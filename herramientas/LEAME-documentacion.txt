@@ -1,0 +1,31 @@
+PLANTA DE LÁCTEOS · MARULANDA, CALDAS
+Sala de recibo y producción · documentación del modelado preliminar
+10 de noviembre de 2026
+
+Visor en línea (3D, plano 2D y recorrido): https://planta-marulanda-3d.vercel.app
+
+CONTENIDO
+planos/planta-marulanda-plano-2d-sala.pdf
+    Plano 2D de la sala en A3 a escala 1:75: muros, puertas, ventanas, columnas,
+    equipos con su nombre, líneas de proceso, tomas y cotas interiores en metros.
+planos/planta-marulanda-planos-arquitectonicos.pdf
+    Versión de lectura del DWG arquitectónico (plantas, cubierta, fachadas y cortes).
+medidas/planta-marulanda-medidas-equipos.xlsx
+    Cada equipo con su medida, de dónde sale, su estado y lo que falta confirmar.
+    Incluye los otros equipos de la planta y las notas de la visita.
+modelo/planta-marulanda-sala.glb
+    Modelo 3D de la sala. Abre en Blender, SketchUp (con complemento para GLB)
+    o el Visor 3D de Windows. Cada equipo es un objeto con su nombre.
+video/planta-marulanda-recorrido-liviano.mp4
+    Recorrido de 78 s por las 8 etapas del proceso (versión liviana para WhatsApp).
+    La versión en alta calidad se descarga aparte desde el visor.
+
+DE DÓNDE SALEN LOS DATOS
+- Muros, puertas, ventanas y columnas: DWG arquitectónico, planta piso 1, en metros.
+- Medidas de los equipos: lista de dimensiones de la planta del 10 de noviembre de 2026.
+  Donde la lista no trae el alto se usó el del catálogo o uno estimado.
+- Zona de recibo y plataforma: leídas a escala del plano de distribución de equipos.
+- Alturas libres: cortes C-C' (zona 1, unos 5,7 m) y D-D' (zona 2, unos 2,8 m bajo losa).
+- Tomas eléctricas y de agua: posición aproximada.
+
+Modelado preliminar.
