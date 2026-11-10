@@ -1,0 +1,346 @@
+<title>Planta de lácteos Marulanda</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Portada: Equinox al frente (logo, presentación, contacto) y Lukbyte como firma de diseño y desarrollo */
+:root {
+  --bg: #f2f4f6;
+  --surface: #ffffff;
+  --ink: #121a2b;
+  --muted: #566173;
+  --line: #d8dee6;
+  --navy: #1a2670;      /* azul de Equinox */
+  --navy-ink: #ffffff;
+  --steel: #e6ebf0;
+  --placa: #ffffff;     /* fondo del logo de Equinox en los dos temas */
+  --lk-bg: #070c1a;     /* banda de Lukbyte: oscura en los dos temas */
+  --lk-ink: #e8f3ff;
+  --lk-muted: #9fb2cc;
+  --lk-cyan: #38d4ff;
+  --lk-violet: #9b6bff;
+  --f-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --f-body: "Barlow", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1118; --surface: #131a23; --ink: #e5eaf1; --muted: #95a1b3; --line: #253041;
+    --navy: #3a4fc4; --navy-ink: #ffffff; --steel: #18212c; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1118; --surface: #131a23; --ink: #e5eaf1; --muted: #95a1b3; --line: #253041;
+  --navy: #3a4fc4; --navy-ink: #ffffff; --steel: #18212c; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.55; }
+a { color: inherit; }
+img { max-width: 100%; }
+.envoltura { max-width: 1160px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; }
+
+/* Encabezado */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+.cab { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; background: var(--surface); border-bottom: 1px solid var(--line); }
+.cab .envoltura { display: flex; align-items: center; gap: 18px; padding-block: 10px; }
+.placa { display: inline-flex; align-items: center; background: var(--placa); border-radius: 8px; padding: 6px 10px; border: 1px solid var(--line); }
+.placa img { display: block; height: 38px; width: auto; }
+.cab nav { display: flex; gap: 18px; margin-left: auto; font-weight: 500; font-size: 15px; }
+.cab nav a { text-decoration: none; color: var(--muted); }
+.cab nav a:hover { color: var(--ink); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 18px; border-radius: 8px; border: 1px solid transparent; font-family: var(--f-display); font-weight: 700; font-size: 17px; letter-spacing: 0.02em; text-decoration: none; cursor: pointer; line-height: 1.1; }
+.btn-1 { background: var(--navy); color: var(--navy-ink); }
+.btn-1:hover { filter: brightness(1.12); }
+.btn-2 { background: var(--surface); color: var(--ink); border-color: var(--line); }
+.btn-2:hover { border-color: var(--navy); }
+.cab .btn { padding: 8px 14px; font-size: 15px; }
+@media (max-width: 760px) { .cab nav { display: none; } .cab .btn { margin-left: auto; } }
+
+/* Portada */
+.hero { padding-block: 56px 40px; }
+.hero .envoltura { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 40px; align-items: center; }
+.ceja { font-family: var(--f-display); font-weight: 600; font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--navy); }
+h1 { margin: 10px 0 14px; font-family: var(--f-display); font-weight: 700; font-size: clamp(40px, 6vw, 64px); line-height: 0.98; letter-spacing: -0.005em; text-wrap: balance; }
+.hero p.lead { margin: 0 0 22px; font-size: 18px; color: var(--muted); max-width: 46ch; }
+.acciones { display: flex; flex-wrap: wrap; gap: 10px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+.chip { font-size: 13px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); }
+.chip b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.foto { margin: 0; position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--steel); box-shadow: 0 18px 40px rgba(10, 20, 40, 0.12); }
+.foto img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+.foto figcaption { position: absolute; left: 12px; bottom: 12px; font-size: 13px; padding: 4px 10px; border-radius: 6px; background: rgba(255, 255, 255, 0.92); color: #233042; }
+@media (max-width: 900px) { .hero .envoltura { grid-template-columns: minmax(0, 1fr); } .hero { padding-block: 32px 24px; } }
+
+/* Secciones */
+section.bloque { padding-block: 48px; scroll-margin-top: 64px; }
+.titulo { display: flex; flex-direction: column; gap: 6px; margin-bottom: 24px; }
+h2 { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: clamp(30px, 4vw, 40px); line-height: 1.02; text-wrap: balance; }
+.titulo p { margin: 0; color: var(--muted); max-width: 62ch; }
+.tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.tarjeta { display: flex; flex-direction: column; gap: 8px; padding: 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); text-decoration: none; }
+.tarjeta:hover { border-color: var(--navy); }
+.tarjeta svg { width: 26px; height: 26px; stroke: var(--navy); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.tarjeta h3 { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: 22px; }
+.tarjeta p { margin: 0; color: var(--muted); font-size: 15px; flex: 1; }
+.tarjeta .ir { font-family: var(--f-display); font-weight: 700; font-size: 15px; color: var(--navy); letter-spacing: 0.02em; }
+
+.proceso { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 32px; align-items: start; }
+ol.etapas { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; counter-reset: etapa; }
+ol.etapas li { counter-increment: etapa; display: grid; grid-template-columns: 34px 6px minmax(0, 1fr); gap: 12px; align-items: start; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+ol.etapas li::before { content: counter(etapa); font-family: var(--f-mono); font-weight: 500; font-size: 14px; color: var(--muted); padding-top: 2px; }
+ol.etapas .barra { width: 6px; align-self: stretch; border-radius: 3px; }
+ol.etapas h3 { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: 19px; line-height: 1.1; }
+ol.etapas p { margin: 2px 0 0; color: var(--muted); font-size: 14.5px; }
+.detalles { display: flex; flex-direction: column; gap: 14px; }
+.detalles figure { margin: 0; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); background: var(--steel); }
+.detalles img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
+.detalles figcaption { padding: 8px 12px; font-size: 13px; color: var(--muted); background: var(--surface); }
+.fuentes { margin-top: 20px; padding: 14px 16px; border-left: 3px solid var(--navy); background: var(--surface); border-radius: 0 8px 8px 0; font-size: 14px; color: var(--muted); }
+@media (max-width: 900px) { .proceso { grid-template-columns: minmax(0, 1fr); } }
+
+.docs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; }
+.docs a { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); text-decoration: none; }
+.docs a:hover { border-color: var(--navy); }
+.docs .tipo { font-family: var(--f-mono); font-weight: 500; font-size: 12px; text-align: center; padding: 4px 0; border-radius: 5px; background: var(--steel); color: var(--muted); }
+.docs .nm { min-width: 0; font-weight: 600; line-height: 1.25; }
+.docs .nm small { display: block; font-weight: 400; font-size: 13px; color: var(--muted); }
+.docs .tam { font-family: var(--f-mono); font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+.zip { margin-top: 14px; }
+
+/* Equinox */
+.equinox { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: 32px; align-items: center; padding: 32px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
+.equinox .placa { padding: 18px 22px; justify-self: start; }
+.equinox .placa img { height: 84px; }
+.equinox p { margin: 8px 0 0; color: var(--muted); }
+.contacto { list-style: none; margin: 16px 0 18px; padding: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 14px; font-size: 15px; }
+.contacto dt { color: var(--muted); }
+.contacto dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.contacto a { text-decoration: none; }
+.contacto a:hover { text-decoration: underline; }
+@media (max-width: 760px) { .equinox { grid-template-columns: minmax(0, 1fr); padding: 22px; } }
+
+/* Lukbyte */
+.lukbyte { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 28px; align-items: center; padding: 28px 32px; border-radius: 14px; background: radial-gradient(120% 140% at 0% 0%, #10204a 0%, var(--lk-bg) 55%); color: var(--lk-ink); border: 1px solid #1d2a4d; }
+.lukbyte img { width: 170px; max-width: 100%; height: auto; display: block; filter: drop-shadow(0 0 18px rgba(56, 212, 255, 0.25)); }
+.lukbyte .ceja { color: var(--lk-cyan); }
+.lukbyte h2 { color: var(--lk-ink); }
+.lukbyte h2 span { color: var(--lk-cyan); }
+.lukbyte p { margin: 8px 0 16px; color: var(--lk-muted); max-width: 60ch; }
+.lukbyte .btn-1 { background: linear-gradient(90deg, #1fb6ff, var(--lk-violet)); color: #ffffff; }
+.lukbyte .btn-2 { background: transparent; color: var(--lk-ink); border-color: #33426b; }
+.lukbyte .btn-2:hover { border-color: var(--lk-cyan); }
+@media (max-width: 640px) { .lukbyte { grid-template-columns: minmax(0, 1fr); padding: 22px; } .lukbyte img { width: 130px; } }
+
+/* Pie */
+footer { margin-top: 32px; border-top: 1px solid var(--line); background: var(--surface); }
+footer .envoltura { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px; padding-block: 18px; font-size: 13.5px; color: var(--muted); }
+footer .placa img { height: 26px; }
+.pie-eq, .pie-lk { display: flex; align-items: center; gap: 10px; }
+.pie-eq .placa, .pie-lk img { flex: none; }
+.pie-lk { text-decoration: none; }
+.pie-lk img { width: 30px; height: auto; }
+.pie-lk b { color: var(--ink); }
+
+/* Video */
+dialog { padding: 0; border: 0; border-radius: 12px; background: #0d1117; width: min(1000px, calc(100vw - 32px)); max-width: none; }
+dialog::backdrop { background: rgba(5, 10, 20, 0.7); }
+dialog video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #000; }
+dialog .barra-dlg { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 14px; color: #c9d4de; font-size: 14px; }
+dialog button { border: 1px solid #33404f; background: transparent; color: #e5eaf1; border-radius: 6px; padding: 5px 12px; cursor: pointer; font: inherit; }
+</style>
+
+<header class="cab">
+  <div class="envoltura">
+    <a class="placa" href="#inicio" aria-label="Industrias Equinox Colombia, inicio"><img src="assets/logo-equinox.png" alt="Industrias Equinox Colombia" width="114" height="38"></a>
+    <nav aria-label="Secciones">
+      <a href="#proyecto">Proyecto</a>
+      <a href="#proceso">Proceso</a>
+      <a href="#documentacion">Documentación</a>
+      <a href="#equinox">Equinox</a>
+    </nav>
+    <a class="btn btn-1" href="visor">Abrir visor 3D</a>
+  </div>
+</header>
+
+<main id="inicio">
+  <section class="hero">
+    <div class="envoltura">
+      <div>
+        <div class="ceja">Industrias Equinox Colombia presenta</div>
+        <h1>Planta de lácteos de Marulanda</h1>
+        <p class="lead">Sala de recibo y producción en 3D. Recorre el proceso de la leche de principio a fin, revisa cada equipo con sus medidas y descarga los planos.</p>
+        <div class="acciones">
+          <a class="btn btn-1" href="visor">Abrir visor 3D</a>
+          <button type="button" class="btn btn-2" id="b-video">▶ Ver el recorrido</button>
+          <a class="btn btn-2" href="#documentacion">Descargar documentación</a>
+        </div>
+        <div class="chips">
+          <span class="chip">Marulanda, Caldas</span>
+          <span class="chip"><b>26</b> equipos</span>
+          <span class="chip"><b>7</b> líneas de proceso</span>
+          <span class="chip"><b>8</b> etapas</span>
+        </div>
+      </div>
+      <figure class="foto">
+        <img src="assets/portada.jpg" alt="Vista general del modelo 3D de la sala de recibo y producción, con tanques, tinas y líneas de proceso" width="2000" height="1125">
+        <figcaption>Modelo 3D · vista general</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="bloque" id="proyecto">
+    <div class="envoltura">
+      <div class="titulo">
+        <div class="ceja">El proyecto</div>
+        <h2>Toda la sala, en una sola página</h2>
+        <p>El modelo se arma con el plano arquitectónico de la planta y la lista de dimensiones de sus equipos. Se abre en el navegador, sin instalar nada.</p>
+      </div>
+      <div class="tarjetas">
+        <a class="tarjeta" href="visor">
+          <svg viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 22V12M21 7l-9 5-9-5"/></svg>
+          <h3>Visor 3D</h3>
+          <p>Gira, acércate y recorre la sala. Toca cualquier equipo para ver su ficha: capacidad, medidas y de dónde salen.</p>
+          <span class="ir">Abrir el 3D →</span>
+        </a>
+        <a class="tarjeta" href="visor#plano">
+          <svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/><path d="M3 9h8v12M11 9h10M15 9v5h6"/></svg>
+          <h3>Plano 2D con cotas</h3>
+          <p>Muros, puertas, equipos y líneas de proceso dibujados como plano de arquitectura, con cotas en metros.</p>
+          <span class="ir">Ver el plano →</span>
+        </a>
+        <a class="tarjeta" href="visor#recorrido">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5z"/></svg>
+          <h3>Recorrido guiado</h3>
+          <p>78 segundos por las 8 etapas del proceso, con el plano a la vista en una esquina mientras avanza.</p>
+          <span class="ir">Iniciar el recorrido →</span>
+        </a>
+        <a class="tarjeta" href="#documentacion">
+          <svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5M12 11v7M9 15l3 3 3-3"/></svg>
+          <h3>Documentación</h3>
+          <p>Planos en PDF, tabla de medidas, modelo 3D y video, para descargar uno por uno o en un solo ZIP.</p>
+          <span class="ir">Ir a las descargas →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloque" id="proceso">
+    <div class="envoltura">
+      <div class="titulo">
+        <div class="ceja">El proceso</div>
+        <h2>De la cantina al producto, en 8 etapas</h2>
+        <p>Cada etapa del recorrido tiene su color, igual que las líneas de proceso del modelo.</p>
+      </div>
+      <div class="proceso">
+        <ol class="etapas" id="etapas"></ol>
+        <div class="detalles">
+          <figure><img src="assets/detalle-recibo.jpg" alt="Tanques de enfriamiento de 5.000 L y 3.000 L con escalera y baranda, y tuberías de leche" width="1200" height="800" loading="lazy"><figcaption>Recibo y enfriamiento: tanques de 5.000 L y 3.000 L</figcaption></figure>
+          <figure><img src="assets/detalle-yogurt.jpg" alt="Zona de yogurt con fermentador, tanque de mezcla, dosificadora y agua helada del chiller" width="1200" height="800" loading="lazy"><figcaption>Yogurt: fermentador con agua helada del chiller</figcaption></figure>
+        </div>
+      </div>
+      <div class="fuentes">Muros, puertas y ventanas del plano arquitectónico de la planta. Equipos con la lista de dimensiones de la planta del 10 de noviembre de 2026; donde la lista no trae el alto se usó el del catálogo o uno estimado. Modelado preliminar.</div>
+    </div>
+  </section>
+
+  <section class="bloque" id="documentacion">
+    <div class="envoltura">
+      <div class="titulo">
+        <div class="ceja">Documentación</div>
+        <h2>Descarga los planos y el modelo</h2>
+        <p>Todo lo que se ve en el visor, en archivos para revisar, imprimir o compartir.</p>
+      </div>
+      <ul class="docs" id="docs"></ul>
+      <div class="zip"><a class="btn btn-1" id="b-zip" href="documentos/planta-marulanda-documentacion.zip" download>Descargar todo (ZIP)</a></div>
+    </div>
+  </section>
+
+  <section class="bloque" id="equinox">
+    <div class="envoltura">
+      <div class="equinox">
+        <span class="placa"><img src="assets/logo-equinox.png" alt="Industrias Equinox Colombia" width="252" height="84" loading="lazy"></span>
+        <div>
+          <div class="ceja">Quién presenta el proyecto</div>
+          <h2>Industrias Equinox Colombia</h2>
+          <p>Fabrica en Copacabana, Antioquia, equipos en acero inoxidable para la industria láctea: los diseña, los fabrica y los instala. Ha instalado equipos en Antioquia, la Costa, Caquetá, Magdalena Medio, Valle, Nariño y Huila.</p>
+          <dl class="contacto">
+            <dt>WhatsApp de ventas</dt><dd><a href="https://wa.me/573107250200" target="_blank" rel="noopener">+57 310 725 0200</a></dd>
+            <dt>Correo</dt><dd><a href="mailto:ventas@indequinoxcol.com">ventas@indequinoxcol.com</a></dd>
+            <dt>Sitio</dt><dd><a href="https://indequinoxcol.com" target="_blank" rel="noopener">indequinoxcol.com</a></dd>
+          </dl>
+          <a class="btn btn-1" href="https://wa.me/573107250200?text=Hola%2C%20vi%20el%20modelo%203D%20de%20la%20planta%20de%20Marulanda%20y%20quiero%20cotizar." target="_blank" rel="noopener">Cotizar por WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloque" id="lukbyte">
+    <div class="envoltura">
+      <div class="lukbyte">
+        <img src="assets/logo-lukbyte.png" alt="Lukbyte, soluciones digitales" width="170" height="178" loading="lazy">
+        <div>
+          <div class="ceja">Diseño y desarrollo</div>
+          <h2>Diseñado y desarrollado por <span>Lukbyte</span></h2>
+          <p>Lukbyte creó el modelo 3D, el plano 2D, el recorrido, el video y este sitio. Hacemos software a medida que crece con tu empresa, desde Medellín.</p>
+          <div class="acciones">
+            <a class="btn btn-1" href="https://lukbyte-my-website.vercel.app/" target="_blank" rel="noopener">Conoce Lukbyte</a>
+            <a class="btn btn-2" href="https://wa.me/573150399322?text=Hola%20Lukbyte%2C%20vi%20el%20modelo%203D%20de%20la%20planta%20de%20Marulanda%20y%20quiero%20un%20proyecto%20as%C3%AD." target="_blank" rel="noopener">Quiero un proyecto así</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="envoltura">
+    <div class="pie-eq"><span class="placa"><img src="assets/logo-equinox.png" alt="Industrias Equinox Colombia" width="78" height="26" loading="lazy"></span><span>Proyecto de Industrias Equinox Colombia · Planta de lácteos Marulanda, Caldas · Modelado preliminar, 10 de noviembre de 2026</span></div>
+    <a class="pie-lk" href="https://lukbyte-my-website.vercel.app/" target="_blank" rel="noopener"><img src="assets/logo-lukbyte-mini.png" alt="" width="30" height="31" loading="lazy"><span>Diseñado y desarrollado por <b>Lukbyte</b></span></a>
+  </div>
+</footer>
+
+<dialog id="dlg-video" aria-label="Video del recorrido">
+  <video id="video" controls playsinline preload="none"></video>
+  <div class="barra-dlg"><span>Recorrido por la sala · 78 s</span><button type="button" id="cerrar-video">Cerrar</button></div>
+</dialog>
+
+<script>
+const ETAPAS = [
+  ['Recibo de leche', 'La leche llega en cantinas, se vuelca al tanque recibidor de 500 L y la bomba la lleva a los tanques.', '#2f7fc4'],
+  ['Enfriamiento', 'Dos tanques de enfriamiento, de 5.000 L y 3.000 L, con el frío de tres compresores.', '#18a9bf'],
+  ['Descremado y pasteurización', 'Descremadora, pasteurizador de placas de 1.500 L/h y homogenizador.', '#2f7fc4'],
+  ['Tinas de 2.000 L', 'Tina semiautomática y tina sencilla, donde la leche se cuaja y se corta.', '#2f7fc4'],
+  ['Queso', 'Mesa de escurrido, hiladora, formadora y mesa de moldeo; el queso sale en canastas hacia la bodega.', '#d4851a'],
+  ['Mantequilla', 'La crema llega por tubería a la batidora de mantequilla.', '#d6b11f'],
+  ['Arequipe', 'La leche pasteurizada se cocina en la marmita con agitador raspador.', '#9a5a2b'],
+  ['Yogurt', 'Fermentador enfriado con agua del chiller, tanque de mezcla y dosificadora.', '#c23d7d'],
+];
+document.getElementById('etapas').innerHTML = ETAPAS.map(([t, d, c]) => `<li><span class="barra" style="background:${c}"></span><div><h3>${t}</h3><p>${d}</p></div></li>`).join('');
+
+const DOCS = [
+  { n: 'Plano 2D de la sala', d: 'Muros, equipos, líneas de proceso y cotas · A3, escala 1:75', f: 'documentos/planos/planta-marulanda-plano-2d-sala.pdf', t: 'PDF' },
+  { n: 'Planos arquitectónicos', d: 'Plantas, fachadas y cortes leídos del DWG', f: 'documentos/planos/planta-marulanda-planos-arquitectonicos.pdf', t: 'PDF' },
+  { n: 'Medidas de los equipos', d: 'Medida, fuente y estado de cada equipo', f: 'documentos/medidas/planta-marulanda-medidas-equipos.xlsx', t: 'XLSX' },
+  { n: 'Modelo 3D', d: 'Abre en Blender, SketchUp o el Visor 3D de Windows', f: 'documentos/modelo/planta-marulanda-sala.glb', t: 'GLB' },
+  { n: 'Video del recorrido', d: '78 s · 1080p · alta calidad', f: 'documentos/video/planta-marulanda-recorrido.mp4', t: 'MP4' },
+  { n: 'Video del recorrido, liviano', d: 'Para enviar por WhatsApp', f: 'documentos/video/planta-marulanda-recorrido-liviano.mp4', t: 'MP4' },
+];
+const tamano = (f) => { const b = (window.TAMANOS || {})[f]; if (!b) return ''; return b >= 1048576 ? `${(b / 1048576).toLocaleString('es-CO', { maximumFractionDigits: 1 })} MB` : `${Math.max(1, Math.round(b / 1024))} kB`; };
+document.getElementById('docs').innerHTML = DOCS.map((d) => `<li><a href="${d.f}" download><span class="tipo">${d.t}</span><span class="nm">${d.n}<small>${d.d}</small></span><span class="tam">${tamano(d.f)}</span></a></li>`).join('');
+const zip = 'documentos/planta-marulanda-documentacion.zip';
+if (tamano(zip)) document.getElementById('b-zip').textContent = `Descargar todo (ZIP · ${tamano(zip)})`;
+
+const dlg = document.getElementById('dlg-video'), video = document.getElementById('video');
+document.getElementById('b-video').addEventListener('click', () => {
+  if (!video.src) video.src = 'documentos/video/planta-marulanda-recorrido-liviano.mp4';
+  dlg.showModal();
+  video.play().catch(() => {});
+});
+const cerrar = () => { video.pause(); dlg.close(); };
+document.getElementById('cerrar-video').addEventListener('click', cerrar);
+dlg.addEventListener('click', (ev) => { if (ev.target === dlg) cerrar(); });
+dlg.addEventListener('close', () => video.pause());
+</script>

@@ -2,7 +2,8 @@
 //
 //   node herramientas/servidor.mjs [puerto]
 //
-// GET /                 -> el visor (sala3d-marulanda.html envuelto en su documento, igual que index.html)
+// GET /                 -> la portada (portada.html envuelta en su documento, igual que index.html)
+// GET /visor            -> el visor (sala3d-marulanda.html, igual que visor.html)
 // GET /<archivo>        -> cualquier archivo del repositorio (documentos/, etc.)
 // POST /guardar-glb     -> guarda el modelo exportado en documentos/modelo/planta-marulanda-sala.glb
 // POST /guardar?nombre= -> guarda un archivo de apoyo en herramientas/salida/ (por ejemplo el plano en SVG)
@@ -64,9 +65,10 @@ http.createServer(async (req, res) => {
     }
     res.writeHead(404); return res.end('no encontrado');
   }
-  if (url.pathname === '/' || url.pathname === '/index.html') {
+  const paginas = { '/': 'portada.html', '/index.html': 'portada.html', '/visor': 'sala3d-marulanda.html', '/visor.html': 'sala3d-marulanda.html' };
+  if (paginas[url.pathname]) {
     res.writeHead(200, { 'content-type': TIPOS['.html'], 'cache-control': 'no-store' });
-    return res.end(documento(fs.readFileSync(path.join(raiz, 'sala3d-marulanda.html'), 'utf8'), raiz));
+    return res.end(documento(fs.readFileSync(path.join(raiz, paginas[url.pathname]), 'utf8'), raiz));
   }
   const f = path.join(raiz, decodeURIComponent(url.pathname));
   if (!f.startsWith(raiz) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404); return res.end('no encontrado'); }

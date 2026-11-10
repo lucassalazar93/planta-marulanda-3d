@@ -2,11 +2,24 @@
 
 Visor 3D y plano 2D de la sala de recibo y producción de la planta de lácteos de Marulanda (Caldas), con recorrido por el proceso, video y documentación descargable.
 
-**Visor publicado:** https://planta-marulanda-3d.vercel.app
+**Proyecto de [Industrias Equinox Colombia](https://indequinoxcol.com)** · diseñado y desarrollado por **[Lukbyte · Soluciones digitales](https://lukbyte-my-website.vercel.app/)**.
+
+| Página | Dirección |
+| --- | --- |
+| Portada del proyecto | https://planta-marulanda-3d.vercel.app |
+| Visor 3D y plano 2D | https://planta-marulanda-3d.vercel.app/visor |
+| Visor con el recorrido en marcha | https://planta-marulanda-3d.vercel.app/visor#recorrido |
+| Visor abierto en el plano 2D | https://planta-marulanda-3d.vercel.app/visor#plano |
 
 > Modelado preliminar. Las medidas de los equipos salen de la lista de dimensiones de la planta (10 de noviembre de 2026); donde la lista no trae el alto se usó el del catálogo o uno estimado. La página no aparece en buscadores (`noindex`): la abre quien tenga el enlace.
 
 ---
+
+## Portada
+
+La portada presenta el proyecto a nombre de Industrias Equinox Colombia: logo, imagen del modelo, accesos al visor, al plano y al recorrido, las 8 etapas del proceso, la documentación descargable y los datos de contacto de Equinox. Al final va la firma de Lukbyte, que diseñó y desarrolló el proyecto. El video del recorrido se ve ahí mismo, en una ventana.
+
+Las dos páginas se adaptan a celular, tablet y computador.
 
 ## Qué hay en el visor
 
@@ -65,14 +78,17 @@ Visor 3D y plano 2D de la sala de recibo y producción de la planta de lácteos 
 ## Estructura del repositorio
 
 ```
-index.html                  Página publicada (se genera, no se edita a mano)
-sala3d-marulanda.html       Fuente del visor: estilos, datos de equipos y código
+index.html                  Portada publicada (se genera desde portada.html, no se edita a mano)
+visor.html                  Visor publicado (se genera desde sala3d-marulanda.html)
+portada.html                Fuente de la portada
+sala3d-marulanda.html       Fuente del visor: estilos, datos de equipos y código (también se publica como artifact de Claude)
 favicon.svg  robots.txt  vercel.json  .vercelignore
-documentos/                 Todo lo que se descarga desde el visor
+assets/                     Logos de Equinox y Lukbyte, e imágenes del modelo para la portada y las vistas previas
+documentos/                 Todo lo que se descarga desde el sitio
 herramientas/
   servidor.mjs              Servidor local para probar, exportar el GLB y grabar el video
   documento.mjs             Envuelve el visor en su documento HTML (lo usan el servidor y el generador)
-  construir-index.mjs       Genera index.html
+  construir-index.mjs       Genera index.html y visor.html
   plano-pdf.mjs             Arma el plano 2D en PDF (A3, 1:75) con Chrome sin ventana
   codificar-video.sh        Convierte los cuadros grabados en los dos MP4
   LEAME-documentacion.txt   Texto que va dentro del ZIP
@@ -90,15 +106,15 @@ Requiere Node 18 o superior.
 node herramientas/servidor.mjs 5178
 ```
 
-Abrir http://127.0.0.1:5178. El servidor arma la página desde `sala3d-marulanda.html` en cada recarga.
+Abrir http://127.0.0.1:5178 (portada) y http://127.0.0.1:5178/visor (visor). El servidor arma las páginas desde `portada.html` y `sala3d-marulanda.html` en cada recarga.
 
-### Después de cambiar el visor
+### Después de cambiar la portada o el visor
 
 ```bash
 node herramientas/construir-index.mjs
 ```
 
-Así `index.html` queda igual a lo que se probó. Hacer commit de los dos archivos.
+Así `index.html` y `visor.html` quedan iguales a lo que se probó. Hacer commit de las fuentes y de las páginas generadas.
 
 ### Volver a generar los documentos
 
@@ -107,6 +123,7 @@ Con el servidor local abierto, desde la consola del navegador en el visor:
 | Documento | Paso en el navegador | Paso en la terminal |
 | --- | --- | --- |
 | Modelo 3D (GLB) | `await window.__sala.exportGLB()` | — |
+| Imágenes de la portada | `await window.__sala.capturaLimpia('portada.jpg', {p: [...], t: [...]}, 2000, 1125)` | mover de `herramientas/salida/` a `assets/` |
 | Plano 2D (PDF) | `await window.__sala.exportarPlanoSVG()` | `node herramientas/plano-pdf.mjs` |
 | Video | `window.__sala.grabarVideo()` (unos minutos; deja los cuadros en la carpeta temporal) | `bash herramientas/codificar-video.sh` (necesita ffmpeg) |
 
@@ -124,4 +141,14 @@ Cada push a `main` publica una versión nueva. `vercel.json` agrega `noindex` a 
 
 ---
 
-Modelado preliminar elaborado por Lukbyte · Soluciones digitales.
+## Créditos
+
+**Industrias Equinox Colombia** presenta el proyecto. Fabrica en Copacabana, Antioquia, equipos en acero inoxidable para la industria láctea: los diseña, los fabrica y los instala.
+WhatsApp de ventas +57 310 725 0200 · ventas@indequinoxcol.com · [indequinoxcol.com](https://indequinoxcol.com)
+
+**Lukbyte · Soluciones digitales** diseñó y desarrolló el modelo 3D, el plano 2D, el recorrido, el video y el sitio. Software a medida que crece con tu empresa, desde Medellín.
+[lukbyte-my-website.vercel.app](https://lukbyte-my-website.vercel.app/) · WhatsApp +57 315 039 9322
+
+Las marcas aparecen en la portada, el visor, el video (apertura, encabezado, firma y cierre) y el cajetín del plano en PDF.
+
+Modelado preliminar, 10 de noviembre de 2026.
