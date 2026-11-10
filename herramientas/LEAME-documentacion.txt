@@ -2,7 +2,8 @@ PLANTA DE LÁCTEOS · MARULANDA, CALDAS
 Sala de recibo y producción · documentación del modelado preliminar
 10 de noviembre de 2026
 
-Visor en línea (3D, plano 2D y recorrido): https://planta-marulanda-3d.vercel.app
+Sitio del proyecto: https://planta-marulanda-3d.vercel.app
+Visor 3D y plano 2D: https://planta-marulanda-3d.vercel.app/visor
 
 CONTENIDO
 planos/planta-marulanda-plano-2d-sala.pdf
@@ -29,3 +30,11 @@ DE DÓNDE SALEN LOS DATOS
 - Tomas eléctricas y de agua: posición aproximada.
 
 Modelado preliminar.
+
+PROYECTO DE INDUSTRIAS EQUINOX COLOMBIA
+Equipos en acero inoxidable para la industria láctea · Copacabana, Antioquia
+WhatsApp de ventas +57 310 725 0200 · ventas@indequinoxcol.com · indequinoxcol.com
+
+DISEÑADO Y DESARROLLADO POR LUKBYTE · SOLUCIONES DIGITALES
+Software a medida que crece con tu empresa · Medellín
+https://lukbyte-my-website.vercel.app · WhatsApp +57 315 039 9322

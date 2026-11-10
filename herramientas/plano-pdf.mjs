@@ -15,6 +15,8 @@ const salida = path.join(raiz, 'herramientas', 'salida');
 const svg = fs.readFileSync(path.join(salida, 'plano-2d.svg'), 'utf8')
   .replace(/<svg\b/, '<svg class="dibujo" preserveAspectRatio="xMidYMid meet"');
 const pdf = path.join(raiz, 'documentos', 'planos', 'planta-marulanda-plano-2d-sala.pdf');
+const logoEq = pathToFileURL(path.join(raiz, 'assets', 'logo-equinox.png')).href;
+const logoLk = pathToFileURL(path.join(raiz, 'assets', 'logo-lukbyte-mini.png')).href;
 
 const LINEAS = [
   ['Leche', '#2f7fc4', ''], ['Queso (traslado a mano)', '#d4851a', '6 4'], ['Crema', '#d6b11f', ''], ['Arequipe', '#9a5a2b', ''],
@@ -32,7 +34,12 @@ body { margin: 0; font-family: Barlow, "Segoe UI", sans-serif; color: #15202a; }
 .hoja { width: 420mm; height: 297mm; padding: 9mm 10mm; display: grid; grid-template-rows: 222mm 1fr; gap: 4mm; }
 .marco { border: 0.5mm solid #15202a; display: grid; place-items: center; overflow: hidden; background: #fff; }
 .dibujo { width: 400mm; height: 216mm; display: block; }
-.cajetin { border: 0.5mm solid #15202a; display: grid; grid-template-columns: 120mm 1fr 118mm; }
+.cajetin { border: 0.5mm solid #15202a; display: grid; grid-template-columns: 128mm 1fr 104mm 58mm; }
+.logo-eq { height: 11mm; width: auto; display: block; margin-bottom: 1.5mm; }
+.firma { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 1mm; }
+.firma img { width: 17mm; height: auto; }
+.firma b { font-family: "Barlow Condensed", sans-serif; font-size: 13pt; }
+.firma span { font-size: 7.5pt; color: #586773; }
 .cajetin > div { padding: 3mm 4mm; border-right: 0.3mm solid #15202a; }
 .cajetin > div:last-child { border-right: 0; }
 .ceja { font-family: "Barlow Condensed", sans-serif; font-weight: 600; font-size: 8.5pt; letter-spacing: 0.12em; text-transform: uppercase; color: #586773; }
@@ -50,6 +57,7 @@ li { display: flex; align-items: center; gap: 2mm; margin-bottom: 1mm; break-ins
   <div class="marco">${svg}</div>
   <div class="cajetin">
     <div>
+      <img class="logo-eq" src="${logoEq}" alt="Industrias Equinox Colombia">
       <div class="ceja">Planta de lácteos · Marulanda, Caldas</div>
       <h1>Sala de recibo y producción</h1>
       <div class="sub">Plano 2D de equipos y líneas de proceso · modelado preliminar</div>
@@ -75,6 +83,12 @@ li { display: flex; align-items: center; gap: 2mm; margin-bottom: 1mm; break-ins
         <li>Zona de recibo y plataforma: leídas a escala del plano de distribución de equipos.</li>
         <li>Tomas eléctricas y de agua: posición aproximada.</li>
       </ul>
+    </div>
+    <div class="firma">
+      <span>Diseño y modelado</span>
+      <img src="${logoLk}" alt="Lukbyte">
+      <b>Lukbyte</b>
+      <span>Soluciones digitales</span>
     </div>
   </div>
 </div></body></html>`;

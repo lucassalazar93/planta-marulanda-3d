@@ -22,6 +22,7 @@
   --plano-piso: #e8edf0;
   --plano-ext: #dfe3dc;
   --guia-fill: #d4ecf5;
+  --placa: #ffffff; /* fondo blanco del logo de Equinox en los dos temas */
   --f-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
   --f-body: "Barlow", "Segoe UI", system-ui, sans-serif;
   --f-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
@@ -119,8 +120,20 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 #vista canvas { display: block; }
 .capa-etq { position: absolute; inset: 0; }
 
-/* Encabezado */
+/* Encabezado y marcas */
 .cab { display: flex; flex-direction: column; gap: 6px; }
+.marca-eq { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+.placa { display: inline-flex; align-items: center; background: var(--placa); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
+.placa img { height: 34px; width: auto; display: block; }
+.presenta { font-family: var(--f-display); font-weight: 600; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.credito { display: flex; align-items: center; gap: 10px; padding: 10px 12px; margin-bottom: 4px; border: 1px solid var(--line); border-radius: 8px; text-decoration: none; color: var(--muted); background: var(--panel); }
+.credito:hover { border-color: var(--accent); }
+.credito img { width: 40px; height: auto; flex: none; }
+.credito span { font-size: 12.5px; line-height: 1.3; }
+.credito b { color: var(--ink); font-weight: 600; }
+.credito small { display: block; font-size: 11.5px; }
+.b-inicio { border: 1px solid var(--line); background: var(--chip); color: var(--ink); border-radius: 7px; padding: 5px 10px; text-decoration: none; font-family: var(--f-display); font-weight: 600; font-size: 14px; }
+.b-inicio:hover { border-color: var(--accent); }
 .ceja { font-family: var(--f-display); font-weight: 600; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 h1 { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: 30px; line-height: 1.02; letter-spacing: 0.005em; text-wrap: balance; }
 .meta { display: flex; flex-wrap: wrap; gap: 6px 12px; color: var(--muted); font-size: 13px; }
@@ -236,6 +249,11 @@ dl.datos dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 .nav button.activo { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .nav svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 @media (max-width: 760px) {
+  .barra { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-block: 6px; }
+  .barra::-webkit-scrollbar { display: none; }
+  .barra > *, .vistas > * { flex: none; }
+  .vistas { flex-wrap: nowrap; }
+  .b-docs { margin-left: 0; }
   .ayuda { display: none; }
   .nav { gap: 6px; padding: 6px 8px; }
   .pad { grid-template-columns: repeat(3, 30px); grid-template-rows: repeat(3, 30px); }
@@ -264,6 +282,7 @@ dl.datos dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 <div class="app">
   <aside class="panel" aria-label="Controles del modelo">
     <header class="cab">
+      <div class="marca-eq"><a class="placa" id="a-inicio" href="./" title="Volver al inicio"><img data-logo="eq" alt="Industrias Equinox Colombia" width="120" height="40"></a><span class="presenta">presenta</span></div>
       <div class="ceja">Planta de lácteos · Marulanda, Caldas</div>
       <h1>Sala de recibo y producción</h1>
       <div class="meta"><span><b id="n-equipos">26</b> equipos</span><span><b>4</b> zonas</span><span><b>7</b> líneas de proceso</span><span>medidas en mm</span></div>
@@ -335,10 +354,16 @@ dl.datos dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
       <p>Medidas de equipos: lista de dimensiones de la planta (10 de noviembre de 2026). Volcador, compresores y carro de canastas no están en la lista y siguen estimados.</p>
       <p>Agua helada del chiller al fermentador de yogurt: tubería proyectada con los ingenieros en la visita. Tomas eléctricas (220 V) y de agua (1/2"): posición aproximada leída del plano.</p>
     </section>
+
+    <a class="credito" id="credito" href="https://lukbyte-my-website.vercel.app/" target="_blank" rel="noopener">
+      <img data-logo="lk" alt="Lukbyte" width="40" height="42">
+      <span>Diseñado y desarrollado por <b>Lukbyte</b><small>Soluciones digitales · Medellín</small></span>
+    </a>
   </aside>
 
   <main class="escena" aria-label="Modelo 3D y plano 2D">
     <div class="barra">
+      <a class="b-inicio" id="b-inicio" href="./" hidden>← Inicio</a>
       <div class="seg" role="group" aria-label="Tipo de vista">
         <button type="button" data-modo="3d" aria-pressed="true">3D</button>
         <button type="button" data-modo="2d" aria-pressed="false">2D</button>
@@ -1428,6 +1453,7 @@ function entrarPaso(k) {
 
 function aplicarTour(t) {
   const r = poseTour(t);
+  if (!grabando && camera.aspect < 1) r.pos = r.tgt.clone().add(r.pos.clone().sub(r.tgt).multiplyScalar(Math.min(1.6, factorAspecto())));
   camera.position.copy(r.pos); controls.target.copy(r.tgt); camera.lookAt(r.tgt);
   if (r.k !== tour.paso) { tour.paso = r.k; entrarPaso(r.k); }
   return r;
@@ -1474,6 +1500,18 @@ function lineasTexto(ctx, txt, maxW) {
   return out;
 }
 const FD = '"Barlow Condensed", "Arial Narrow", sans-serif', FB = 'Barlow, "Segoe UI", sans-serif';
+// Logos de Equinox y Lukbyte: en el sitio salen de assets/, en Claude de los archivos del artifact
+const LOGO_URL = { eq: 'assets/logo-equinox.png', lk: 'assets/logo-lukbyte.png', lkMini: 'assets/logo-lukbyte-mini.png' };
+const LOGOS = {};
+function cargarLogos() {
+  return Promise.all(['eq', 'lk'].map((k) => new Promise((ok) => {
+    if (LOGOS[k]) return ok();
+    const i = new Image();
+    i.onload = () => { LOGOS[k] = i; ok(); };
+    i.onerror = () => ok();
+    i.src = LOGO_URL[k];
+  })));
+}
 function dibujarOverlay(ctx, w, h, t) {
   const r = poseTour(t), P = r.P, k = r.k, u = r.u;
   const s = w / 1920;
@@ -1496,10 +1534,27 @@ function dibujarOverlay(ctx, w, h, t) {
   if (k > 0) {
     ctx.save();
     ctx.globalAlpha = k === 1 ? Math.min(1, u / 1.2) : 1;
-    rr(ctx, 40 * s, 36 * s, 560 * s, 92 * s, 10 * s); ctx.fillStyle = 'rgba(245,247,248,0.9)'; ctx.fill();
-    ctx.fillStyle = '#586773'; ctx.font = `600 ${19 * s}px ${FD}`; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-    ctx.fillText('PLANTA DE LÁCTEOS · MARULANDA, CALDAS', 62 * s, 70 * s);
-    ctx.fillStyle = '#15202a'; ctx.font = `700 ${36 * s}px ${FD}`; ctx.fillText('Sala de recibo y producción', 62 * s, 110 * s);
+    // Encabezado con el logo de Equinox
+    const hx = 40 * s, hy = 36 * s, hh = 96 * s, lh = 56 * s;
+    const lw = LOGOS.eq ? (LOGOS.eq.width / LOGOS.eq.height) * lh : 0;
+    const tx = hx + 24 * s + (lw ? lw + 30 * s : 0);
+    ctx.font = `700 ${34 * s}px ${FD}`;
+    const cw = tx - hx + Math.max(ctx.measureText('Sala de recibo y producción').width, 380 * s) + 28 * s;
+    rr(ctx, hx, hy, cw, hh, 10 * s); ctx.fillStyle = 'rgba(255,255,255,0.95)'; ctx.fill();
+    if (LOGOS.eq) {
+      ctx.drawImage(LOGOS.eq, hx + 22 * s, hy + (hh - lh) / 2, lw, lh);
+      ctx.fillStyle = 'rgba(21,32,42,0.16)'; ctx.fillRect(tx - 15 * s, hy + 18 * s, 2 * s, hh - 36 * s);
+    }
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = '#586773'; ctx.font = `600 ${18 * s}px ${FD}`; ctx.fillText('PLANTA DE LÁCTEOS · MARULANDA, CALDAS', tx, hy + 40 * s);
+    ctx.fillStyle = '#15202a'; ctx.font = `700 ${34 * s}px ${FD}`; ctx.fillText('Sala de recibo y producción', tx, hy + 76 * s);
+    // Crédito de Lukbyte abajo a la derecha
+    ctx.font = `500 ${18 * s}px ${FB}`;
+    const credito = 'Diseñado y desarrollado por Lukbyte', crw = ctx.measureText(credito).width;
+    const chw = crw + (LOGOS.lk ? 66 : 32) * s, chx = w - 40 * s - chw, chy = h - 86 * s;
+    rr(ctx, chx, chy, chw, 46 * s, 23 * s); ctx.fillStyle = 'rgba(255,255,255,0.92)'; ctx.fill();
+    if (LOGOS.lk) ctx.drawImage(LOGOS.lk, chx + 12 * s, chy + 5 * s, 36 * s * LOGOS.lk.width / LOGOS.lk.height, 36 * s);
+    ctx.fillStyle = '#33414c'; ctx.fillText(credito, chx + (LOGOS.lk ? 54 : 16) * s, chy + 30 * s);
     ctx.font = `500 ${20 * s}px ${FB}`; const aviso = 'Modelo 3D preliminar'; const aw = ctx.measureText(aviso).width;
     rr(ctx, w - aw - 84 * s, 50 * s, aw + 44 * s, 44 * s, 22 * s); ctx.fillStyle = 'rgba(255,244,214,0.95)'; ctx.fill();
     ctx.fillStyle = '#6b4b00'; ctx.fillText(aviso, w - aw - 62 * s, 79 * s);
@@ -1509,18 +1564,35 @@ function dibujarOverlay(ctx, w, h, t) {
   if (k === 0 || k === PASOS.length - 1) {
     const a = k === 0 ? Math.min(1, (P.dur - u) / 0.8) : Math.min(1, Math.max(0, (u - 1.2) / 0.8));
     ctx.save(); ctx.globalAlpha = Math.max(0, a);
-    const bw = 1080 * s, bh = 250 * s, bx = (w - bw) / 2, by = (h - bh) / 2;
-    rr(ctx, bx, by, bw, bh, 14 * s); ctx.fillStyle = 'rgba(19,26,30,0.82)'; ctx.fill();
+    const bw = 1080 * s, bh = (k === 0 ? 350 : 420) * s, bx = (w - bw) / 2, by = (h - bh) / 2;
+    rr(ctx, bx, by, bw, bh, 14 * s); ctx.fillStyle = 'rgba(19,26,30,0.86)'; ctx.fill();
     ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+    const placaEq = (cx, cy, alto) => {
+      if (!LOGOS.eq) return;
+      const lw = (LOGOS.eq.width / LOGOS.eq.height) * alto, pw = lw + 48 * s, ph = alto + 30 * s;
+      rr(ctx, cx - pw / 2, cy, pw, ph, 10 * s); ctx.fillStyle = '#ffffff'; ctx.fill();
+      ctx.drawImage(LOGOS.eq, cx - lw / 2, cy + 15 * s, lw, alto);
+    };
     if (k === 0) {
-      ctx.fillStyle = '#9fd3e6'; ctx.font = `600 ${24 * s}px ${FD}`; ctx.fillText('PLANTA DE LÁCTEOS · MARULANDA, CALDAS', w / 2, by + 70 * s);
-      ctx.fillStyle = '#ffffff'; ctx.font = `700 ${78 * s}px ${FD}`; ctx.fillText('Sala de recibo y producción', w / 2, by + 152 * s);
-      ctx.fillStyle = '#c9d4da'; ctx.font = `500 ${26 * s}px ${FB}`; ctx.fillText('Recorrido por el proceso · modelo 3D preliminar', w / 2, by + 205 * s);
+      placaEq(w / 2, by + 34 * s, 80 * s);
+      ctx.fillStyle = '#9fd3e6'; ctx.font = `600 ${24 * s}px ${FD}`; ctx.fillText('PRESENTA · PLANTA DE LÁCTEOS · MARULANDA, CALDAS', w / 2, by + 192 * s);
+      ctx.fillStyle = '#ffffff'; ctx.font = `700 ${72 * s}px ${FD}`; ctx.fillText('Sala de recibo y producción', w / 2, by + 266 * s);
+      ctx.fillStyle = '#c9d4da'; ctx.font = `500 ${26 * s}px ${FB}`; ctx.fillText('Recorrido por el proceso · modelado preliminar', w / 2, by + 314 * s);
     } else {
-      ctx.fillStyle = '#ffffff'; ctx.font = `700 ${64 * s}px ${FD}`; ctx.fillText(P.t, w / 2, by + 92 * s);
-      ctx.fillStyle = '#9fd3e6'; ctx.font = `600 ${32 * s}px ${FD}`; ctx.fillText('26 equipos · 7 líneas de proceso · 8 etapas', w / 2, by + 146 * s);
-      ctx.fillStyle = '#c9d4da'; ctx.font = `500 ${26 * s}px ${FB}`;
-      ctx.fillText('Modelado preliminar', w / 2, by + 205 * s);
+      ctx.fillStyle = '#ffffff'; ctx.font = `700 ${64 * s}px ${FD}`; ctx.fillText(P.t, w / 2, by + 86 * s);
+      ctx.fillStyle = '#9fd3e6'; ctx.font = `600 ${32 * s}px ${FD}`; ctx.fillText('26 equipos · 7 líneas de proceso · 8 etapas', w / 2, by + 138 * s);
+      ctx.fillStyle = '#c9d4da'; ctx.font = `500 ${24 * s}px ${FB}`; ctx.fillText('Modelado preliminar', w / 2, by + 178 * s);
+      ctx.fillStyle = 'rgba(255,255,255,0.14)'; ctx.fillRect(bx + 60 * s, by + 206 * s, bw - 120 * s, 1.5 * s);
+      ctx.fillStyle = '#9aa9b4'; ctx.font = `500 ${20 * s}px ${FB}`;
+      ctx.fillText('Proyecto de', bx + bw * 0.28, by + 250 * s);
+      placaEq(bx + bw * 0.28, by + 268 * s, 72 * s);
+      ctx.fillText('Diseñado y desarrollado por', bx + bw * 0.72, by + 250 * s);
+      const cxL = bx + bw * 0.72;
+      if (LOGOS.lk) { const lh2 = 118 * s, lw2 = lh2 * LOGOS.lk.width / LOGOS.lk.height; ctx.drawImage(LOGOS.lk, cxL - lw2 - 6 * s, by + 262 * s, lw2, lh2); }
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#ffffff'; ctx.font = `700 ${46 * s}px ${FD}`; ctx.fillText('Lukbyte', cxL + 8 * s, by + 324 * s);
+      ctx.fillStyle = '#7fd6f2'; ctx.font = `600 ${17 * s}px ${FD}`; ctx.fillText('SOLUCIONES DIGITALES', cxL + 8 * s, by + 350 * s);
+      ctx.textAlign = 'center';
     }
     ctx.restore();
   }
@@ -1555,6 +1627,7 @@ function dibujarOverlay(ctx, w, h, t) {
 async function grabarVideo({ fps = 30, ancho = 1920, alto = 1080, desde = 0, hasta = DUR_TOUR, calidad = 0.92 } = {}) {
   if (!['127.0.0.1', 'localhost'].includes(location.hostname)) throw new Error('Solo desde el servidor local');
   await document.fonts.ready;
+  await cargarLogos();
   grabando = true; detenerTour(); seleccionar(null, false);
   const prevPR = renderer.getPixelRatio();
   renderer.setPixelRatio(1); renderer.setSize(ancho, alto, false);
@@ -1585,6 +1658,7 @@ async function grabarVideo({ fps = 30, ancho = 1920, alto = 1080, desde = 0, has
 }
 async function cuadroPrueba(t) {
   await document.fonts.ready;
+  await cargarLogos();
   grabando = true;
   renderer.setPixelRatio(1); renderer.setSize(1920, 1080, false); camera.aspect = 1920 / 1080; camera.updateProjectionMatrix();
   renderer.setClearColor(0xdfe5e8); matSuelo.color.set(0xcdd3cc);
@@ -1598,7 +1672,14 @@ async function cuadroPrueba(t) {
   grabando = false;
   return 'ok';
 }
-function irVista(id) { const v = VISTAS[id]; marcarVista(id); volar(new V3(...v.p), new V3(...v.t)); }
+// En pantallas verticales (celular) la cámara se aleja para que quepa el ancho de la sala
+const factorAspecto = () => (camera.aspect >= 1 ? 1 : Math.min(2.1, 1.15 / camera.aspect));
+function poseVista(id) {
+  const v = VISTAS[id], t = new V3(...v.t), p = new V3(...v.p);
+  const f = id === 'general' || id === 'planta' ? factorAspecto() : Math.min(1.5, factorAspecto());
+  return { p: t.clone().add(p.sub(t).multiplyScalar(f)), t };
+}
+function irVista(id) { const v = poseVista(id); marcarVista(id); volar(v.p, v.t); }
 
 // Selección por clic en la escena
 const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
@@ -1724,7 +1805,24 @@ async function exportarPlanoSVG() {
   }
   return { bytes: txt.length };
 }
-window.__sala = { exportGLB, grabarVideo, cuadroPrueba, progreso, DUR_TOUR, exportarPlanoSVG };
+// Imagen limpia del 3D (sin textos), para la portada del sitio
+async function capturaLimpia(nombre = 'portada.jpg', vista = 'general', ancho = 1920, alto = 1080, t = 20) {
+  grabando = true;
+  const prevPR = renderer.getPixelRatio();
+  renderer.setPixelRatio(1); renderer.setSize(ancho, alto, false);
+  camera.aspect = ancho / alto; camera.updateProjectionMatrix();
+  renderer.setClearColor(0xdfe5e8); matSuelo.color.set(0xcdd3cc);
+  const v = typeof vista === 'object' ? vista : (VISTAS[vista] || VISTAS.general);
+  camera.position.set(...v.p); controls.target.set(...v.t); camera.lookAt(controls.target);
+  animarPartes(t); actualizarFlujos(t); aplicarMuros();
+  renderer.render(scene, camera);
+  const blob = await new Promise((res) => renderer.domElement.toBlob(res, 'image/jpeg', 0.9));
+  renderer.setPixelRatio(prevPR); ajustar(); aplicarTema(); controls.update();
+  grabando = false;
+  const r = await fetch(`/guardar?nombre=${encodeURIComponent(nombre)}`, { method: 'POST', body: blob });
+  return r.json();
+}
+window.__sala = { exportGLB, grabarVideo, cuadroPrueba, progreso, DUR_TOUR, exportarPlanoSVG, capturaLimpia, VISTAS };
 
 // ---------- Arranque
 construirEdificio();
@@ -2084,16 +2182,16 @@ asaNav.addEventListener('pointerup', soltarNav);
 asaNav.addEventListener('pointercancel', soltarNav);
 asaNav.addEventListener('dblclick', (ev) => { if (ev.target.closest('button')) return; navPos = null; colocarNav(); guardarNav(); });
 bMinNav.addEventListener('click', () => { minimizarNav(!nav.classList.contains('min')); guardarNav(); });
-try {
-  const s = JSON.parse(localStorage.getItem('sala3d-nav') || 'null');
-  if (s) { navPos = s.pos || null; if (s.min) minimizarNav(true); }
-} catch {}
+let navGuardado = null;
+try { navGuardado = JSON.parse(localStorage.getItem('sala3d-nav') || 'null'); } catch {}
+if (navGuardado) { navPos = navGuardado.pos || null; if (navGuardado.min) minimizarNav(true); }
+else if (matchMedia('(max-width: 600px)').matches) minimizarNav(true); // en celular arrancan recogidos para no tapar el modelo
 new ResizeObserver(() => colocarNav()).observe($('#p3d'));
 
 // ---------- Video y documentación: en Claude se descargan con permiso del visor; en el sitio publicado, con enlaces normales
 const EN_CLAUDE = !!(window.claude && typeof window.claude.use === 'function');
 const SITIO_URL = 'https://planta-marulanda-3d.vercel.app';
-const VIDEO_URL = EN_CLAUDE ? '/_blob/c33a73b9e3dee91f313a843ba7ea34df' : 'documentos/video/planta-marulanda-recorrido-liviano.mp4';
+const VIDEO_URL = EN_CLAUDE ? '/_blob/3af0da5eb92435342eba1c424f8b25ee' : 'documentos/video/planta-marulanda-recorrido-liviano.mp4';
 const VIDEO_NOMBRE = 'Sala-recibo-produccion-Marulanda-recorrido.mp4';
 const ENLACE_VISOR = EN_CLAUDE ? 'https://claude.ai/artifact/XAUQug2jBGYToKcePVoimE' : location.origin + location.pathname;
 const DOCS = [
@@ -2116,6 +2214,13 @@ $('#b-docs').addEventListener('click', () => {
   s.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
   s.classList.remove('resalte'); void s.offsetWidth; s.classList.add('resalte');
 });
+// Marcas: logo de Equinox arriba del panel y crédito de Lukbyte al final
+const LOGO_DOM = EN_CLAUDE
+  ? { eq: '/_blob/2b28793b24564d01fdbef4755da678cc', lk: '/_blob/1ca242dc3cae460d31ac1488b2f2ee4e' }
+  : { eq: LOGO_URL.eq, lk: LOGO_URL.lkMini };
+document.querySelectorAll('img[data-logo]').forEach((i) => { i.src = LOGO_DOM[i.dataset.logo]; });
+if (EN_CLAUDE) { $('#a-inicio').href = SITIO_URL; $('#a-inicio').target = '_blank'; $('#a-inicio').rel = 'noopener'; }
+else $('#b-inicio').hidden = false;
 $('#enlace-visor').textContent = ENLACE_VISOR;
 if (!EN_CLAUDE) $('#enlace-nota').textContent = 'Compártelo por WhatsApp o por correo.';
 function avisoVideo(txt) { $('#video-estado').textContent = txt; }
@@ -2166,6 +2271,10 @@ $('#b-enlace').addEventListener('click', async () => {
 
 ajustar();
 aplicarTema();
+if (camera.aspect < 1) { const v = poseVista('general'); camera.position.copy(v.p); controls.target.copy(v.t); controls.update(); }
+if (matchMedia('(max-width: 600px)').matches) { $('#o-nombres').checked = false; $('#o-nombres').dispatchEvent(new Event('change')); }
 $('#cargando').hidden = true;
+if (location.hash === '#recorrido') setTimeout(iniciarTour, 600);
+if (location.hash === '#plano') ponerModo('2d');
 requestAnimationFrame(cuadro);
 </script>

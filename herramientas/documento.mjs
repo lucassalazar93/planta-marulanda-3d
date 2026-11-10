@@ -27,9 +27,12 @@ export function documento(contenido, raiz) {
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="Visor 3D y plano 2D de la sala de recibo y producción de la planta de lácteos de Marulanda (Caldas), con recorrido por el proceso, video y documentación descargable.">
-<meta property="og:title" content="Sala 3D Marulanda">
-<meta property="og:description" content="Recorrido 3D, plano 2D y documentación de la sala de recibo y producción de la planta de lácteos de Marulanda.">
+<meta property="og:title" content="Planta de lácteos de Marulanda · Industrias Equinox Colombia">
+<meta property="og:description" content="Recorrido 3D, plano 2D y documentación de la sala de recibo y producción. Diseñado y desarrollado por Lukbyte.">
 <meta property="og:type" content="website">
+<meta property="og:image" content="https://planta-marulanda-3d.vercel.app/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="theme-color" content="#0b6d8e">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
