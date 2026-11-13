@@ -118,7 +118,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 }
 #vista { position: absolute; inset: 0; }
 #vista canvas { display: block; }
-.capa-etq { position: absolute; inset: 0; }
+.capa-etq { position: absolute; inset: 0; z-index: 1; } /* capa propia: las etiquetas 3D no tapan menús ni controles */
 
 /* Encabezado y marcas */
 .cab { display: flex; flex-direction: column; gap: 6px; }
@@ -277,6 +277,61 @@ dl.datos dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
   h1 { font-size: 26px; }
 }
 @media (prefers-reduced-motion: reduce) { .brujula svg { transition: none; } }
+
+/* Edificio completo: salas, pisos y recorrido a pie */
+:root { --sala-op: 0.85; --lav: #1f8a5c; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sala-op: 0.34; --lav: #5fd39c; } }
+:root[data-theme="dark"] { --sala-op: 0.34; --lav: #5fd39c; }
+.etq-sala { font-family: var(--f-display); text-align: center; line-height: 1.1; color: var(--ink); background: var(--chip); border: 1px solid var(--line); border-radius: 5px; padding: 2px 7px 3px; cursor: pointer; pointer-events: auto; user-select: none; white-space: nowrap; }
+.etq-sala b { display: block; font-size: 12.5px; font-weight: 700; letter-spacing: 0.01em; }
+.etq-sala span { display: block; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.etq-sala.lav { border-color: var(--lav); }
+.etq-sala.lav b::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 50%; background: var(--lav); vertical-align: 1px; }
+.etq-sala.vac { background: transparent; border-style: dashed; }
+.etq-sala.sel { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.sl { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; align-items: center; gap: 8px; width: 100%; text-align: left; border: 1px solid transparent; background: transparent; padding: 5px 6px; border-radius: 6px; cursor: pointer; }
+.sl:hover { background: var(--panel); }
+.sl[aria-current="true"] { border-color: var(--accent); background: var(--panel); }
+.sl i { width: 9px; height: 9px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, 0.18); }
+.sl .n { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sl .n small { display: block; color: var(--muted); font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; }
+.sl .d { font-family: var(--f-mono); font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ficha .acciones { display: flex; flex-wrap: wrap; gap: 8px; }
+#plano .sala2 { fill-opacity: var(--sala-op); stroke: none; cursor: pointer; }
+#plano .sala2:hover { stroke: var(--accent); stroke-width: 0.04; }
+#plano .sala2.sel { stroke: var(--accent); stroke-width: 0.1; }
+#plano .vacio2 { fill: url(#rayado-vacio); fill-opacity: 1; }
+#plano .rayado { stroke: var(--muted); stroke-width: 0.025; opacity: 0.6; }
+#plano .umbral2 { stroke: var(--muted); stroke-width: 0.025; stroke-dasharray: 0.1 0.07; }
+#plano .esc2 { fill: none; stroke: var(--muted); stroke-width: 0.022; }
+#plano .lav2 { fill: var(--plano-bg); stroke: var(--lav); stroke-width: 0.04; }
+#plano .camion2 rect { fill: var(--panel); stroke: var(--ink); stroke-width: 0.03; }
+#plano .camion2 line { stroke: var(--muted); stroke-width: 0.02; }
+#plano .sala2-t { font-weight: 700; fill: var(--ink); text-anchor: middle; pointer-events: none; paint-order: stroke; stroke: var(--plano-bg); stroke-width: 0.05px; stroke-linejoin: round; }
+#plano .sala2-a { font-weight: 500; fill: var(--muted); text-anchor: middle; pointer-events: none; font-variant-numeric: tabular-nums; }
+.pie-hud { position: absolute; left: 12px; top: 10px; z-index: 6; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; max-width: calc(100% - 80px); pointer-events: none; }
+.pie-hud > * { pointer-events: auto; }
+.pie-donde { display: flex; align-items: center; gap: 8px; background: var(--chip); backdrop-filter: blur(6px); border: 1px solid var(--line); border-radius: 8px; padding: 5px 6px 5px 10px; font-size: 13px; }
+.pie-donde span { color: var(--muted); font-family: var(--f-display); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; font-size: 12px; }
+.pie-donde b { font-family: var(--f-display); font-weight: 700; font-size: 16px; }
+.pie-donde button { border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 2px 9px; cursor: pointer; font-size: 12.5px; }
+.pie-ayuda { font-size: 12px; color: var(--muted); background: var(--chip); border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; }
+#pie-esc { box-shadow: 0 6px 18px rgba(8, 20, 28, 0.25); }
+.lienzos[data-pie] .ayuda, .lienzos[data-pie] .brujula { display: none; }
+.menu-rec { position: absolute; right: 12px; top: 12px; z-index: 9; width: min(370px, calc(100% - 24px)); max-height: calc(100% - 24px); overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 14px 34px rgba(8, 20, 28, 0.28); }
+.menu-rec[hidden] { display: none; }
+.menu-rec-cab { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-family: var(--f-display); font-size: 16px; }
+.menu-rec-cab button { width: 30px; height: 30px; border: 1px solid var(--line); background: transparent; border-radius: 6px; cursor: pointer; font-size: 18px; line-height: 1; }
+.op-rec { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; text-align: left; border: 1px solid var(--line); background: var(--bg); border-radius: 8px; padding: 8px 10px; cursor: pointer; }
+.op-rec:hover, .fila-rec button:not(.btn):hover { border-color: var(--accent); }
+.op-rec b { font-family: var(--f-display); font-size: 16px; font-weight: 700; }
+.op-rec span { grid-column: 1; font-size: 12.5px; color: var(--muted); line-height: 1.3; }
+.op-rec i { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-style: normal; font-family: var(--f-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.menu-rec-sub { margin-top: 4px; font-family: var(--f-display); font-weight: 600; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.fila-rec { display: flex; flex-wrap: wrap; gap: 6px; }
+.fila-rec button:not(.btn) { flex: 1; border: 1px solid var(--line); background: var(--bg); border-radius: 7px; padding: 6px 8px; cursor: pointer; font-family: var(--f-display); font-weight: 600; font-size: 14px; }
+.fila-rec select { flex: 1 1 180px; min-width: 0; font: inherit; font-size: 16px; padding: 5px 8px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); color: var(--ink); }
+@media (max-width: 760px) { .pie-ayuda { display: none; } }
 </style>
 
 <div class="app">
@@ -284,10 +339,17 @@ dl.datos dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
     <header class="cab">
       <div class="marca-eq"><a class="placa" id="a-inicio" href="./" title="Volver al inicio"><img data-logo="eq" alt="Industrias Equinox Colombia" width="120" height="40"></a><span class="presenta">presenta</span></div>
       <div class="ceja">Planta de lácteos · Marulanda, Caldas</div>
-      <h1>Sala de recibo y producción</h1>
-      <div class="meta"><span><b id="n-equipos">26</b> equipos</span><span><b>4</b> zonas</span><span><b>7</b> líneas de proceso</span><span>medidas en mm</span></div>
-      <div class="aviso">Modelo preliminar. Las medidas salen de la lista de dimensiones de la planta; donde la lista no trae el alto se usa el del catálogo o uno estimado.</div>
+      <h1 id="titulo">Sala de recibo y producción</h1>
+      <div class="meta" id="meta"><span><b id="n-equipos">26</b> equipos</span><span><b>4</b> zonas</span><span><b>7</b> líneas de proceso</span><span>medidas en mm</span></div>
+      <div class="aviso" id="aviso">Modelo preliminar. Las medidas salen de la lista de dimensiones de la planta; donde la lista no trae el alto se usa el del catálogo o uno estimado.</div>
     </header>
+
+    <section class="sec" aria-labelledby="t-edif" id="sec-edif" hidden>
+      <h2 id="t-edif">Sala del edificio</h2>
+      <div class="ficha" id="ficha-sala"></div>
+      <h2>Salas por piso</h2>
+      <div id="lista-salas"></div>
+    </section>
 
     <section class="sec" aria-labelledby="t-video" id="sec-video" hidden>
       <h2 id="t-video">Video del recorrido</h2>
@@ -351,6 +413,7 @@ dl.datos dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
       <p>Muros, puertas, ventanas y columnas: DWG arquitectónico <i>ARQ_PLANTA LACTEOS</i> (planta piso 1), en metros.</p>
       <p>Zona de recibo (4,25 m de ancho) y plataforma: plano de distribución de equipos. Ese plano no trae cotas, así que su ancho es una lectura a escala.</p>
       <p>Alturas: corte C-C' (Zona 1 con ≈ 5,7 m libres) y corte D-D' (la «L» con ≈ 2,8 m bajo losa).</p>
+      <p>Edificio completo: plantas de los pisos −1, 1 y 2 y cortes del mismo DWG. Niveles N −2,85, N +0,15 y N +3,19; aleros a N +5,93 y cumbrera a N +7,23. Las áreas «modelo» se miden entre muros y pueden diferir unas décimas de las del plano. Escaleras, lavamanos y lavado de botas: posición leída del plano, forma simplificada. Camión: posición y tamaño del bloque del plano (6,85 × 2,20 m); la carga de cantinas y el operario son ilustrativos.</p>
       <p>Medidas de equipos: lista de dimensiones de la planta (10 de noviembre de 2026). Volcador, compresores y carro de canastas no están en la lista y siguen estimados.</p>
       <p>Agua helada del chiller al fermentador de yogurt: tubería proyectada con los ingenieros en la visita. Tomas eléctricas (220 V) y de agua (1/2"): posición aproximada leída del plano.</p>
     </section>
@@ -364,6 +427,10 @@ dl.datos dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
   <main class="escena" aria-label="Modelo 3D y plano 2D">
     <div class="barra">
       <a class="b-inicio" id="b-inicio" href="./" hidden>← Inicio</a>
+      <div class="seg" role="group" aria-label="Qué ver">
+        <button type="button" data-ambito="edificio" aria-pressed="true">Edificio</button>
+        <button type="button" data-ambito="sala" aria-pressed="false">Sala de producción</button>
+      </div>
       <div class="seg" role="group" aria-label="Tipo de vista">
         <button type="button" data-modo="3d" aria-pressed="true">3D</button>
         <button type="button" data-modo="2d" aria-pressed="false">2D</button>
@@ -376,8 +443,16 @@ dl.datos dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
       <button type="button" data-vista="produccion" aria-pressed="false">Producción</button>
       <button type="button" data-vista="yogurt" aria-pressed="false">Yogurt y arequipe</button>
     </div>
+    <div class="vistas" id="vistas-edif" role="group" aria-label="Pisos del edificio" hidden>
+      <button type="button" data-piso="todo" aria-pressed="false">Exterior</button>
+      <button type="button" data-piso="p2" aria-pressed="false">Piso 2</button>
+      <button type="button" data-piso="p1" aria-pressed="true">Piso 1</button>
+      <button type="button" data-piso="p-1" aria-pressed="false">Piso −1</button>
+      <button type="button" id="b-separar" aria-pressed="false" title="Separar los pisos para verlos todos a la vez">Separar pisos</button>
+    </div>
+      <button type="button" id="b-pie" class="b-tour" aria-pressed="false" title="Recorrer el edificio caminando, en primera persona">Caminar</button>
       <button type="button" id="b-docs" class="b-docs" title="Ir a la documentación descargable">⬇ Documentación</button>
-      <button type="button" id="b-recorrido" class="b-tour" aria-pressed="false">▶ Recorrido</button>
+      <button type="button" id="b-recorrido" class="b-tour" aria-pressed="false" aria-expanded="false" aria-controls="menu-rec">▶ Recorrido</button>
     </div>
     <div class="lienzos" id="lienzos" data-modo="3d">
     <div class="p3d" id="p3d" tabindex="0" aria-label="Modelo 3D">
@@ -419,6 +494,11 @@ dl.datos dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
         </div>
       </div>
     </div>
+    <div class="pie-hud" id="pie-hud" hidden>
+      <div class="pie-donde"><span id="pie-piso">Piso 1</span><b id="pie-sala">—</b><button type="button" id="pie-salir">Salir</button></div>
+      <button type="button" class="btn" id="pie-esc" hidden></button>
+      <div class="pie-ayuda">Arrastra para mirar · flechas o W A S D para caminar · Mayús para ir más rápido · Esc para salir</div>
+    </div>
     <div class="cargando" id="cargando">Cargando el modelo…</div>
     </div>
     <div class="p2d" id="p2d" aria-label="Plano 2D">
@@ -430,6 +510,16 @@ dl.datos dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
       </div>
       <div class="plano-nota">Planta · cotas interiores en metros · arrastra para mover · rueda para acercar · toca un equipo para ver su ficha</div>
       <button type="button" class="pip-btn" data-a="2d" aria-label="Ver el plano en grande"></button>
+    </div>
+    <div class="menu-rec" id="menu-rec" role="dialog" aria-label="Escoger recorrido" hidden>
+      <div class="menu-rec-cab"><b>Recorridos guiados</b><button type="button" id="menu-rec-cerrar" aria-label="Cerrar">×</button></div>
+      <button type="button" class="op-rec" data-rec="planta"><b>Planta completa</b><span>Exterior, los tres pisos y cada zona del edificio</span><i></i></button>
+      <button type="button" class="op-rec" data-rec="proceso"><b>Proceso de producción</b><span>Las 8 etapas en la sala de recibo y producción</span><i></i></button>
+      <button type="button" class="op-rec" data-rec="lavado"><b>Zonas de lavado</b><span>Lavado de botas, lavamanos de pedal y cuarto de lavado</span><i></i></button>
+      <div class="menu-rec-sub">Por piso, sala por sala</div>
+      <div class="fila-rec"><button type="button" data-rec="piso" data-arg="p2">Piso 2</button><button type="button" data-rec="piso" data-arg="p1">Piso 1</button><button type="button" data-rec="piso" data-arg="p-1">Piso −1</button></div>
+      <div class="menu-rec-sub">Una sala</div>
+      <div class="fila-rec"><select id="sel-sala-rec" aria-label="Sala para recorrer"></select><button type="button" class="btn" id="b-rec-sala">▶ Recorrer</button></div>
     </div>
     <div class="guia" id="guia" hidden>
       <div class="guia-cab"><span id="guia-paso">Recorrido</span><button type="button" id="guia-cerrar" aria-label="Detener el recorrido">Detener</button></div>
@@ -1005,7 +1095,7 @@ const MUROS = [
   { n: 'Muro oeste recibo', X0: 387.85, X1: 387.98, Y0: -15.418, Y1: -9.577, h: HZ1, nrm: [-1, 0],
     vanos: [{ a0: -12.5, a1: -11.6, b: 0, t: 2.1, p: 1 }, { a0: -10.5, a1: -9.82, b: 1.2, t: 2.2, v: 1 }] },
   { n: 'Muro recibo - producción', X0: 392.233, X1: 392.363, Y0: -15.288, Y1: -9.707, h: HZ1, nrm: null, vanos: [] },
-  { n: 'Muro este zona 1', X0: 410.734, X1: 410.864, Y0: -15.288, Y1: -9.577, h: HZ1, nrm: [1, 0], vanos: [{ a0: -13.88, a1: -12.88, b: 0, t: 2.1, p: 1, afuera: true }] },
+  { n: 'Muro este zona 1', X0: 410.734, X1: 410.864, Y0: -15.288, Y1: -9.577, h: HZ1, nrm: [1, 0], vanos: [{ a0: -12.728, a1: -11.728, b: 0, t: 2.1, p: 1, afuera: true }, { a0: -13.88, a1: -12.88, b: 0, t: 2.1, p: 1, afuera: true }] },
   { n: 'Muro este L', X0: 410.734, X1: 410.864, Y0: -20.668, Y1: -15.288, h: HZ2, nrm: [1, 0], vanos: [] },
   { n: 'Muro oeste L', X0: 405.554, X1: 405.684, Y0: -20.668, Y1: -15.418, h: HZ2, nrm: [-1, 0], vanos: [{ a0: -16.64, a1: -15.418, b: 0, t: 2.1, p: 1, afuera: true }] },
   { n: 'Muro sur L', X0: 405.554, X1: 410.864, Y0: -20.668, Y1: -20.538, h: HZ2, nrm: [0, 1], vanos: [{ a0: 407.83, a1: 409.03, b: 1.0, t: 2.2, v: 1 }] },
@@ -1236,6 +1326,7 @@ function animarPartes(t) {
     else if (a.tipo === 'girar') a.obj.rotation.x = t * 1.6;
     else if (a.tipo === 'volcar') a.obj.rotation.z = -0.2 - 0.6 * (0.5 - 0.5 * Math.cos(t * 0.9));
   }
+  animarOperario(tour.activo && tour.g && tour.g.id === 'proceso' ? tour.t : t);
 }
 function actualizarFlujos(t) {
   for (const f of flujos) {
@@ -1282,7 +1373,7 @@ function etiquetaZona(txt, sub, X, Y) {
 const etqZonas = [];
 
 // ---------- Interfaz
-const estado = { muros: 'auto', color: 'mat', sel: null, nombres: true, tourEq: new Set(), modo: '3d' };
+const estado = { muros: 'auto', color: 'mat', sel: null, nombres: true, tourEq: new Set(), modo: '3d', ambito: 'sala', sala: null };
 
 function fichaHTML(e) {
   const es = ESTADOS[e.estado];
@@ -1357,6 +1448,7 @@ function resaltar() {
 
 function seleccionar(id, enfocar) {
   estado.sel = id;
+  if (estado.ambito === 'edificio') aplicarEtiquetas();
   document.querySelectorAll('.eq').forEach((b) => b.setAttribute('aria-current', String(b.dataset.id === id)));
   const ficha = $('#ficha');
   if (!id) { ficha.innerHTML = '<p class="vacia">Toca un equipo en el modelo o en la lista para ver sus medidas, de dónde salen y qué falta confirmar.</p>'; resaltar(); return; }
@@ -1374,6 +1466,7 @@ function seleccionar(id, enfocar) {
 }
 
 function aplicarMuros() {
+  if (estado.ambito === 'edificio' || paseo.activo) { for (const o of murosObj) { o.full.visible = true; o.cut.visible = false; } return; }
   const cam = camera.position;
   for (const o of murosObj) {
     let corte;
@@ -1404,7 +1497,7 @@ function marcarVista(id) { document.querySelectorAll('.vistas button[data-vista]
 // ---------- Recorrido guiado (se usa en vivo y para grabar el video)
 const PASOS = [
   { id: 'intro', dur: 5, t: 'Sala de recibo y producción', d: 'Planta de lácteos · Marulanda, Caldas', p: [-18, 20, 22], tg: [0.5, 0.6, 0.6], der: [5, -2, -2], lineas: null, eq: [] },
-  { id: 'recibo', dur: 8, t: 'Recibo de leche', d: 'La leche llega en cantinas, se vuelca al tanque recibidor de 500 L y la bomba la lleva a los tanques.', p: [-15.6, 3.4, 3.6], tg: [-10.8, 0.7, -0.8], der: [1.4, 0.3, 0.6], lineas: ['leche'], eq: ['volcador', 'tq_recibo', 'bomba_plat'] },
+  { id: 'recibo', dur: 10, t: 'Recibo de leche', d: 'La leche llega en cantinas en el camión. El operario las baja, las sube al volcador y la leche cae al tanque recibidor de 500 L; la bomba la lleva a los tanques.', p: [-17.6, 4.6, 7.4], tg: [-10.6, 0.7, 0.2], der: [1.6, 0.2, -0.6], lineas: ['leche'], eq: ['volcador', 'tq_recibo', 'bomba_plat'] },
   { id: 'frio', dur: 8, t: 'Enfriamiento', d: 'Los tanques de enfriamiento de 5.000 L y 3.000 L guardan la leche fría. Tres compresores en el exterior les dan el frío.', p: [-12.5, 8.2, -10.5], tg: [-7.6, 1.8, -2.6], der: [2.4, 0.3, 0.4], lineas: ['leche', 'frio'], eq: ['tq5000', 'tq3000', 'comp1', 'comp2', 'comp3'] },
   { id: 'pasteurizacion', dur: 9, t: 'Descremado y pasteurización', d: 'La descremadora separa la crema. La leche pasa al pasteurizador de placas de 1.500 L/h y luego al homogenizador.', p: [0.8, 4.4, 4.6], tg: [-4.3, 0.9, -2.3], der: [-1.4, 0.2, 0.7], lineas: ['leche'], eq: ['descremadora', 'pasteurizador', 'homogenizador'] },
   { id: 'tinas', dur: 8, t: 'Tinas de 2.000 L', d: 'La leche entra a la tina semiautomática y a la tina sencilla, donde se cuaja y se corta.', p: [3.2, 4.2, 2.4], tg: [-0.9, 1.0, -3.0], der: [-1.6, 0.3, 0.8], lineas: ['leche'], eq: ['tina_at', 'tina_s'] },
@@ -1418,23 +1511,39 @@ const INICIO = []; let DUR_TOUR = 0;
 for (const p of PASOS) { INICIO.push(DUR_TOUR); DUR_TOUR += p.dur; }
 const N_ETAPAS = PASOS.length - 2;
 const suave = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
-const tour = { activo: false, t: 0, paso: -1 };
+// Un guion es una lista de pasos con su tiempo de inicio. El del proceso (PASOS) es el del video;
+// los del edificio (planta completa, por piso, por sala, zonas de lavado) se arman con los datos del DWG.
+function guion(id, nombre, pasos, etiqueta = 'Parada') {
+  const inicio = []; let dur = 0;
+  for (const q of pasos) { inicio.push(dur); dur += q.dur; }
+  return { id, nombre, pasos, inicio, dur, n: pasos.length - 2, etiqueta };
+}
+const G_PROCESO = guion('proceso', 'Proceso de producción', PASOS, 'Etapa');
+const tour = { activo: false, t: 0, paso: -1, g: G_PROCESO };
 
 function poseTour(t) {
-  let k = PASOS.length - 1;
-  for (let i = 0; i < PASOS.length; i++) if (t < INICIO[i] + PASOS[i].dur) { k = i; break; }
-  const P = PASOS[k], u = Math.min(Math.max(0, t - INICIO[k]), P.dur);
+  const G = tour.g, PS = G.pasos;
+  let k = PS.length - 1;
+  for (let i = 0; i < PS.length; i++) if (t < G.inicio[i] + PS[i].dur) { k = i; break; }
+  const P = PS[k], u = Math.min(Math.max(0, t - G.inicio[k]), P.dur);
   const fin = (Q) => ({ p: new V3(...Q.p).add(new V3(...Q.der)), t: new V3(...Q.tg).add(new V3(...(Q.derT || [0, 0, 0]))) });
   const ini = { p: new V3(...P.p), t: new V3(...P.tg) };
   const tr = k === 0 ? 0 : 2.2;
   let pos, tgt;
-  if (u < tr) { const a = fin(PASOS[k - 1]), s = suave(u / tr); pos = a.p.lerp(ini.p, s); tgt = a.t.lerp(ini.t, s); }
+  if (u < tr) { const a = fin(PS[k - 1]), s = suave(u / tr); pos = a.p.lerp(ini.p, s); tgt = a.t.lerp(ini.t, s); }
   else { const v = suave((u - tr) / (P.dur - tr)), b = fin(P); pos = ini.p.clone().lerp(b.p, v); tgt = ini.t.clone().lerp(b.t, v); }
   return { k, u, P, pos, tgt };
 }
 
 function entrarPaso(k) {
-  const P = PASOS[k];
+  const G = tour.g, P = G.pasos[k];
+  const amb = P.amb || 'sala';
+  if (estado.ambito !== amb) ponerAmbito(amb, false, true);
+  if (amb === 'edificio') {
+    edif.piso = P.piso || 'p1'; edif.expObj = P.sep ? 1 : 0;
+    aplicarEdificio(); pintarBarra(); aplicar2D();
+    seleccionarSala(P.sala || null, false);
+  }
   for (const f of flujos) {
     const ver = P.lineas ? P.lineas.includes(f.L.id) : true;
     f.grp.visible = ver;
@@ -1445,7 +1554,7 @@ function entrarPaso(k) {
   for (const o of Object.values(objEq)) o.etq.visible = estado.tourEq.has(o.e.id);
   etqZonas.forEach((z) => { z.visible = false; });
   resaltar();
-  const num = k > 0 && k < PASOS.length - 1 ? `Etapa ${k} de ${N_ETAPAS}` : (k === 0 ? 'Recorrido' : 'Final');
+  const num = k > 0 && k < G.pasos.length - 1 ? (G.n > 1 ? `${G.nombre} · ${G.etiqueta} ${k} de ${G.n}` : G.nombre) : (k === 0 ? `Recorrido · ${G.nombre}` : 'Final');
   $('#guia-paso').textContent = num;
   $('#guia-t').textContent = P.t;
   $('#guia-d').textContent = P.d;
@@ -1459,11 +1568,16 @@ function aplicarTour(t) {
   return r;
 }
 
-function iniciarTour() {
+function iniciarTour(id = 'proceso', arg) {
+  const G = crearGuion(id, arg);
+  if (!G) return;
+  if (paseo.activo) salirPaseo();
+  cerrarMenuRec();
+  tour.g = G;
   seleccionar(null, false);
   vuelo = null; marcarVista(null);
   tour.activo = true; tour.t = 0; tour.paso = -1;
-  tour.vbPrev = { ...vb };
+  tour.vbPrev = { ...vb }; tour.ambPrev = estado.ambito;
   $('#guia').hidden = false;
   $('#nav').hidden = true;
   aplicarPip();
@@ -1481,11 +1595,9 @@ function detenerTour() {
   }
   estado.tourEq = new Set();
   estado.cortarL = false;
-  if (tour.vbPrev) { vb = { ...tour.vbPrev }; tour.vbPrev = null; aplicarVB(); }
+  if (tour.vbPrev) { vb = tour.ambPrev === estado.ambito ? { ...tour.vbPrev } : { ...VB0 }; tour.vbPrev = null; aplicarVB(); }
   if (typeof aplicarPip === 'function' && document.querySelector('#lienzos')) aplicarPip();
-  const nombres = $('#o-nombres').checked;
-  for (const o of Object.values(objEq)) o.etq.visible = nombres;
-  etqZonas.forEach((z) => { z.visible = nombres; });
+  aplicarEtiquetas();
   resaltar();
 }
 
@@ -1628,7 +1740,7 @@ async function grabarVideo({ fps = 30, ancho = 1920, alto = 1080, desde = 0, has
   if (!['127.0.0.1', 'localhost'].includes(location.hostname)) throw new Error('Solo desde el servidor local');
   await document.fonts.ready;
   await cargarLogos();
-  grabando = true; detenerTour(); seleccionar(null, false);
+  grabando = true; detenerTour(); seleccionar(null, false); tour.g = G_PROCESO;
   const prevPR = renderer.getPixelRatio();
   renderer.setPixelRatio(1); renderer.setSize(ancho, alto, false);
   camera.aspect = ancho / alto; camera.updateProjectionMatrix();
@@ -1664,7 +1776,7 @@ async function cuadroPrueba(t) {
   renderer.setClearColor(0xdfe5e8); matSuelo.color.set(0xcdd3cc);
   const lienzo = document.createElement('canvas'); lienzo.width = 1920; lienzo.height = 1080;
   const ctx = lienzo.getContext('2d');
-  tour.paso = -1; aplicarTour(t); animarPartes(t); actualizarFlujos(t); aplicarMuros();
+  tour.g = G_PROCESO; tour.paso = -1; aplicarTour(t); animarPartes(t); actualizarFlujos(t); aplicarMuros();
   renderer.render(scene, camera); ctx.drawImage(renderer.domElement, 0, 0); dibujarOverlay(ctx, 1920, 1080, t);
   const blob = await new Promise((res) => lienzo.toBlob(res, 'image/jpeg', 0.9));
   await fetch(`/prueba?t=${t}`, { method: 'POST', body: blob });
@@ -1690,8 +1802,11 @@ capaEtq.domElement.addEventListener('pointerup', (ev) => {
   const r = renderer.domElement.getBoundingClientRect();
   ptr.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
   ray.setFromCamera(ptr, camera);
-  const hit = ray.intersectObjects(equiposG.children, true).find((h) => h.object.isMesh && h.object.userData.eqId);
-  seleccionar(hit ? hit.object.userData.eqId : null, false);
+  const cands = estado.ambito === 'edificio' ? [equiposG, edifG] : [equiposG];
+  const hit = ray.intersectObjects(cands, true).find((h) => h.object.isMesh && (h.object.userData.eqId || h.object.userData.salaId) && visibleArriba(h.object));
+  if (hit && hit.object.userData.eqId) { seleccionar(hit.object.userData.eqId, false); return; }
+  if (estado.ambito === 'edificio' && !paseo.activo) seleccionarSala(hit ? hit.object.userData.salaId : null, false);
+  seleccionar(null, false);
 });
 controls.addEventListener('start', () => { vuelo = null; marcarVista(null); if (tour.activo) detenerTour(); });
 
@@ -1722,14 +1837,15 @@ const brujula = $('#brujula');
 function cuadro() {
   const dt = Math.min(0.05, reloj.getDelta());
   if (grabando || (estado.modo === '2d' && !tour.activo)) { requestAnimationFrame(cuadro); return; }
-  moverVista(dt);
+  if (paseo.activo) actualizarPaseo(dt); else moverVista(dt);
+  animarEdificio(dt);
   if (tour.activo) {
     tour.t += dt;
-    if (tour.t >= DUR_TOUR) { detenerTour(); requestAnimationFrame(cuadro); return; }
+    if (tour.t >= tour.g.dur) { detenerTour(); requestAnimationFrame(cuadro); return; }
     aplicarTour(tour.t);
-    $('#guia-prog').style.width = `${(tour.t / DUR_TOUR) * 100}%`;
+    $('#guia-prog').style.width = `${(tour.t / tour.g.dur) * 100}%`;
     if (estado.modo === '2d') {
-      const o = vbPaso(PASOS[tour.paso]), k = reduceMotion ? 1 : 1 - Math.exp(-dt * 2.2);
+      const o = vbPaso(tour.g.pasos[tour.paso]), k = reduceMotion ? 1 : 1 - Math.exp(-dt * 2.2);
       vb.x += (o.x - vb.x) * k; vb.y += (o.y - vb.y) * k; vb.w += (o.w - vb.w) * k; vb.h += (o.h - vb.h) * k;
       aplicarVB();
     }
@@ -1741,14 +1857,14 @@ function cuadro() {
     requestAnimationFrame(cuadro);
     return;
   }
-  if (vuelo) {
+  if (vuelo && !paseo.activo) {
     vuelo.k = Math.min(1, vuelo.k + dt / 0.8);
     const s = vuelo.k < 0.5 ? 4 * vuelo.k ** 3 : 1 - (-2 * vuelo.k + 2) ** 3 / 2;
     camera.position.lerpVectors(vuelo.p0, vuelo.p1, s);
     controls.target.lerpVectors(vuelo.t0, vuelo.t1, s);
     if (vuelo.k >= 1) vuelo = null;
   }
-  controls.update();
+  if (!paseo.activo) controls.update();
   aplicarMuros();
   actualizarMarca2D();
   if (!reduceMotion) tiempo += dt;
@@ -1851,12 +1967,12 @@ document.querySelectorAll('[data-color]').forEach((b) => b.addEventListener('cli
   $('#leyenda').hidden = estado.color !== 'est';
   aplicarColor();
 }));
-$('#o-nombres').addEventListener('change', (ev) => { for (const o of Object.values(objEq)) o.etq.visible = ev.target.checked; etqZonas.forEach((z) => { z.visible = ev.target.checked; }); });
+$('#o-nombres').addEventListener('change', () => aplicarEtiquetas());
 $('#o-tomas').addEventListener('change', (ev) => { tomasG.visible = ev.target.checked; if (plano.tomas) plano.tomas.style.display = ev.target.checked ? '' : 'none'; });
 $('#o-grilla').addEventListener('change', (ev) => { edificio.userData.grilla.visible = ev.target.checked; });
 $('#o-losa').addEventListener('change', (ev) => { edificio.userData.losaL.visible = ev.target.checked; });
 document.querySelectorAll('[data-vista]').forEach((b) => b.addEventListener('click', () => { detenerTour(); irVista(b.dataset.vista); }));
-$('#b-recorrido').addEventListener('click', () => { if (tour.activo) detenerTour(); else iniciarTour(); });
+$('#b-recorrido').addEventListener('click', () => { if (tour.activo) detenerTour(); else alternarMenuRec(); });
 $('#guia-cerrar').addEventListener('click', () => detenerTour());
 
 // ---------- Controles de navegación 3D (botones y teclado)
@@ -1890,14 +2006,14 @@ document.querySelectorAll('#nav [data-mov]').forEach((b) => {
   b.addEventListener('click', (ev) => { if (ev.detail === 0) { mov[k] = v; setTimeout(() => { if (mov[k] === v) mov[k] = 0; }, 300); } });
   b.addEventListener('contextmenu', (ev) => ev.preventDefault());
 });
-$('#nav [data-accion="inicio"]').addEventListener('click', () => { detenerTour(); irVista('general'); });
+$('#nav [data-accion="inicio"]').addEventListener('click', () => { if (paseo.activo) { ponerPiso(paseo.piso); return; } detenerTour(); irInicio(); });
 const TECLAS = { ArrowUp: ['pz', 1], ArrowDown: ['pz', -1], ArrowLeft: ['px', -1], ArrowRight: ['px', 1], KeyW: ['pz', 1], KeyS: ['pz', -1], KeyA: ['px', -1], KeyD: ['px', 1],
   KeyQ: ['az', 1], KeyE: ['az', -1], KeyR: ['pol', -1], KeyF: ['pol', 1], Equal: ['zoom', -1], NumpadAdd: ['zoom', -1], Minus: ['zoom', 1], NumpadSubtract: ['zoom', 1] };
 const enEscena = () => { const a = document.activeElement; return !a || a === document.body || !!a.closest?.('.p3d'); };
 addEventListener('keydown', (ev) => {
   if (ev.ctrlKey || ev.metaKey || ev.altKey || estado.modo === '2d') return;
   if (ev.target.closest?.('input, textarea, select')) return;
-  if (['Digit0', 'Numpad0', 'Home'].includes(ev.code) && enEscena()) { detenerTour(); irVista('general'); return; }
+  if (['Digit0', 'Numpad0', 'Home'].includes(ev.code) && enEscena()) { if (!paseo.activo) { detenerTour(); irInicio(); } return; }
   const t = TECLAS[ev.code];
   if (!t || !enEscena()) return;
   ev.preventDefault();
@@ -1910,7 +2026,9 @@ capaEtq.domElement.addEventListener('dblclick', (ev) => {
   const r = renderer.domElement.getBoundingClientRect();
   ptr.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
   ray.setFromCamera(ptr, camera);
-  const hit = ray.intersectObjects([edificio, equiposG], true).find((h) => h.object.isMesh && !h.object.isInstancedMesh && visibleArriba(h.object));
+  if (paseo.activo) return;
+  const tope = estado.ambito === 'edificio' ? planosCorte.p1.constant + 0.01 : Infinity;
+  const hit = ray.intersectObjects([edificio, equiposG, edifG], true).find((h) => h.object.isMesh && !h.object.isInstancedMesh && visibleArriba(h.object) && h.point.y <= tope && h.object.material?.colorWrite !== false);
   if (!hit) return;
   detenerTour(); marcarVista(null);
   const off = camera.position.clone().sub(controls.target);
@@ -1922,7 +2040,8 @@ capaEtq.domElement.addEventListener('dblclick', (ev) => {
 const NS = 'http://www.w3.org/2000/svg';
 const sv = (tag, attrs = {}, padre) => { const n = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) if (v !== '' && v != null) n.setAttribute(k, v); if (padre) padre.appendChild(n); return n; };
 const svg = $('#plano');
-const VB0 = { x: -14.8, y: -7.6, w: 30, h: 16.2 };
+let VB0 = { x: -14.8, y: -7.6, w: 30, h: 16.2 };
+const VB_SALA = { ...VB0 };
 let vb = { ...VB0 };
 const aplicarVB = () => svg.setAttribute('viewBox', `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
 const plano = { equipos: {}, lineas: {}, tomas: null };
@@ -1945,6 +2064,7 @@ function construirPlano2D() {
   const defs = sv('defs', {}, svg);
   const raiz2 = sv('g', {}, svg);
   const grilla = sv('g', { class: 'grilla' }, raiz2);
+  plano.sala = raiz2; plano.grilla = grilla;
   for (let x = Math.ceil(VB0.x); x <= VB0.x + VB0.w; x++) sv('line', { x1: x, y1: VB0.y, x2: x, y2: VB0.y + VB0.h }, grilla);
   for (let y = Math.ceil(VB0.y); y <= VB0.y + VB0.h; y++) sv('line', { x1: VB0.x, y1: y, x2: VB0.x + VB0.w, y2: y }, grilla);
   rect2(385.45, 387.85, -15.418, -12.44, { class: 'piso-ext' }, raiz2);
@@ -2048,7 +2168,8 @@ function construirPlano2D() {
   for (let i = 0; i < 5; i++) sv('rect', { x: i, y: 0, width: 1, height: 0.14, style: `fill:var(${i % 2 ? '--plano-bg' : '--ink'});stroke:var(--ink);stroke-width:0.015` }, ge2);
   for (const v of [0, 1, 2, 3, 4, 5]) texto2(String(v), v, 0.45, 'escala-t', ge2);
   texto2('m', 5.45, 0.45, 'escala-t', ge2);
-  texto2('PLANTA · SALA DE RECIBO Y PRODUCCIÓN', VB0.x + 0.8, VB0.y + 0.9, 'titulo2', raiz2);
+  const tit = texto2('PLANTA · SALA DE RECIBO Y PRODUCCIÓN', VB0.x + 0.8, VB0.y + 0.9, 'titulo2', raiz2);
+  plano.deco = [gc, gn, ge2, tit];
   // Marcador de la cámara 3D (dónde está y hacia dónde mira)
   plano.marca = sv('g', { class: 'marca-cam' }, svg);
   sv('path', { d: 'M0 0 L1.7 -0.95 L1.7 0.95 Z', class: 'cono' }, plano.marca);
@@ -2065,9 +2186,10 @@ function actualizarMarca2D() {
 }
 // Encuadre del plano en cada etapa del recorrido (cuando el plano es la vista principal)
 function vbPaso(P) {
-  if (!P || !P.eq.length) return { ...VB0 };
+  if (!P || (!P.bb2 && !(P.eq && P.eq.length))) return { ...VB0 };
   let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-  for (const id of P.eq) {
+  if (P.bb2) [x0, x1, y0, y1] = P.bb2;
+  else for (const id of P.eq) {
     const e = porId[id], h = huella(e), cx = wx(e.X), cz = wz(e.Y);
     x0 = Math.min(x0, cx - h.hx); x1 = Math.max(x1, cx + h.hx); y0 = Math.min(y0, cz - h.hz); y1 = Math.max(y1, cz + h.hz);
   }
@@ -2102,8 +2224,11 @@ svg.addEventListener('pointerup', (ev) => {
   if (!arr2) return;
   const clic = !arr2.mov; arr2 = null; svg.classList.remove('arrastrando');
   if (!clic) return;
-  const g = document.elementFromPoint(ev.clientX, ev.clientY)?.closest?.('.eq');
-  seleccionar(g ? g.dataset.id : null, !!g && estado.modo === 'ambos');
+  const el = document.elementFromPoint(ev.clientX, ev.clientY);
+  const g = el?.closest?.('.eq');
+  if (g) { seleccionar(g.dataset.id, estado.modo === 'ambos'); return; }
+  seleccionar(null, false);
+  if (estado.ambito === 'edificio') { const sl = el?.closest?.('[data-sala2]'); seleccionarSala(sl ? sl.dataset.sala2 : null, !!sl && estado.modo === 'ambos'); }
 });
 svg.addEventListener('pointercancel', () => { arr2 = null; svg.classList.remove('arrastrando'); });
 $('#z2-mas').addEventListener('click', () => zoom2D(0.75, centro2D()));
@@ -2125,8 +2250,9 @@ function ponerModo(m) {
   estado.modo = m;
   $('#lienzos').dataset.modo = m;
   document.querySelectorAll('[data-modo]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.modo === m)));
-  $('#vistas').hidden = m === '2d';
+  if (m === '2d' && paseo.activo) salirPaseo();
   for (const k in mov) mov[k] = 0;
+  pintarBarra();
   aplicarPip();
   actualizarMarca2D();
 }
@@ -2269,12 +2395,1065 @@ $('#b-enlace').addEventListener('click', async () => {
   }
 });
 
+// ---------- Edificio completo, piso a piso (DWG arquitectónico: plantas −1, 1 y 2 y cortes)
+// Datos generados por herramientas/edificio/construir_edificio.py e incrustados con incrustar.py
+const EDIF = /*EDIFICIO*/{"pisos":[{"id":"p-1","nombre":"Piso -1","nivel":"N -2,85","y0":-3.0,"alto":3.0,"muros":[[389.757,-7.205,394.107,-7.205,394.107,-7.077,389.757,-7.077],[405.387,-7.205,405.557,-7.205,405.557,-7.077,405.387,-7.077],[405.667,-7.205,411.117,-7.205,411.117,-7.077,405.667,-7.077],[394.397,-5.956,395.385,-5.872,395.374,-5.743,394.386,-5.827],[395.515,-5.861,399.088,-5.558,399.077,-5.428,395.504,-5.732],[404.377,-8.287,404.377,-5.548,404.247,-5.548,404.247,-8.287],[395.524,-8.287,395.524,-5.851,395.394,-5.851,395.394,-8.287],[399.387,-5.557,401.28,-5.557,401.28,-5.423,399.387,-5.423],[402.48,-5.557,404.257,-5.557,404.257,-5.423,402.48,-5.423],[404.387,-5.557,405.387,-5.557,405.387,-5.423,404.387,-5.423],[394.227,-9.567,394.227,-8.417,394.091,-8.417,394.091,-9.567],[394.227,-7.087,394.227,-6.117,394.091,-6.117,394.091,-7.087],[394.387,-9.707,399.087,-9.707,399.087,-9.571,394.387,-9.571],[399.387,-9.707,405.387,-9.707,405.387,-9.571,399.387,-9.571],[399.227,-8.117,399.227,-5.717,399.09,-5.717,399.09,-8.117],[405.686,-9.567,405.686,-8.417,405.547,-8.417,405.547,-9.567],[405.686,-7.087,405.686,-5.717,405.547,-5.717,405.547,-7.087],[389.759,-8.261,390.587,-8.261,390.587,-8.122,389.759,-8.122],[390.887,-8.261,394.087,-8.261,394.087,-8.122,390.887,-8.122],[405.688,-8.261,410.168,-8.261,410.168,-8.122,405.688,-8.122],[395.514,-8.414,397.087,-8.414,397.087,-8.261,395.514,-8.261],[400.387,-8.414,404.257,-8.414,404.257,-8.261,400.387,-8.261],[390.587,-8.414,390.887,-8.414,390.887,-8.122,390.587,-8.122],[394.087,-8.414,394.387,-8.414,394.387,-8.122,394.087,-8.122],[399.087,-8.414,399.387,-8.414,399.387,-8.122,399.087,-8.122],[405.387,-8.414,405.687,-8.414,405.687,-8.122,405.387,-8.122],[399.087,-5.717,399.387,-5.717,399.387,-5.423,399.087,-5.423],[405.387,-5.717,405.687,-5.717,405.687,-5.423,405.387,-5.423],[405.686,-9.867,405.686,-9.567,405.39,-9.567,405.39,-9.867],[405.686,-8.417,405.686,-8.117,405.39,-8.117,405.39,-8.417],[394.387,-9.867,394.387,-9.567,394.091,-9.567,394.091,-9.867],[394.387,-8.417,394.387,-8.117,394.091,-8.117,394.091,-8.417],[394.387,-6.117,394.387,-5.817,394.091,-5.817,394.091,-6.117],[390.587,-9.867,390.887,-9.867,390.887,-9.571,390.587,-9.571],[399.087,-9.867,399.387,-9.867,399.387,-9.571,399.087,-9.571],[399.387,-8.417,399.387,-8.117,399.09,-8.117,399.09,-8.417],[390.887,-8.417,390.887,-8.117,390.587,-8.117,390.587,-8.417]],"vanos":[{"p1":[401.28,-5.49],"p2":[402.48,-5.49],"ancho":1.2,"esp":0.134,"tipo":"ventana"},{"p1":[394.159,-8.417],"p2":[394.159,-7.087],"ancho":1.33,"esp":0.136,"tipo":"puerta"},{"p1":[405.616,-8.417],"p2":[405.616,-7.087],"ancho":1.33,"esp":0.139,"tipo":"puerta"},{"p1":[397.087,-8.338],"p2":[400.387,-8.338],"ancho":3.3,"esp":0.152,"tipo":"puerta"}],"salas":[{"nombre":"Circulación","tipo":"circulacion","area_plano":null,"area_calc":4.96,"poly":[[394.25,-9.525],[396.3,-9.525],[396.3,-8.475],[395.525,-8.45],[395.475,-8.3],[395.35,-8.275],[395.325,-5.9],[394.425,-5.95],[394.4,-6.125],[394.25,-6.175],[394.25,-8.075],[394.4,-8.125],[394.4,-8.425],[394.25,-8.475],[394.25,-9.525]],"etiqueta":[394.877,-7.955]},{"nombre":"Hall del sótano","tipo":"circulacion","area_plano":null,"area_calc":13.42,"poly":[[396.3,-9.525],[405.475,-9.55],[405.5,-8.475],[405.35,-8.425],[405.35,-8.125],[405.55,-8.075],[405.55,-7.275],[405.375,-7.25],[405.35,-7.075],[405.55,-7.025],[405.55,-5.775],[405.375,-5.75],[405.325,-5.6],[404.4,-5.625],[404.4,-8.275],[404.3,-8.325],[404.275,-8.45],[400.325,-8.4],[396.325,-8.45],[396.3,-9.525]],"etiqueta":[400.0,-9.0]},{"nombre":"Cuarto de residuos sólidos","tipo":"tecnico","area_plano":9.1,"area_calc":8.82,"poly":[[395.55,-8.225],[399.025,-8.25],[399.05,-5.625],[398.575,-5.6],[395.625,-5.85],[395.55,-5.925],[395.55,-8.225]],"etiqueta":[396.873,-6.088]},{"nombre":"Cuarto de almacenamiento","tipo":"tecnico","area_plano":13.5,"area_calc":13.26,"poly":[[399.4,-8.225],[404.225,-8.25],[404.25,-5.625],[402.425,-5.55],[399.425,-5.6],[399.375,-5.75],[399.25,-5.775],[399.25,-8.075],[399.375,-8.1],[399.4,-8.225]],"etiqueta":[400.968,-6.297]}]},{"id":"p1","nombre":"Piso 1","nivel":"N +0,15","y0":0.0,"alto":3.04,"muros":[[394.394,-20.667,399.094,-20.667,399.094,-20.539,394.394,-20.539],[399.394,-20.667,401.414,-20.667,401.414,-20.539,399.394,-20.539],[401.524,-20.667,402.954,-20.667,402.954,-20.539,401.524,-20.539],[404.154,-20.667,407.834,-20.667,407.834,-20.539,404.154,-20.539],[411.024,-20.667,411.774,-20.667,411.774,-20.539,411.024,-20.539],[412.974,-20.667,413.724,-20.667,413.724,-20.539,412.974,-20.539],[414.024,-20.667,420.821,-20.667,420.821,-20.539,414.024,-20.539],[422.251,-20.667,425.066,-20.667,425.065,-20.539,422.25,-20.539],[425.176,-20.667,428.066,-20.667,428.065,-20.539,425.175,-20.539],[421.109,-20.378,421.109,-18.553,420.981,-18.553,420.981,-20.378],[421.109,-17.923,421.109,-16.078,420.981,-16.078,420.981,-17.923],[421.109,-14.228,421.109,-13.028,420.981,-13.028,420.981,-14.228],[414.014,-17.408,414.014,-15.428,413.886,-15.428,413.885,-17.408],[414.014,-15.128,414.014,-13.878,413.886,-13.878,413.886,-15.128],[414.014,-12.728,414.014,-11.898,413.886,-11.898,413.886,-12.728],[414.014,-10.698,414.014,-9.867,413.886,-9.867,413.886,-10.698],[416.16,-14.128,416.161,-13.028,416.031,-13.028,416.031,-14.128],[394.405,-5.956,399.095,-5.558,399.084,-5.428,394.394,-5.827],[417.8,-18.043,420.991,-18.043,420.99,-17.913,417.8,-17.913],[418.635,-15.278,418.636,-12.878,418.506,-12.878,418.505,-15.278],[425.185,-20.548,425.186,-17.583,425.056,-17.583,425.055,-20.548],[412.064,-13.978,412.064,-12.858,411.934,-12.858,411.934,-13.978],[399.394,-5.557,401.287,-5.557,401.287,-5.427,399.394,-5.427],[402.487,-5.557,404.264,-5.557,404.264,-5.427,402.487,-5.427],[404.394,-5.557,405.394,-5.557,405.394,-5.427,404.394,-5.427],[417.81,-20.528,417.81,-19.383,417.68,-19.383,417.68,-20.528],[417.81,-17.923,417.81,-16.628,417.68,-16.628,417.68,-17.923],[404.384,-8.287,404.384,-5.548,404.254,-5.547,404.254,-8.287],[401.534,-20.548,401.534,-17.418,401.404,-17.418,401.404,-20.548],[416.021,-19.393,417.69,-19.393,417.69,-19.263,416.021,-19.263],[411.024,-9.708,413.874,-9.708,413.874,-9.577,411.024,-9.577],[405.686,-8.117,405.686,-7.198,405.554,-7.197,405.554,-8.117],[405.686,-7.087,405.686,-5.717,405.554,-5.717,405.554,-7.087],[389.764,-7.209,394.094,-7.209,394.094,-7.077,389.764,-7.077],[405.675,-7.209,411.124,-7.209,411.124,-7.077,405.674,-7.077],[410.724,-12.871,411.944,-12.871,411.944,-12.738,410.724,-12.738],[412.054,-12.871,413.724,-12.871,413.724,-12.738,412.054,-12.738],[414.024,-12.871,415.02,-12.871,415.02,-12.738,414.024,-12.738],[416.321,-12.871,416.845,-12.871,416.845,-12.738,416.32,-12.738],[418.046,-12.871,419.095,-12.871,419.095,-12.738,418.046,-12.738],[420.296,-12.871,420.821,-12.871,420.82,-12.738,420.296,-12.738],[422.26,-20.548,422.261,-17.583,422.127,-17.583,422.127,-20.548],[422.261,-17.473,422.261,-16.853,422.127,-16.853,422.127,-17.473],[428.19,-20.548,428.191,-17.583,428.056,-17.583,428.055,-20.548],[394.225,-17.578,398.244,-17.578,398.244,-17.443,394.224,-17.443],[410.854,-17.578,413.894,-17.578,413.894,-17.443,410.854,-17.443],[422.25,-17.578,422.733,-17.578,422.733,-17.443,422.25,-17.443],[424.583,-17.578,425.065,-17.578,425.065,-17.443,424.583,-17.443],[425.175,-17.578,425.289,-17.578,425.289,-17.443,425.175,-17.443],[427.139,-17.578,428.065,-17.578,428.065,-17.443,427.139,-17.443],[394.234,-20.378,394.234,-17.558,394.098,-17.558,394.098,-20.378],[394.234,-8.117,394.234,-6.117,394.098,-6.117,394.098,-8.117],[380.332,-15.42,381.67,-15.42,381.67,-15.282,380.332,-15.282],[416.321,-15.42,420.821,-15.42,420.82,-15.281,416.32,-15.282],[389.764,-8.265,394.075,-8.265,394.074,-8.125,389.764,-8.125],[405.694,-8.265,410.076,-8.265,410.076,-8.125,405.694,-8.125],[395.594,-8.407,399.094,-8.407,399.094,-8.265,395.594,-8.265],[400.394,-8.407,404.264,-8.407,404.264,-8.265,400.394,-8.265],[399.244,-8.117,399.244,-5.717,399.099,-5.717,399.099,-8.117],[399.389,-20.378,399.389,-17.428,399.244,-17.428,399.244,-20.378],[381.82,-15.28,381.82,-14.378,381.67,-14.378,381.67,-15.28],[380.331,-15.28,380.332,-13.578,380.182,-13.578,380.181,-15.28],[380.332,-13.578,381.82,-13.578,381.82,-13.428,380.331,-13.428],[422.121,-20.667,422.251,-20.667,422.25,-20.378,422.121,-20.378],[428.066,-20.667,428.195,-20.667,428.195,-20.378,428.065,-20.378],[422.42,-20.678,422.42,-20.548,422.127,-20.548,422.127,-20.678],[422.421,-17.583,422.421,-17.473,422.127,-17.473,422.127,-17.583],[428.19,-20.678,428.19,-20.548,427.895,-20.548,427.895,-20.678],[428.191,-17.583,428.191,-17.453,427.896,-17.453,427.896,-17.583],[422.121,-17.753,422.251,-17.753,422.25,-17.443,422.12,-17.443],[428.066,-17.753,428.195,-17.753,428.195,-17.443,428.065,-17.443]],"vanos":[{"p1":[402.954,-20.603],"p2":[404.154,-20.603],"ancho":1.2,"esp":0.128,"tipo":"ventana"},{"p1":[411.774,-20.603],"p2":[412.974,-20.603],"ancho":1.2,"esp":0.128,"tipo":"ventana"},{"p1":[421.045,-18.553],"p2":[421.045,-17.923],"ancho":0.63,"esp":0.129,"tipo":"ventana"},{"p1":[421.045,-16.078],"p2":[421.045,-14.228],"ancho":1.85,"esp":0.129,"tipo":"ventana"},{"p1":[413.95,-13.878],"p2":[413.95,-12.728],"ancho":1.15,"esp":0.129,"tipo":"puerta"},{"p1":[413.95,-11.898],"p2":[413.95,-10.698],"ancho":1.2,"esp":0.129,"tipo":"ventana"},{"p1":[401.287,-5.492],"p2":[402.487,-5.492],"ancho":1.2,"esp":0.13,"tipo":"ventana"},{"p1":[417.745,-19.383],"p2":[417.745,-17.923],"ancho":1.46,"esp":0.13,"tipo":"puerta"},{"p1":[415.02,-12.805],"p2":[416.321,-12.805],"ancho":1.3,"esp":0.133,"tipo":"puerta"},{"p1":[416.845,-12.805],"p2":[418.046,-12.805],"ancho":1.2,"esp":0.133,"tipo":"ventana"},{"p1":[419.095,-12.805],"p2":[420.296,-12.805],"ancho":1.2,"esp":0.133,"tipo":"ventana"},{"p1":[422.733,-17.511],"p2":[424.583,-17.511],"ancho":1.85,"esp":0.135,"tipo":"puerta"},{"p1":[425.289,-17.511],"p2":[427.139,-17.511],"ancho":1.85,"esp":0.135,"tipo":"puerta"},{"p1":[399.094,-8.336],"p2":[400.394,-8.336],"ancho":1.3,"esp":0.142,"tipo":"puerta"}],"salas":[{"nombre":"Zona de entrega de producto","tipo":"produccion","area_plano":35.3,"area_calc":34.64,"poly":[[402.95,-20.525],[405.55,-20.475],[405.525,-15.45],[394.25,-15.475],[394.275,-17.4],[398.225,-17.4],[398.275,-17.55],[399.075,-17.55],[399.175,-17.65],[399.225,-17.4],[401.575,-17.4],[401.55,-20.475],[402.95,-20.525]],"etiqueta":[402.475,-15.948]},{"nombre":"Escalera a la oficina","tipo":"escalera","area_plano":null,"area_calc":8.94,"poly":[[410.9,-20.575],[410.975,-20.6],[411.025,-20.5],[413.725,-20.5],[413.775,-20.6],[413.95,-20.575],[413.925,-17.45],[413.875,-17.6],[410.9,-17.625],[410.9,-20.575]],"etiqueta":[412.5,-19.0]},{"nombre":"Cuarto frío","tipo":"frio","area_plano":14.75,"area_calc":14.42,"poly":[[399.1,-20.575],[399.275,-20.6],[399.3,-20.425],[399.2,-20.375],[399.2,-17.675],[399.075,-17.55],[394.25,-17.625],[394.25,-20.325],[394.375,-20.5],[399.075,-20.5],[399.1,-20.575]],"etiqueta":[394.939,-18.048]},{"nombre":"Escalera al almacén de empaques","tipo":"escalera","area_plano":null,"area_calc":6.01,"poly":[[399.3,-20.525],[401.4,-20.475],[401.375,-17.5],[399.4,-17.525],[399.4,-20.375],[399.3,-20.425],[399.3,-20.525]],"etiqueta":[400.4,-19.0]},{"nombre":"Zona de producción 2","tipo":"produccion","area_plano":27.16,"area_calc":25.25,"poly":[[405.7,-20.475],[410.7,-20.475],[410.675,-15.45],[405.7,-15.475],[405.7,-20.475]],"etiqueta":[407.792,-16.625]},{"nombre":"Zona administrativa","tipo":"administrativo","area_plano":25.15,"area_calc":21.55,"poly":[[414.05,-20.475],[415.975,-20.5],[415.95,-19.325],[416.025,-19.25],[417.7,-19.225],[417.65,-17.925],[417.7,-15.475],[416.325,-15.45],[416.275,-15.25],[416.225,-15.4],[416.15,-15.375],[416.15,-14.175],[416.0,-14.125],[416.0,-13.025],[416.1,-12.975],[416.075,-12.85],[414.0,-12.925],[414.05,-15.125],[413.95,-15.175],[413.95,-15.375],[414.05,-15.425],[414.05,-20.475]],"etiqueta":[415.051,-17.607]},{"nombre":"Batería de baños 2","tipo":"servicios","area_plano":7.82,"area_calc":7.67,"poly":[[420.85,-20.525],[420.95,-20.525],[420.925,-18.05],[417.8,-18.075],[417.875,-20.5],[420.85,-20.525]],"etiqueta":[418.029,-18.794]},{"nombre":"Planta eléctrica","tipo":"tecnico","area_plano":8.12,"area_calc":7.98,"poly":[[422.3,-20.475],[425.05,-20.475],[425.025,-17.6],[422.3,-17.625],[422.3,-20.475]],"etiqueta":[423.156,-19.482]},{"nombre":"Bodega","tipo":"tecnico","area_plano":8.35,"area_calc":8.27,"poly":[[425.2,-20.475],[428.05,-20.475],[428.025,-17.6],[425.2,-17.625],[425.2,-20.475]],"etiqueta":[426.166,-19.482]},{"nombre":"Batería de baños 1","tipo":"servicios","area_plano":7.82,"area_calc":7.7,"poly":[[417.85,-17.875],[420.925,-17.9],[421.0,-15.425],[420.875,-15.35],[420.825,-15.45],[417.825,-15.45],[417.85,-17.875]],"etiqueta":[418.028,-16.169]},{"nombre":"Vestuario","tipo":"servicios","area_plano":13.53,"area_calc":13.14,"poly":[[410.9,-17.375],[413.85,-17.375],[413.85,-15.425],[413.95,-15.375],[413.95,-15.175],[413.85,-15.125],[413.875,-12.8],[413.775,-12.8],[413.725,-12.9],[412.125,-12.9],[412.075,-14.0],[411.9,-13.975],[411.875,-12.9],[410.9,-12.925],[410.9,-17.375]],"etiqueta":[411.7,-15.006]},{"nombre":"Garita","tipo":"administrativo","area_plano":null,"area_calc":2.18,"poly":[[380.35,-15.225],[381.65,-15.225],[381.675,-13.6],[380.35,-13.625],[380.35,-15.225]],"etiqueta":[380.552,-14.462]},{"nombre":"Zona de recibo","tipo":"produccion","area_plano":23.7,"area_calc":23.1,"poly":[[388.0,-15.225],[392.2,-15.225],[392.175,-9.75],[388.0,-9.775],[388.0,-15.225]],"etiqueta":[390.1,-12.6]},{"nombre":"Zona de producción 1","tipo":"produccion","area_plano":107.0,"area_calc":100.65,"poly":[[392.4,-15.225],[410.675,-15.25],[410.7,-9.775],[392.425,-9.75],[392.4,-15.225]],"etiqueta":[396.602,-11.919]},{"nombre":"Zona de bienestar","tipo":"servicios","area_plano":5.6,"area_calc":5.42,"poly":[[416.25,-15.225],[418.5,-15.225],[418.475,-12.9],[416.1,-12.875],[416.1,-12.975],[416.2,-13.025],[416.25,-15.225]],"etiqueta":[416.596,-13.302]},{"nombre":"Atención al usuario","tipo":"administrativo","area_plano":5.6,"area_calc":5.47,"poly":[[420.85,-15.325],[420.95,-15.325],[420.9,-12.975],[420.825,-12.9],[420.275,-12.85],[418.675,-12.9],[418.65,-15.225],[420.825,-15.25],[420.85,-15.325]],"etiqueta":[418.958,-14.278]},{"nombre":"Laboratorio","tipo":"laboratorio","area_plano":9.01,"area_calc":8.8,"poly":[[411.95,-12.825],[412.05,-12.825],[412.075,-12.7],[413.725,-12.7],[413.775,-12.8],[413.9,-12.775],[413.9,-10.725],[413.825,-9.75],[411.025,-9.75],[410.975,-9.65],[410.9,-9.675],[410.9,-12.675],[411.925,-12.7],[411.95,-12.825]],"etiqueta":[411.435,-11.09]},{"nombre":"Hall de calderas","tipo":"circulacion","area_plano":null,"area_calc":9.03,"poly":[[394.2,-9.525],[402.325,-9.55],[402.35,-8.475],[400.325,-8.4],[394.225,-8.45],[394.2,-9.525]],"etiqueta":[400.0,-9.0]},{"nombre":"Circulación","tipo":"circulacion","area_plano":null,"area_calc":6.75,"poly":[[402.35,-9.525],[405.5,-9.525],[405.5,-8.275],[405.65,-8.175],[405.55,-8.125],[405.55,-7.225],[405.65,-7.125],[405.55,-7.075],[405.55,-5.775],[405.475,-5.65],[404.4,-5.625],[404.4,-8.275],[404.3,-8.325],[404.275,-8.45],[402.375,-8.45],[402.35,-9.525]],"etiqueta":[404.652,-7.82]},{"nombre":"Almacenamiento de carbón","tipo":"tecnico","area_plano":12.25,"area_calc":12.06,"poly":[[394.2,-8.275],[399.175,-8.25],[399.2,-8.175],[399.1,-8.125],[399.1,-5.725],[399.2,-5.675],[399.2,-5.575],[394.425,-5.95],[394.25,-6.175],[394.25,-8.125],[394.1,-8.175],[394.2,-8.275]],"etiqueta":[397.078,-5.774]},{"nombre":"Zona de calderas","tipo":"tecnico","area_plano":13.5,"area_calc":13.33,"poly":[[399.2,-8.225],[404.225,-8.25],[404.25,-5.625],[402.425,-5.55],[399.375,-5.6],[399.325,-5.5],[399.225,-5.5],[399.2,-8.225]],"etiqueta":[400.835,-5.943]},{"nombre":"Cuarto de lavado","tipo":"lavado","area_plano":1.85,"area_calc":1.63,"poly":[[416.1,-20.475],[417.625,-20.5],[417.65,-19.475],[416.125,-19.45],[416.1,-20.475]],"etiqueta":[416.149,-19.658]}]},{"id":"p2","nombre":"Piso 2","nivel":"N +3,19","y0":3.04,"alto":2.7,"muros":[[401.532,-20.55,401.532,-17.42,401.401,-17.42,401.401,-20.55],[394.392,-20.672,396.142,-20.672,396.142,-20.54,394.392,-20.54],[397.342,-20.672,399.092,-20.672,399.092,-20.54,397.342,-20.54],[399.392,-20.672,401.411,-20.672,401.411,-20.54,399.392,-20.54],[401.522,-20.672,402.952,-20.672,402.952,-20.54,401.522,-20.54],[404.152,-20.672,407.832,-20.672,407.832,-20.54,404.152,-20.54],[409.032,-20.672,410.722,-20.672,410.722,-20.54,409.032,-20.54],[411.022,-20.672,411.772,-20.672,411.772,-20.54,411.022,-20.54],[412.972,-20.672,413.722,-20.672,413.722,-20.54,412.972,-20.54],[411.022,-9.709,411.762,-9.709,411.762,-9.576,411.022,-9.576],[412.962,-9.709,413.722,-9.709,413.722,-9.576,412.962,-9.576],[414.016,-20.38,414.016,-13.03,413.882,-13.03,413.882,-20.38],[414.016,-12.73,414.016,-11.899,413.882,-11.899,413.882,-12.73],[414.016,-10.699,414.016,-9.869,413.882,-9.869,413.882,-10.699],[410.862,-20.38,410.862,-15.43,410.727,-15.43,410.727,-20.38],[394.232,-20.38,394.232,-17.025,394.097,-17.025,394.097,-20.38],[394.232,-15.825,394.232,-15.43,394.097,-15.43,394.097,-15.825],[405.688,-20.38,405.688,-15.43,405.551,-15.43,405.552,-20.38],[399.388,-20.38,399.388,-17.43,399.251,-17.43,399.251,-20.38],[411.022,-15.424,412.872,-15.424,412.872,-15.287,411.022,-15.287],[394.092,-20.672,394.392,-20.672,394.392,-20.38,394.092,-20.38],[399.092,-20.672,399.392,-20.672,399.392,-20.38,399.092,-20.38],[410.722,-20.672,411.022,-20.672,411.022,-20.38,410.722,-20.38],[413.722,-20.672,414.022,-20.672,414.022,-20.38,413.722,-20.38],[413.722,-9.869,414.022,-9.869,414.022,-9.576,413.722,-9.576],[413.722,-15.424,414.022,-15.424,414.022,-15.13,413.722,-15.13],[414.016,-20.68,414.016,-20.38,413.722,-20.38,413.722,-20.68],[414.016,-13.03,414.016,-12.73,413.722,-12.73,413.722,-13.03],[414.016,-9.869,414.016,-9.569,413.722,-9.569,413.722,-9.869],[411.022,-20.68,411.022,-20.38,410.727,-20.38,410.727,-20.68],[394.392,-20.68,394.392,-20.38,394.097,-20.38,394.097,-20.68],[405.688,-20.68,405.688,-20.38,405.392,-20.38,405.392,-20.68],[399.388,-20.68,399.388,-20.38,399.092,-20.38,399.092,-20.68]],"vanos":[{"p1":[396.142,-20.606],"p2":[397.342,-20.606],"ancho":1.2,"esp":0.132,"tipo":"ventana"},{"p1":[402.952,-20.606],"p2":[404.152,-20.606],"ancho":1.2,"esp":0.132,"tipo":"ventana"},{"p1":[407.832,-20.606],"p2":[409.032,-20.606],"ancho":1.2,"esp":0.132,"tipo":"ventana"},{"p1":[411.772,-20.606],"p2":[412.972,-20.606],"ancho":1.2,"esp":0.132,"tipo":"ventana"},{"p1":[411.762,-9.643],"p2":[412.962,-9.643],"ancho":1.2,"esp":0.134,"tipo":"ventana"},{"p1":[413.949,-11.899],"p2":[413.949,-10.699],"ancho":1.2,"esp":0.135,"tipo":"ventana"},{"p1":[394.164,-17.025],"p2":[394.164,-15.825],"ancho":1.2,"esp":0.135,"tipo":"ventana"}],"salas":[{"nombre":"Almacén de empaques","tipo":"produccion","area_plano":51.0,"area_calc":49.85,"poly":[[396.15,-20.525],[399.025,-20.5],[399.075,-20.35],[399.25,-20.325],[399.225,-17.35],[401.6,-17.375],[401.575,-20.5],[405.325,-20.5],[405.375,-20.35],[405.55,-20.325],[405.55,-15.475],[394.275,-15.45],[394.25,-20.325],[394.375,-20.35],[394.425,-20.5],[396.15,-20.525]],"etiqueta":[399.653,-15.877]},{"nombre":"Espacio sobre producción 2","tipo":"porDefinir","area_plano":null,"area_calc":25.31,"poly":[[407.85,-20.525],[410.7,-20.475],[410.675,-15.45],[405.7,-15.475],[405.7,-20.475],[407.85,-20.525]],"etiqueta":[408.2,-18.0]},{"nombre":"Hall","tipo":"circulacion","area_plano":8.85,"area_calc":15.05,"poly":[[411.8,-20.525],[413.675,-20.5],[413.725,-20.35],[413.85,-20.325],[413.85,-15.475],[413.725,-15.45],[413.675,-15.3],[412.925,-15.3],[412.875,-15.45],[411.025,-15.45],[410.975,-15.35],[410.8,-15.375],[410.9,-15.425],[410.9,-20.325],[411.05,-20.375],[411.075,-20.5],[411.8,-20.525]],"etiqueta":[411.93,-15.79]},{"nombre":"Escalera","tipo":"escalera","area_plano":null,"area_calc":6.1,"poly":[[399.4,-20.475],[401.4,-20.475],[401.375,-17.45],[399.4,-17.475],[399.4,-20.475]],"etiqueta":[400.4,-19.0]},{"nombre":"Oficina","tipo":"administrativo","area_plano":16.68,"area_calc":16.31,"poly":[[410.8,-15.325],[410.975,-15.35],[411.025,-15.25],[413.675,-15.3],[413.7,-15.125],[413.85,-15.075],[413.85,-13.075],[413.7,-13.025],[413.7,-12.725],[413.85,-12.675],[413.9,-10.725],[413.85,-9.925],[413.725,-9.9],[413.675,-9.75],[412.925,-9.7],[411.025,-9.75],[410.975,-9.65],[410.9,-9.675],[410.9,-15.275],[410.8,-15.325]],"etiqueta":[411.93,-12.77]},{"nombre":"Doble altura de recibo","tipo":"vacio","area_plano":null,"area_calc":23.1,"poly":[[388.0,-15.225],[392.2,-15.225],[392.175,-9.75],[388.0,-9.775],[388.0,-15.225]],"etiqueta":[390.1,-12.6]},{"nombre":"Doble altura de producción","tipo":"vacio","area_plano":null,"area_calc":100.65,"poly":[[392.4,-15.225],[410.675,-15.25],[410.7,-9.775],[392.425,-9.75],[392.4,-15.225]],"etiqueta":[400.0,-12.5]}]}]}/*FIN EDIFICIO*/;
+const PISO_IDS = ['p-1', 'p1', 'p2'];
+const PISO = Object.fromEntries(EDIF.pisos.map((p) => [p.id, p]));
+const NIVEL_IDX = { 'p-1': 0, p1: 1, p2: 2, todo: 3 };
+const NOMBRE_PISO = { 'p-1': 'Piso −1', p1: 'Piso 1', p2: 'Piso 2', todo: 'Exterior' };
+const TIPOS = {
+  produccion: { t: 'Producción', c: '#9fc3df' },
+  frio: { t: 'Frío', c: '#8fd0de' },
+  lavado: { t: 'Lavado', c: '#6fc796' },
+  servicios: { t: 'Servicios del personal', c: '#e3c38e' },
+  administrativo: { t: 'Administrativo', c: '#c2aee3' },
+  tecnico: { t: 'Técnico', c: '#cdbca3' },
+  laboratorio: { t: 'Laboratorio', c: '#e9a9bc' },
+  circulacion: { t: 'Circulación', c: '#d6dadc' },
+  escalera: { t: 'Escalera', c: '#c4cacd' },
+  vacio: { t: 'Doble altura (vacío)', c: '#ffffff' },
+  porDefinir: { t: 'Uso por definir', c: '#e8d488' },
+};
+const SALAS_VISOR = ['Zona de recibo', 'Zona de producción 1', 'Zona de producción 2'];
+const ZONAS_SALA = { 'Zona de recibo': ['plataforma', 'recibo', 'exterior'], 'Zona de producción 1': ['prod1'], 'Zona de producción 2': ['prod2'] };
+const NOTAS_SALA = {
+  'Espacio sobre producción 2': 'El plano del piso 2 la marca con aspa y el corte D-D\' muestra losa a N +3,19. Uso por confirmar.',
+  'Doble altura de producción': 'Vacío sobre la zona de producción 1: desde el piso 2 se ve la sala de abajo.',
+  'Doble altura de recibo': 'Vacío sobre la zona de recibo.',
+  'Zona administrativa': 'En el plano, sus 25,15 m² incluyen la escalera a la oficina.',
+  'Hall': 'En el plano, 8,85 m² sin contar la escalera.',
+  'Almacén de empaques': 'Queda encima del cuarto frío y de la entrega de producto.',
+  'Cuarto de lavado': 'Zona de lavado del plano (1,85 m²).',
+  'Zona de recibo': 'Sala modelada con sus equipos (ver «Sala de producción»).',
+  'Zona de producción 1': 'Sala modelada con sus equipos (ver «Sala de producción»). Tiene lavamanos de pedal y lavado de botas.',
+  'Zona de producción 2': 'Sala modelada con sus equipos (ver «Sala de producción»).',
+};
+const SIN_EQUIPOS = ['vacio', 'circulacion', 'escalera'];
+// Puntos de lavado leídos del plano (lavamanos de pedal) y de la implantación general (lavado de botas)
+const LAVADO = [
+  { id: 'lav-n', n: 'Lavamanos de pedal', d: 'Muro norte de producción 1', X: 400.45, Y: -9.907, cara: 'S' },
+  { id: 'lav-ne', n: 'Lavamanos de pedal', d: 'Esquina del laboratorio', X: 410.534, Y: -10.1, cara: 'O' },
+  { id: 'lav-e', n: 'Lavamanos de pedal', d: 'Salida del vestuario', X: 410.534, Y: -14.5, cara: 'O' },
+  { id: 'botas', n: 'Lavado de botas', d: 'Paso del vestuario a producción', X: 410.29, Y: -13.38, botas: true },
+];
+// Escaleras: tramos [X, Y del borde de arranque (centro del ancho), sentido, ancho, escalones, huella, contrahuella, altura de arranque]
+const ESC = [
+  { n: 'Escalera al almacén de empaques', piso: 'p1', planos: ['p1', 'p2'], base: 0,
+    tramos: [[399.895, -17.6, 'S', 1.04, 8, 0.28, 0.19, 0], [400.935, -19.84, 'N', 1.02, 8, 0.28, 0.19, 1.52]], descanso: [399.37, 401.45, -20.43, -19.84, 1.52] },
+  { n: 'Escalera a la oficina', piso: 'p1', planos: ['p1', 'p2'], base: 0,
+    tramos: [[413.95, -19.935, 'O', 1.03, 10, 0.28, 0.19, 0], [411.575, -19.42, 'N', 1.05, 6, 0.28, 0.19, 1.9]] },
+  { n: 'Escalera exterior oeste', piso: 'p-1', planos: ['p1', 'p-1'], base: -3.0, tramos: [[389.65, -7.665, 'E', 0.97, 16, 0.278, -0.178, -0.15]] },
+  { n: 'Escalera exterior este', piso: 'p-1', planos: ['p1', 'p-1'], base: -3.0, tramos: [[410.1, -7.665, 'O', 0.97, 16, 0.278, -0.178, -0.15]] },
+];
+// Recorrido a pie: dónde se sube o baja, zonas que no se pisan (escaleras y huecos) y punto de llegada a cada piso
+const SUBIDAS = [
+  { de: 'p1', zona: [399.35, 401.45, -17.55, -16.75], a: 'p2', X: 400.9, Y: -16.9, yaw: -Math.PI / 2, t: 'Subir al almacén de empaques' },
+  { de: 'p2', zona: [399.35, 401.45, -17.35, -16.65], a: 'p1', X: 399.9, Y: -16.9, yaw: -Math.PI / 2, t: 'Bajar a la entrega de producto' },
+  { de: 'p1', zona: [414.05, 414.95, -20.45, -19.25], a: 'p2', X: 411.6, Y: -17.0, yaw: 0, t: 'Subir a la oficina' },
+  { de: 'p2', zona: [411.05, 412.7, -17.5, -16.75], a: 'p1', X: 414.6, Y: -19.9, yaw: -Math.PI / 2, t: 'Bajar a la zona administrativa' },
+  { de: 'p1', zona: [388.6, 389.95, -8.15, -7.18], a: 'p-1', X: 394.85, Y: -8.0, yaw: -Math.PI / 2, t: 'Bajar al piso −1' },
+  { de: 'p1', zona: [409.85, 411.1, -8.15, -7.18], a: 'p-1', X: 404.9, Y: -8.0, yaw: Math.PI / 2, t: 'Bajar al piso −1' },
+  { de: 'p-1', zona: [394.3, 395.4, -8.4, -7.0], a: 'p1', X: 388.7, Y: -7.65, yaw: Math.PI / 2, t: 'Subir al exterior' },
+  { de: 'p-1', zona: [404.1, 405.45, -8.4, -7.0], a: 'p1', X: 410.7, Y: -7.65, yaw: -Math.PI / 2, t: 'Subir al exterior' },
+];
+const BLOQUEOS = {
+  p1: [[399.3, 401.5, -20.5, -17.55], [411.0, 414.0, -20.5, -17.55], [389.95, 394.1, -8.2, -7.1], [405.7, 409.85, -8.2, -7.1]],
+  p2: [[411.0, 414.0, -20.5, -17.55], [399.3, 401.5, -20.45, -17.42]],
+  'p-1': [],
+};
+const HUECO_HALL = [[411.05, -20.4], [413.85, -20.4], [413.85, -17.55], [411.05, -17.55]];
+const INICIO_PIE = { p1: [401.0, -14.7, 0], p2: [397.0, -16.4, -Math.PI / 2], 'p-1': [397.0, -9.0, -Math.PI / 2] };
+
+// Utilidades en coordenadas del DWG
+const enRect = (r, X, Y) => X >= r[0] && X <= r[1] && Y >= r[2] && Y <= r[3];
+function enPoly(P, X, Y) {
+  let c = false;
+  for (let i = 0, j = P.length - 1; i < P.length; j = i++) {
+    const xi = P[i][0], yi = P[i][1], xj = P[j][0], yj = P[j][1];
+    if ((yi > Y) !== (yj > Y) && X < ((xj - xi) * (Y - yi)) / (yj - yi) + xi) c = !c;
+  }
+  return c;
+}
+function dSeg(X, Y, ax, ay, bx, by) {
+  const dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy;
+  const t = L2 ? Math.max(0, Math.min(1, ((X - ax) * dx + (Y - ay) * dy) / L2)) : 0;
+  return Math.hypot(X - ax - t * dx, Y - ay - t * dy);
+}
+function dPoly(P, X, Y) {
+  if (enPoly(P, X, Y)) return 0;
+  let d = Infinity;
+  for (let i = 0, j = P.length - 1; i < P.length; j = i++) d = Math.min(d, dSeg(X, Y, P[j][0], P[j][1], P[i][0], P[i][1]));
+  return d;
+}
+function cajaBB(P) { let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity; for (const [x, y] of P) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); } return [x0, x1, y0, y1]; }
+function centroPoly(P) {
+  let a = 0, cx = 0, cy = 0;
+  for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const f = P[j][0] * P[i][1] - P[i][0] * P[j][1]; a += f; cx += (P[j][0] + P[i][0]) * f; cy += (P[j][1] + P[i][1]) * f; }
+  return a ? [cx / (3 * a), cy / (3 * a)] : P[0];
+}
+const rectP = (x0, x1, y0, y1) => [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+function rectEje(p1, p2, esp) {
+  const dx = p2[0] - p1[0], dy = p2[1] - p1[1], L = Math.hypot(dx, dy) || 1, nx = (-dy / L) * esp / 2, ny = (dx / L) * esp / 2;
+  return [[p1[0] + nx, p1[1] + ny], [p2[0] + nx, p2[1] + ny], [p2[0] - nx, p2[1] - ny], [p1[0] - nx, p1[1] - ny]];
+}
+const m2 = (n) => Number(n).toLocaleString('es-CO', { maximumFractionDigits: 2 });
+const quadP = (q) => [[q[0], q[1]], [q[2], q[3]], [q[4], q[5]], [q[6], q[7]]];
+
+// Salas
+const SALAS = [];
+for (const p of EDIF.pisos) p.salas.forEach((s, i) => {
+  let c = centroPoly(s.poly);
+  if (!enPoly(s.poly, c[0], c[1])) c = s.etiqueta;
+  SALAS.push({ ...s, id: `${p.id}-${i}`, piso: p.id, c, visor: p.id === 'p1' && SALAS_VISOR.includes(s.nombre) });
+});
+const salaPorId = Object.fromEntries(SALAS.map((s) => [s.id, s]));
+const salaEn = (f, X, Y) => SALAS.find((s) => s.piso === f && enPoly(s.poly, X, Y)) || null;
+for (const L of LAVADO) { const s = salaEn('p1', L.X, L.Y); L.sala = s ? s.id : null; }
+const SALAS_UTILES = SALAS.filter((s) => !SIN_EQUIPOS.includes(s.tipo));
+function altoSala(s) {
+  if (s.tipo === 'vacio') return null;
+  if (s.nombre === 'Zona de recibo' || s.nombre === 'Zona de producción 1') return HZ1;
+  if (s.nombre === 'Zona de producción 2') return HZ2;
+  if (s.nombre === 'Garita') return 2.6;
+  if (s.piso === 'p-1') return 2.85;
+  if (s.piso === 'p2') return 2.7;
+  const debajo = SALAS.some((o) => o.piso === 'p2' && !['vacio', 'escalera'].includes(o.tipo) && enPoly(o.poly, s.c[0], s.c[1]));
+  return debajo ? 2.89 : 3.04;
+}
+
+// Grupos y materiales (cada piso con su plano de corte)
+const edifG = new THREE.Group(); edifG.name = 'Edificio completo';
+const pisoG = {};
+for (const f of PISO_IDS) { pisoG[f] = new THREE.Group(); pisoG[f].name = NOMBRE_PISO[f]; edifG.add(pisoG[f]); }
+const techoG = new THREE.Group(); techoG.name = 'Cubierta'; edifG.add(techoG);
+const lavadoG = new THREE.Group(); lavadoG.name = 'Puntos de lavado';
+edifG.visible = false;
+scene.add(edifG); raiz.add(lavadoG);
+renderer.localClippingEnabled = true;
+const planosCorte = Object.fromEntries(PISO_IDS.map((f) => [f, new THREE.Plane(new V3(0, -1, 0), 1e4)]));
+for (const m of [matMuro, matVidrio, matPuerta, matColumna]) Object.assign(m, { clippingPlanes: [planosCorte.p1], clipShadows: true, side: THREE.DoubleSide });
+const MAT_E = { p1: { muro: matMuro, vidrio: matVidrio } };
+for (const f of ['p-1', 'p2']) MAT_E[f] = {
+  muro: std(0xeceeec, 0, 0.88, { clippingPlanes: [planosCorte[f]], clipShadows: true, side: THREE.DoubleSide }),
+  vidrio: std(0xa9d4e6, 0.1, 0.1, { transparent: true, opacity: 0.35, clippingPlanes: [planosCorte[f]] }),
+};
+const matEsc = std(0xb9bfc2, 0, 0.85, { clippingPlanes: [planosCorte.p1], clipShadows: true, side: THREE.DoubleSide });
+const matEscB = std(0xb9bfc2, 0, 0.85, { clippingPlanes: [planosCorte['p-1']], clipShadows: true, side: THREE.DoubleSide });
+const matTecho = std(0x8f9aa0, 0.45, 0.5, { side: THREE.DoubleSide });
+const matCulata = std(0xe4e7e5, 0, 0.9, { side: THREE.DoubleSide });
+const matInox = std(0xd2d8dc, 0.85, 0.28);
+const matAgua = std(0x4aa8cf, 0.1, 0.15, { transparent: true, opacity: 0.75 });
+const matTanqueAgua = std(0x232c31, 0.05, 0.6);
+const matPick = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false, transparent: true, opacity: 0 });
+// Muros cortados: la cara interior (la que queda a la vista por el corte) se pinta oscura, como el relleno de un plano
+const TAPA_CORTE = (sh) => { sh.fragmentShader = sh.fragmentShader.replace('#include <dithering_fragment>', '#include <dithering_fragment>\n  if (!gl_FrontFacing) gl_FragColor = vec4(0.30, 0.35, 0.39, 1.0);'); };
+for (const m of [matMuro, matPuerta, matColumna, MAT_E['p-1'].muro, MAT_E.p2.muro, matEsc, matEscB]) { m.onBeforeCompile = TAPA_CORTE; m.shadowSide = THREE.BackSide; } // sombra solo de caras traseras: sin rayado
+
+function muroQuad(P, base, alto, mat) {
+  const L = Math.hypot(P[1][0] - P[0][0], P[1][1] - P[0][1]), T = Math.hypot(P[2][0] - P[1][0], P[2][1] - P[1][1]);
+  if (L < 0.02 || T < 0.02 || alto <= 0) return null;
+  const cX = (P[0][0] + P[2][0]) / 2, cY = (P[0][1] + P[2][1]) / 2;
+  const m = caja(L, alto, T, mat, wx(cX), base, wz(cY));
+  m.rotation.y = Math.atan2(P[1][1] - P[0][1], P[1][0] - P[0][0]);
+  m.castShadow = m.receiveShadow = true;
+  return m;
+}
+function vano3D(v, base, alto, mt, g) {
+  const cX = (v.p1[0] + v.p2[0]) / 2, cY = (v.p1[1] + v.p2[1]) / 2, ang = Math.atan2(v.p2[1] - v.p1[1], v.p2[0] - v.p1[0]);
+  const pieza3 = (b0, b1, mat, esc = 1) => {
+    if (b1 - b0 < 0.01) return;
+    const m = caja(v.ancho, b1 - b0, v.esp * esc, mat, wx(cX), base + b0, wz(cY));
+    m.rotation.y = ang; m.castShadow = mat !== mt.vidrio; g.add(m);
+  };
+  if (v.tipo === 'puerta') pieza3(2.1, alto, mt.muro);
+  else { pieza3(0, 1.0, mt.muro); pieza3(2.2, alto, mt.muro); pieza3(1.0, 2.2, mt.vidrio, 0.25); }
+}
+function formaDe(poly, huecos = []) {
+  const s = new THREE.Shape(poly.map(([X, Y]) => new THREE.Vector2(wx(X), Y + 14.5)));
+  for (const h of huecos) s.holes.push(new THREE.Path(h.map(([X, Y]) => new THREE.Vector2(wx(X), Y + 14.5))));
+  return s;
+}
+function tramo3D(g, [Xc, Yc, dir, ancho, n, huella, contra, y0], base, mat = matEsc) {
+  const [dx, dy] = { N: [0, 1], S: [0, -1], E: [1, 0], O: [-1, 0] }[dir];
+  for (let i = 0; i < n; i++) {
+    const top = y0 + (i + 1) * contra, alto = Math.abs(contra) + 0.04; // peldaño: huella y contrahuella, sin relleno
+    const cX = Xc + dx * (i + 0.5) * huella, cY = Yc + dy * (i + 0.5) * huella;
+    const st = caja(dx ? huella + 0.02 : ancho, alto, dx ? ancho : huella + 0.02, mat, wx(cX), top - alto, wz(cY));
+    st.castShadow = st.receiveShadow = true; g.add(st);
+  }
+}
+// Cubierta: faldón plano entre (Ya, ya) y (Yb, yb), de X0 a X1; culata = cierre vertical bajo la cubierta en el plano X
+function faldon(X0, X1, Ya, ya, Yb, yb) {
+  const run = Math.abs(Yb - Ya), dh = Math.abs(yb - ya), len = Math.hypot(run, dh), ang = Math.atan2(dh, run);
+  const surAlto = Ya < Yb ? ya > yb : yb > ya; // el extremo sur (z mayor) es el alto
+  const m = caja(X1 - X0, 0.06, len, matTecho, wx((X0 + X1) / 2), (ya + yb) / 2 - 0.03, wz((Ya + Yb) / 2));
+  m.rotation.x = surAlto ? -ang : ang; m.castShadow = true; m.receiveShadow = true; techoG.add(m);
+}
+function culata(X, pts) {
+  const m = new THREE.Mesh(new THREE.ShapeGeometry(new THREE.Shape(pts.map(([Y, y]) => new THREE.Vector2(wz(Y), y)))), matCulata);
+  m.rotation.y = -Math.PI / 2; m.position.x = wx(X); m.castShadow = true; techoG.add(m);
+}
+function lavamanos3D(L) {
+  const g = new THREE.Group(); g.name = L.n;
+  if (L.botas) {
+    g.add(caja(0.8, 0.12, 1.0, matInox, 0, 0, 0), caja(0.7, 0.01, 0.9, matAgua, 0, 0.1, 0));
+    g.add(caja(0.05, 0.9, 0.05, matInox, 0.32, 0, -0.42), cil(0.03, 0.06, matInox, 0.32, 0.9, -0.36));
+  } else {
+    g.add(caja(0.5, 0.2, 0.4, matInox, 0, 0.66, 0), caja(0.42, 0.02, 0.32, matAgua, 0, 0.845, 0.01));
+    g.add(caja(0.12, 0.66, 0.12, matInox, 0, 0, -0.08), caja(0.16, 0.04, 0.22, matInox, 0.14, 0, 0.16));
+    g.add(cil(0.015, 0.26, matInox, 0, 0.86, -0.15));
+  }
+  g.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.userData.lavId = L.id; } });
+  g.position.copy(W(L.X, L.Y, 0));
+  g.rotation.y = L.cara === 'O' ? -Math.PI / 2 : 0;
+  lavadoG.add(g);
+  const d = document.createElement('div');
+  d.className = 'etq'; d.innerHTML = `<i style="background:var(--lav)"></i>${L.botas ? 'Lavado de botas' : 'Lavamanos'}`;
+  d.addEventListener('click', (ev) => { ev.stopPropagation(); irLavado(L.id); });
+  const o = new CSS2DObject(d); o.position.copy(W(L.X, L.Y, L.botas ? 0.5 : 1.25)); lavadoG.add(o); L.etq = o;
+}
+const pisoVisor = {};
+function construirEdificioCompleto() {
+  for (const p of EDIF.pisos) {
+    const g = pisoG[p.id], mt = MAT_E[p.id];
+    for (const q of p.muros) {
+      const P = quadP(q), cX = (P[0][0] + P[2][0]) / 2, cY = (P[0][1] + P[2][1]) / 2;
+      const deEscalera = cY > -8.4 && cY < -6.9 && (cX < 394.0 || cX > 405.75);
+      if (deEscalera && p.id === 'p-1') continue;
+      let base = p.y0, alto = p.alto;
+      if (deEscalera) { base = -3.0; alto = 3.9; } else if (p.id === 'p1' && cX < 383) alto = 2.6;
+      const m = muroQuad(P, base, alto, mt.muro); if (m) g.add(m);
+    }
+    for (const v of p.vanos) vano3D(v, p.y0, p.alto, mt, g);
+  }
+  // Pisos y placas de cada sala (las de la sala de producción ya las dibuja el visor: aquí solo sirven para tocarlas)
+  const nombresVisor = { 'Zona de recibo': 'Piso zona de recibo', 'Zona de producción 1': 'Piso producción 1', 'Zona de producción 2': 'Piso producción 2' };
+  for (const [n, nm] of Object.entries(nombresVisor)) pisoVisor[n] = edificio.getObjectByName(nm);
+  for (const s of SALAS) {
+    if (s.tipo === 'vacio' || (s.piso === 'p2' && s.tipo === 'escalera')) continue;
+    const p = PISO[s.piso];
+    let mesh;
+    if (s.visor) {
+      mesh = new THREE.Mesh(new THREE.ShapeGeometry(formaDe(s.poly)), matPick);
+      mesh.rotation.x = -Math.PI / 2; mesh.position.y = 0.02;
+      s.mat = pisoVisor[s.nombre]?.material || null;
+    } else {
+      const esp = s.piso === 'p2' ? 0.2 : 0.15;
+      const huecos = s.piso === 'p2' && s.nombre === 'Hall' ? [HUECO_HALL] : [];
+      s.mat = new THREE.MeshStandardMaterial({ color: TIPOS[s.tipo].c, roughness: 0.92, metalness: 0 });
+      mesh = new THREE.Mesh(new THREE.ExtrudeGeometry(formaDe(s.poly, huecos), { depth: esp, bevelEnabled: false }), [s.mat, matLosa]);
+      mesh.rotation.x = -Math.PI / 2; mesh.position.y = p.y0 - esp + 0.004;
+      mesh.receiveShadow = true;
+    }
+    mesh.name = s.nombre; mesh.userData.salaId = s.id; s.mesh = mesh;
+    pisoG[s.piso].add(mesh);
+  }
+  // Nombres de las salas
+  for (const s of SALAS) {
+    if (s.visor || (s.tipo === 'circulacion' && s.nombre === 'Circulación') || s.tipo === 'escalera') continue;
+    const d = document.createElement('div');
+    d.className = 'etq-sala' + (s.tipo === 'lavado' ? ' lav' : '') + (s.tipo === 'vacio' ? ' vac' : '');
+    d.innerHTML = `<b>${s.nombre}</b><span>${m2(s.area_plano ?? s.area_calc)} m²</span>`;
+    d.addEventListener('click', (ev) => { ev.stopPropagation(); seleccionarSala(s.id, true); });
+    const o = new CSS2DObject(d); o.position.copy(W(s.c[0], s.c[1], PISO[s.piso].y0 + 0.15)); o.visible = false;
+    pisoG[s.piso].add(o); s.etq = o;
+  }
+  // Escaleras
+  for (const e of ESC) {
+    const g = new THREE.Group(); g.name = e.n;
+    for (const t of e.tramos) tramo3D(g, t, e.base, e.piso === 'p-1' ? matEscB : matEsc);
+    if (e.descanso) { const [x0, x1, y0, y1, h] = e.descanso; const m = caja(x1 - x0, 0.18, y1 - y0, matEsc, wx((x0 + x1) / 2), h - 0.18, wz((y0 + y1) / 2)); m.castShadow = m.receiveShadow = true; g.add(m); }
+    pisoG[e.piso].add(g);
+  }
+  // Cubiertas (cortes: aleros N +5,93 y cumbrera N +7,23 en el bloque principal; calderas a una agua; bloque este bajo)
+  // bloque principal: el faldón norte sigue sobre la zona de recibo; el sur solo cubre de la columna B hacia el este
+  const yA = HZ1 + 0.04, yC = 7.08, Ym = -15.12;
+  faldon(387.45, 414.45, -9.177, yA - 0.4 * (yC - yA) / (-9.577 - Ym), Ym, yC);
+  faldon(393.8, 414.45, Ym, yC, -21.068, yA - 0.4 * (yC - yA) / (Ym + 20.668));
+  culata(387.85, [[-9.577, HZ1], [-9.577, yA], [Ym, yC], [-15.418, yC], [-15.418, HZ1]]);
+  culata(394.2, [[-15.35, HZ1], [-20.668, HZ1], [-20.668, yA], [Ym, yC], [-15.35, yC]]);
+  culata(414.0, [[-9.577, HZ1], [-9.577, yA], [Ym, yC], [-20.668, yA], [-20.668, HZ1]]);
+  const tapa = caja(394.2 - 387.85, yC - HZ1, 0.1, matCulata, wx((387.85 + 394.2) / 2), HZ1, wz(-15.35)); tapa.castShadow = true; techoG.add(tapa);
+  // calderas y carbón: una sola agua hacia el norte
+  faldon(393.85, 405.95, -5.05, 2.92, -9.58, 4.25);
+  for (const X of [394.16, 405.62]) culata(X, [[-5.5, 3.04], [-9.58, 3.04], [-9.58, 4.25]]);
+  // bloque este (laboratorio, baños, administración): dos aguas bajas
+  faldon(413.95, 421.45, -12.4, 2.948, -16.734, 3.95);
+  faldon(413.95, 421.45, -16.734, 3.95, -21.07, 2.948);
+  culata(421.05, [[-12.8, 3.04], [-16.734, 3.95], [-20.668, 3.04]]);
+  const losaPE = caja(428.35 - 422.0, 0.16, 20.75 - 17.4, matLosa, wx((422.0 + 428.35) / 2), 3.04, wz((-17.4 - 20.75) / 2));
+  const losaGa = caja(382.2 - 379.9, 0.14, 15.7 - 13.15, matLosa, wx((379.9 + 382.2) / 2), 2.6, wz((-13.15 - 15.7) / 2));
+  const tanque = cil(0.65, 1.5, matTanqueAgua, wx(425.9), 3.2, wz(-19.05)); tanque.name = 'Tanque de agua';
+  for (const m of [losaPE, losaGa, tanque]) { m.castShadow = true; m.receiveShadow = true; techoG.add(m); }
+  // Puntos de lavado
+  for (const L of LAVADO) lavamanos3D(L);
+}
+
+// Estado del edificio: piso elegido, pisos separados y cubierta
+const edif = { piso: 'p1', exp: 0, expObj: 0 };
+const offPiso = (f) => edif.exp * { 'p-1': -4.4, p1: 0, p2: 4.4 }[f];
+let terreno = null;
+function aplicarEdificio() {
+  const ed = estado.ambito === 'edificio' || paseo.activo;
+  edifG.visible = ed;
+  const sel = paseo.activo ? 'todo' : edif.piso;
+  const n = ed ? NIVEL_IDX[sel] : 3;
+  for (const f of PISO_IDS) pisoG[f].visible = ed && NIVEL_IDX[f] <= n;
+  const p1 = n >= 1;
+  edificio.visible = equiposG.visible = lineasG.visible = lavadoG.visible = camionG.visible = operarioG.visible = p1;
+  tomasG.visible = p1 && $('#o-tomas').checked;
+  techoG.visible = ed && (paseo.activo || sel === 'todo');
+  if (!terreno) terreno = edificio.getObjectByName('Terreno');
+  if (terreno) terreno.visible = !(ed && edif.expObj > 0);
+  edificio.userData.losaL.visible = !ed && $('#o-losa').checked;
+  if (edificio.userData.grilla) edificio.userData.grilla.visible = !ed && $('#o-grilla').checked;
+  aplicarEtiquetas();
+  aplicarCortes();
+}
+function aplicarCortes() {
+  const ed = estado.ambito === 'edificio' && !paseo.activo;
+  for (const f of PISO_IDS) {
+    let c = 1e4;
+    if (ed && estado.muros !== 'full') {
+      if (edif.piso === 'todo') { if (estado.muros === 'cut' || edif.exp > 0.02) c = PISO[f].y0 + offPiso(f) + HCORTE; }
+      else c = PISO[edif.piso].y0 + HCORTE;
+    }
+    planosCorte[f].constant = c;
+    pisoG[f].position.y = offPiso(f);
+  }
+  techoG.position.y = edif.exp * 9;
+}
+function animarEdificio(dt) {
+  if (edif.exp !== edif.expObj) {
+    edif.exp += (edif.expObj - edif.exp) * (reduceMotion ? 1 : 1 - Math.exp(-dt * 5));
+    if (Math.abs(edif.expObj - edif.exp) < 0.002) edif.exp = edif.expObj;
+  }
+  aplicarCortes();
+}
+function aplicarEtiquetas() {
+  const nombres = $('#o-nombres').checked && !paseo.activo;
+  const ed = estado.ambito === 'edificio';
+  const sel = edif.piso, sep = edif.expObj > 0;
+  for (const s of SALAS) if (s.etq) s.etq.visible = ed && nombres && (sel === s.piso || (sel === 'todo' && sep));
+  const verP1 = !ed || sel === 'p1' || (sel === 'todo' && sep);
+  for (const L of LAVADO) if (L.etq) L.etq.visible = ed && nombres && verP1;
+  if (tour.activo) return; // el recorrido decide qué equipos se nombran
+  // en el edificio se nombran las salas; los equipos, en la sala de producción (o al seleccionarlos)
+  for (const o of Object.values(objEq)) o.etq.visible = nombres && (!ed || o.e.id === estado.sel);
+  etqZonas.forEach((z) => { z.visible = nombres && verP1; });
+}
+const BB_PISO = Object.fromEntries(PISO_IDS.map((f) => [f, cajaBB(SALAS.filter((s) => s.piso === f).flatMap((s) => s.poly))]));
+function poseBaseEdificio(f, sep) {
+  if (f === 'todo') { const t = new V3(5.5, sep ? 2.5 : 0.4, -1.0); return { p: t.clone().add(sep ? new V3(-30, 27, 40) : new V3(-24, 21, 32)), t }; }
+  const b = BB_PISO[f], y = PISO[f].y0;
+  const t = new V3(wx((b[0] + b[1]) / 2), y + 0.4, wz((b[2] + b[3]) / 2));
+  return { p: t.clone().add(new V3(-0.21, 0.78, 0.59).normalize().multiplyScalar(Math.max(17, (b[1] - b[0]) * 0.82))), t };
+}
+function poseEdificio(f) {
+  const v = poseBaseEdificio(f, f === 'todo' && edif.expObj > 0);
+  return { p: v.t.clone().add(v.p.clone().sub(v.t).multiplyScalar(factorAspecto())), t: v.t };
+}
+function irInicio() {
+  if (estado.ambito === 'edificio') { const v = poseEdificio(edif.piso); marcarVista(null); volar(v.p, v.t); }
+  else irVista('general');
+}
+function ponerPiso(f, volarA = true) {
+  if (paseo.activo) {
+    const g = f === 'todo' ? 'p1' : f, [X, Y, a] = INICIO_PIE[g];
+    entrarTransicion({ X, Y, yaw: a, a: g }, 0.9);
+    return;
+  }
+  edif.piso = f;
+  if (f !== 'todo') edif.expObj = 0;
+  aplicarEdificio(); pintarBarra(); aplicar2D();
+  if (volarA) { const v = poseEdificio(f); volar(v.p, v.t); }
+}
+function ponerAmbito(a, volarA = true, desdeTour = false) {
+  if (a === estado.ambito) return;
+  if (a === 'sala' && paseo.activo) salirPaseo();
+  if (tour.activo && !desdeTour) detenerTour();
+  estado.ambito = a;
+  Object.assign(sol.shadow.camera, a === 'edificio' ? { left: -34, right: 34, top: 22, bottom: -22 } : { left: -18, right: 18, top: 14, bottom: -14 });
+  sol.shadow.camera.updateProjectionMatrix();
+  if (a === 'sala') seleccionarSala(null, false);
+  aplicarEdificio(); pintarBarra(); aplicar2D();
+  vb = { ...VB0 }; aplicarVB();
+  if (volarA) irInicio();
+}
+const CAB = {
+  sala: { h1: $('#titulo').textContent, meta: $('#meta').innerHTML, aviso: $('#aviso').textContent },
+  edificio: {
+    h1: 'Planta completa, piso a piso',
+    meta: `<span><b>3</b> pisos y cubierta</span><span><b>${SALAS_UTILES.length}</b> salas</span><span><b>${LAVADO.length + SALAS.filter((s) => s.tipo === 'lavado').length}</b> puntos de lavado</span><span>áreas en m²</span>`,
+    aviso: 'Modelo preliminar del edificio, leído del DWG arquitectónico. Las salas sin equipos quedan vacías hasta que se definan sus máquinas; toca una sala para ver su ficha o recórrela a pie.',
+  },
+};
+function pintarBarra() {
+  const ed = estado.ambito === 'edificio';
+  document.querySelectorAll('[data-ambito]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.ambito === estado.ambito)));
+  $('#vistas').hidden = ed || estado.modo === '2d';
+  $('#vistas-edif').hidden = !ed;
+  const actual = paseo.activo ? paseo.piso : edif.piso;
+  document.querySelectorAll('#vistas-edif [data-piso]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.piso === actual)));
+  $('#b-separar').setAttribute('aria-pressed', String(edif.expObj > 0));
+  $('#b-separar').hidden = estado.modo === '2d' || paseo.activo;
+  $('#b-pie').hidden = estado.modo === '2d';
+  $('#b-pie').setAttribute('aria-pressed', String(paseo.activo));
+  $('#b-pie').textContent = paseo.activo ? 'Dejar de caminar' : 'Caminar';
+  $('#sec-edif').hidden = !ed;
+  const c = CAB[estado.ambito];
+  $('#titulo').textContent = c.h1; $('#meta').innerHTML = c.meta; $('#aviso').textContent = c.aviso;
+  if (paseo.activo) $('#lienzos').dataset.pie = '1'; else delete $('#lienzos').dataset.pie;
+}
+
+// Ficha y lista de salas
+const FICHA_SALA_VACIA = '<p class="vacia">Toca una sala en el modelo, en el plano o en la lista para ver su área, su altura y qué equipos tiene. Las que aún no tienen máquinas definidas aparecen como «por definir».</p>';
+function fichaSalaHTML(s) {
+  const T = TIPOS[s.tipo], p = PISO[s.piso], alto = altoSala(s);
+  const eqs = (ZONAS_SALA[s.nombre] || []).flatMap((z) => EQUIPOS.filter((e) => e.zona === z));
+  const lav = LAVADO.filter((L) => L.sala === s.id);
+  const sinEq = SIN_EQUIPOS.includes(s.tipo);
+  const equipos = eqs.length ? `${eqs.length}: ${eqs.map((e) => e.n).join(', ')}` : (sinEq ? '—' : 'Por definir');
+  const nota = NOTAS_SALA[s.nombre] || (sinEq ? '' : 'Equipos por definir. La sala ya está modelada con sus muros, puertas y ventanas para ubicarlos cuando se decidan.');
+  const lavTxt = lav.length ? lav.map((L) => L.n).join(', ') : (s.tipo === 'lavado' ? 'Sí, es zona de lavado' : '');
+  return `
+    <div><h3>${s.nombre}</h3><div class="sub">${NOMBRE_PISO[s.piso]} · nivel ${p.nivel}</div></div>
+    <div class="chips"><span class="chip"><i style="background:${T.c}"></i>${T.t}</span>${!sinEq && !eqs.length ? '<span class="chip">Sin equipos todavía</span>' : ''}</div>
+    <div class="medidas">
+      <div><span>Área plano m²</span><b>${s.area_plano ? m2(s.area_plano) : '—'}</b></div>
+      <div><span>Área modelo m²</span><b>${m2(s.area_calc)}</b></div>
+      <div><span>Alto libre m</span><b>${alto ? '≈ ' + m2(alto) : '—'}</b></div>
+    </div>
+    <dl class="datos"><dt>Equipos</dt><dd>${equipos}</dd>${lavTxt ? `<dt>Lavado</dt><dd>${lavTxt}</dd>` : ''}</dl>
+    ${nota ? `<div class="pendiente">${nota}</div>` : ''}
+    <div class="acciones"><button type="button" class="btn" data-rec-sala="${s.id}">▶ Recorrer esta sala</button>${s.tipo === 'vacio' ? '' : `<button type="button" class="btn alt" data-pie="${s.id}">Caminar por esta sala</button>`}${eqs.length ? '<button type="button" class="btn alt" data-ver-sala="1">Ver en «Sala de producción»</button>' : ''}</div>`;
+}
+function pintarSalas() {
+  const fila = (s) => `<button type="button" class="sl" data-sala="${s.id}" aria-current="false"><i style="background:${TIPOS[s.tipo].c}"></i><span class="n">${s.nombre}</span><span class="d">${m2(s.area_plano ?? s.area_calc)} m²</span></button>`;
+  const peso = (s) => (s.tipo === 'vacio' ? 3 : s.tipo === 'escalera' ? 2 : s.tipo === 'circulacion' ? 1 : 0);
+  let html = `<div class="grupo"><h4>Zonas de lavado</h4>${SALAS.filter((s) => s.tipo === 'lavado').map(fila).join('')}
+    ${LAVADO.map((L) => `<button type="button" class="sl" data-lav="${L.id}"><i style="background:${TIPOS.lavado.c}"></i><span class="n">${L.n}<small>${L.d}</small></span><span class="d">Piso 1</span></button>`).join('')}</div>`;
+  for (const f of ['p2', 'p1', 'p-1']) {
+    const ss = SALAS.filter((s) => s.piso === f && !(s.tipo === 'circulacion' && s.nombre === 'Circulación'))
+      .sort((a, b) => peso(a) - peso(b) || a.nombre.localeCompare(b.nombre, 'es'));
+    html += `<div class="grupo"><h4>${NOMBRE_PISO[f]} · ${PISO[f].nivel}</h4>${ss.map(fila).join('')}</div>`;
+  }
+  $('#lista-salas').innerHTML = html;
+  $('#lista-salas').addEventListener('click', (ev) => {
+    const b = ev.target.closest('.sl'); if (!b) return;
+    if (b.dataset.lav) irLavado(b.dataset.lav); else seleccionarSala(b.dataset.sala, true);
+  });
+  $('#ficha-sala').innerHTML = FICHA_SALA_VACIA;
+  $('#ficha-sala').addEventListener('click', (ev) => {
+    const b = ev.target.closest('[data-pie]');
+    if (b) { const s = salaPorId[b.dataset.pie]; iniciarPaseo(s.piso, s.c[0], s.c[1]); return; }
+    if (ev.target.closest('[data-ver-sala]')) ponerAmbito('sala');
+    const r = ev.target.closest('[data-rec-sala]');
+    if (r) iniciarTour('sala', r.dataset.recSala);
+  });
+}
+function seleccionarSala(id, enfocar) {
+  estado.sala = id;
+  const acc = new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#0b6d8e');
+  for (const s of SALAS) {
+    const on = s.id === id;
+    if (s.mat) { s.mat.emissive.copy(on ? acc : new THREE.Color(0x000000)); s.mat.emissiveIntensity = on ? 0.32 : 0; }
+    if (s.etq) s.etq.element.classList.toggle('sel', on);
+    if (plano2E.salas[s.id]) plano2E.salas[s.id].classList.toggle('sel', on);
+  }
+  document.querySelectorAll('#lista-salas .sl').forEach((b) => b.setAttribute('aria-current', String(!!id && b.dataset.sala === id)));
+  $('#ficha-sala').innerHTML = id ? fichaSalaHTML(salaPorId[id]) : FICHA_SALA_VACIA;
+  if (!id || !enfocar) return;
+  const s = salaPorId[id];
+  if (estado.ambito !== 'edificio') ponerAmbito('edificio', false);
+  if (paseo.activo) return;
+  if (edif.piso !== s.piso && !(edif.piso === 'todo' && edif.expObj > 0)) ponerPiso(s.piso, false);
+  if (window.innerWidth <= 820) $('#p3d').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+  const bb = cajaBB(s.poly), tam = Math.max(bb[1] - bb[0], bb[3] - bb[2]);
+  const y = PISO[s.piso].y0 + offPiso(s.piso);
+  const c = W(s.c[0], s.c[1], y);
+  const dir = camera.position.clone().sub(controls.target).setY(0);
+  if (dir.lengthSq() < 1e-6) dir.set(-0.4, 0, 1);
+  dir.normalize();
+  const dist = Math.max(6.5, tam * 1.6) * Math.min(1.5, factorAspecto());
+  marcarVista(null);
+  volar(c.clone().addScaledVector(dir, dist * 0.7).setY(y + dist * 0.95), c);
+}
+function irLavado(id) {
+  const L = LAVADO.find((x) => x.id === id);
+  if (estado.ambito !== 'edificio') ponerAmbito('edificio', false);
+  if (L.sala) seleccionarSala(L.sala, false);
+  if (paseo.activo) return;
+  if (edif.piso !== 'p1') ponerPiso('p1', false);
+  const c = W(L.X, L.Y, 0.8);
+  const dir = new V3(-0.55, 0, 1).normalize();
+  marcarVista(null);
+  volar(c.clone().addScaledVector(dir, 4.2).setY(3.4), c);
+}
+
+// ---------- Recorrido a pie (primera persona, choca con muros y equipos, sube y baja por las escaleras)
+const paseo = { activo: false, piso: 'p1', X: 0, Y: 0, yOjo: 1.6, yaw: 0, pitch: 0, rapido: false, trans: null, arr: null, sub: null, salaTxt: '', pisoTxt: '' };
+const OBST = {};
+const RADIO = 0.22;
+function construirObstaculos() {
+  for (const f of PISO_IDS) OBST[f] = [];
+  const add = (f, P) => OBST[f].push({ P, bb: cajaBB(P) });
+  for (const p of EDIF.pisos) {
+    for (const q of p.muros) add(p.id, quadP(q));
+    for (const v of p.vanos) if (v.tipo === 'ventana') add(p.id, rectEje(v.p1, v.p2, Math.max(0.1, v.esp)));
+  }
+  for (const d of MUROS) {
+    const alongX = (d.X1 - d.X0) >= (d.Y1 - d.Y0);
+    if (!d.base) {
+      let cur = alongX ? d.X0 : d.Y0;
+      const piezas = [];
+      for (const v of [...d.vanos].sort((a, b) => a.a0 - b.a0)) if (v.p && !v.b) { piezas.push([cur, v.a0]); cur = v.a1; }
+      piezas.push([cur, alongX ? d.X1 : d.Y1]);
+      for (const [a, b] of piezas) if (b - a > 0.01) add('p1', alongX ? rectP(a, b, d.Y0, d.Y1) : rectP(d.X0, d.X1, a, b));
+    }
+    if (d.h > PISO.p2.y0 + 0.1) add('p2', rectP(d.X0, d.X1, d.Y0, d.Y1));
+  }
+  for (const [X, Y] of COLUMNAS) for (const f of ['p1', 'p2']) add(f, rectP(X - 0.15, X + 0.15, Y - 0.15, Y + 0.15));
+  for (const e of EQUIPOS) { const h = huella(e); add('p1', rectP(e.X - h.hx, e.X + h.hx, e.Y - h.hz, e.Y + h.hz)); }
+  add('p1', rectP(CAMION.X0, CAMION.X1, CAMION.Y0, CAMION.Y1));
+  for (const L of LAVADO) if (!L.botas) add('p1', L.cara === 'O' ? rectP(L.X - 0.2, L.X + 0.2, L.Y - 0.25, L.Y + 0.25) : rectP(L.X - 0.25, L.X + 0.25, L.Y - 0.2, L.Y + 0.2));
+}
+function libre(f, X, Y) {
+  if (X < 376 || X > 432 || Y < -26 || Y > -1.5) return false;
+  for (const r of BLOQUEOS[f]) if (enRect(r, X, Y)) return false;
+  if (f !== 'p1' && !SALAS.some((s) => s.piso === f && s.tipo !== 'vacio' && s.tipo !== 'escalera' && dPoly(s.poly, X, Y) < 0.4)) return false;
+  for (const o of OBST[f]) {
+    const b = o.bb;
+    if (X < b[0] - RADIO || X > b[1] + RADIO || Y < b[2] - RADIO || Y > b[3] + RADIO) continue;
+    if (dPoly(o.P, X, Y) < RADIO) return false;
+  }
+  return true;
+}
+function colocarCamaraPaseo() {
+  camera.position.set(wx(paseo.X), paseo.yOjo + offPiso(paseo.piso), wz(paseo.Y));
+  camera.rotation.set(paseo.pitch, paseo.yaw, 0, 'YXZ');
+  controls.target.set(camera.position.x - Math.sin(paseo.yaw) * 2, camera.position.y, camera.position.z - Math.cos(paseo.yaw) * 2);
+}
+function hudPaseo() {
+  const s = salaEn(paseo.piso, paseo.X, paseo.Y);
+  const txt = s ? s.nombre : (paseo.piso === 'p1' ? 'Exterior' : 'Circulación');
+  if (txt !== paseo.salaTxt) { paseo.salaTxt = txt; $('#pie-sala').textContent = txt; }
+  if (paseo.pisoTxt !== paseo.piso) { paseo.pisoTxt = paseo.piso; $('#pie-piso').textContent = `${NOMBRE_PISO[paseo.piso]} · ${PISO[paseo.piso].nivel}`; }
+  const sub = paseo.trans ? null : (SUBIDAS.find((u) => u.de === paseo.piso && enRect(u.zona, paseo.X, paseo.Y)) || null);
+  if (sub !== paseo.sub) { paseo.sub = sub; const b = $('#pie-esc'); b.hidden = !sub; if (sub) b.textContent = `${sub.t} (Enter)`; }
+}
+function entrarTransicion(u, dur) {
+  let d = u.yaw - paseo.yaw; d = ((d + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;
+  paseo.trans = { k: 0, dur: reduceMotion ? 0.01 : dur, X0: paseo.X, Y0: paseo.Y, X1: u.X, Y1: u.Y, y0: paseo.yOjo, y1: PISO[u.a].y0 + 1.6, a0: paseo.yaw, da: d, f: u.a };
+  paseo.sub = null; $('#pie-esc').hidden = true;
+}
+function usarEscalera() { if (paseo.sub) entrarTransicion(paseo.sub, 1.6); }
+function actualizarPaseo(dt) {
+  const T = paseo.trans;
+  if (T) {
+    T.k = Math.min(1, T.k + dt / T.dur);
+    const s = suave(T.k);
+    paseo.X = T.X0 + (T.X1 - T.X0) * s; paseo.Y = T.Y0 + (T.Y1 - T.Y0) * s;
+    paseo.yOjo = T.y0 + (T.y1 - T.y0) * s; paseo.yaw = T.a0 + T.da * s;
+    if (T.k >= 1) { paseo.trans = null; paseo.piso = T.f; pintarBarra(); aplicar2D(); }
+  } else {
+    paseo.yaw += mov.az * 1.5 * dt;
+    paseo.pitch = Math.max(-1.2, Math.min(1.2, paseo.pitch - mov.pol * 0.9 * dt));
+    if (mov.pz || mov.px) {
+      const v = (paseo.rapido ? 3.2 : 1.5) * dt, sn = Math.sin(paseo.yaw), cs = Math.cos(paseo.yaw);
+      const dX = (-sn * mov.pz + cs * mov.px) * v, dY = (cs * mov.pz + sn * mov.px) * v;
+      const f = paseo.piso, atrapado = !libre(f, paseo.X, paseo.Y);
+      if (atrapado || libre(f, paseo.X + dX, paseo.Y)) paseo.X += dX;
+      if (atrapado || libre(f, paseo.X, paseo.Y + dY)) paseo.Y += dY;
+    }
+    paseo.yOjo = PISO[paseo.piso].y0 + 1.6;
+  }
+  colocarCamaraPaseo();
+  hudPaseo();
+}
+function iniciarPaseo(f, X, Y, yaw) {
+  if (tour.activo) detenerTour();
+  if (estado.ambito !== 'edificio') ponerAmbito('edificio', false);
+  if (estado.modo === '2d') ponerModo('3d');
+  f = f && f !== 'todo' ? f : 'p1';
+  let [x0, y0, a0] = INICIO_PIE[f];
+  if (X != null && libre(f, X, Y)) { x0 = X; y0 = Y; a0 = yaw ?? a0; }
+  Object.assign(paseo, { activo: true, piso: f, X: x0, Y: y0, yaw: a0, pitch: -0.1, yOjo: PISO[f].y0 + 1.6, trans: null, sub: null, salaTxt: '', pisoTxt: '' });
+  edif.expObj = 0; edif.exp = 0;
+  vuelo = null; marcarVista(null);
+  controls.enabled = false;
+  camera.fov = 66; camera.updateProjectionMatrix();
+  $('#pie-hud').hidden = false;
+  seleccionar(null, false);
+  aplicarEdificio(); aplicarCortes(); pintarBarra(); aplicar2D();
+  colocarCamaraPaseo(); hudPaseo();
+  $('#p3d').focus({ preventScroll: true });
+}
+function salirPaseo() {
+  if (!paseo.activo) return;
+  paseo.activo = false; paseo.trans = null; paseo.arr = null; vuelo = null;
+  for (const k in mov) mov[k] = 0;
+  camera.fov = 40; camera.updateProjectionMatrix();
+  controls.enabled = true;
+  $('#pie-hud').hidden = true; $('#pie-esc').hidden = true;
+  const f = paseo.piso, y = PISO[f].y0;
+  const t = W(paseo.X, paseo.Y, y + 0.4);
+  const atras = new V3(Math.sin(paseo.yaw), 0, Math.cos(paseo.yaw));
+  controls.target.copy(t); camera.position.copy(t).addScaledVector(atras, 8).setY(y + 9);
+  controls.update();
+  edif.piso = f;
+  aplicarEdificio(); pintarBarra(); aplicar2D();
+}
+capaEtq.domElement.addEventListener('pointerdown', (ev) => {
+  if (!paseo.activo || ev.button > 0) return;
+  paseo.arr = { x: ev.clientX, y: ev.clientY, yaw: paseo.yaw, pitch: paseo.pitch, id: ev.pointerId };
+});
+capaEtq.domElement.addEventListener('pointermove', (ev) => {
+  const a = paseo.arr; if (!a || ev.pointerId !== a.id) return;
+  paseo.yaw = a.yaw + (ev.clientX - a.x) * 0.0045;
+  paseo.pitch = Math.max(-1.2, Math.min(1.2, a.pitch + (ev.clientY - a.y) * 0.0045));
+});
+for (const t of ['pointerup', 'pointercancel', 'pointerleave']) capaEtq.domElement.addEventListener(t, () => { paseo.arr = null; });
+addEventListener('keydown', (ev) => {
+  if (!paseo.activo) return;
+  paseo.rapido = ev.shiftKey;
+  if (ev.target.closest?.('input, textarea, select')) return;
+  if (ev.code === 'Escape') { salirPaseo(); ev.preventDefault(); }
+  else if ((ev.code === 'Enter' || ev.code === 'NumpadEnter') && paseo.sub && enEscena()) { usarEscalera(); ev.preventDefault(); }
+});
+addEventListener('keyup', (ev) => { paseo.rapido = ev.shiftKey; });
+$('#pie-salir').addEventListener('click', () => salirPaseo());
+$('#pie-esc').addEventListener('click', () => usarEscalera());
+$('#b-pie').addEventListener('click', () => {
+  if (paseo.activo) { salirPaseo(); return; }
+  const s = estado.sala ? salaPorId[estado.sala] : null;
+  if (s && s.tipo !== 'vacio') iniciarPaseo(s.piso, s.c[0], s.c[1]); else iniciarPaseo(edif.piso);
+});
+
+// ---------- Plano 2D del edificio (un piso a la vez)
+const VB_EDIF = { x: -20.4, y: -12.6, w: 53.2, h: 21.6 };
+const plano2E = { g: null, pisos: {}, salas: {}, titulo: null };
+const pts2 = (P) => P.map(([X, Y]) => `${wx(X).toFixed(3)},${wz(Y).toFixed(3)}`).join(' ');
+function construirPlano2DEdificio() {
+  const g = sv('g', { class: 'edif2' });
+  svg.insertBefore(g, plano.sala);
+  plano2E.g = g;
+  const defs = sv('defs', {}, g);
+  const pat = sv('pattern', { id: 'rayado-vacio', patternUnits: 'userSpaceOnUse', width: 0.4, height: 0.4, patternTransform: 'rotate(45)' }, defs);
+  sv('line', { x1: 0, y1: 0, x2: 0, y2: 0.4, class: 'rayado' }, pat);
+  const grilla = sv('g', { class: 'grilla' }, g);
+  const V = VB_EDIF;
+  for (let x = Math.ceil(V.x); x <= V.x + V.w; x++) sv('line', { x1: x, y1: V.y, x2: x, y2: V.y + V.h }, grilla);
+  for (let y = Math.ceil(V.y); y <= V.y + V.h; y++) sv('line', { x1: V.x, y1: y, x2: V.x + V.w, y2: y }, grilla);
+  for (const p of EDIF.pisos) {
+    const gp = sv('g', { 'data-piso': p.id }, g); plano2E.pisos[p.id] = gp;
+    const gs = sv('g', {}, gp);
+    for (const s of SALAS.filter((x) => x.piso === p.id)) {
+      plano2E.salas[s.id] = sv('polygon', { points: pts2(s.poly), class: `sala2${s.tipo === 'vacio' ? ' vacio2' : ''}`, 'data-sala2': s.id, style: s.tipo === 'vacio' ? '' : `fill:${TIPOS[s.tipo].c}` }, gs);
+    }
+    const gm = sv('g', {}, gp);
+    for (const q of p.muros) sv('polygon', { points: pts2(quadP(q)), class: 'muro' }, gm);
+    if (p.id === 'p2') {
+      for (const d of MUROS) if (d.h > PISO.p2.y0 + 0.1) rect2(d.X0, d.X1, d.Y0, d.Y1, { class: 'muro' }, gm);
+      for (const [X, Y] of COLUMNAS) sv('rect', { x: wx(X) - 0.15, y: wz(Y) - 0.15, width: 0.3, height: 0.3, class: 'muro' }, gm);
+    }
+    for (const v of p.vanos) {
+      if (v.tipo === 'ventana') {
+        for (const k of [-0.22, 0.22]) {
+          const r = rectEje(v.p1, v.p2, v.esp * k * 2)[0], r2 = rectEje(v.p1, v.p2, v.esp * k * 2)[1];
+          sv('line', { x1: wx(r[0]), y1: wz(r[1]), x2: wx(r2[0]), y2: wz(r2[1]), class: 'vidrio' }, gm);
+        }
+      } else sv('line', { x1: wx(v.p1[0]), y1: wz(v.p1[1]), x2: wx(v.p2[0]), y2: wz(v.p2[1]), class: 'umbral2' }, gm);
+    }
+    // Escaleras: contorno y huellas
+    const ge = sv('g', {}, gp);
+    for (const e of ESC) {
+      if (!e.planos.includes(p.id)) continue;
+      for (const [Xc, Yc, dir, ancho, n, huella] of e.tramos) {
+        const [dx, dy] = { N: [0, 1], S: [0, -1], E: [1, 0], O: [-1, 0] }[dir];
+        const L = n * huella, X2 = Xc + dx * L, Y2 = Yc + dy * L;
+        const r = dx ? rectP(Math.min(Xc, X2), Math.max(Xc, X2), Yc - ancho / 2, Yc + ancho / 2) : rectP(Xc - ancho / 2, Xc + ancho / 2, Math.min(Yc, Y2), Math.max(Yc, Y2));
+        sv('polygon', { points: pts2(r), class: 'esc2' }, ge);
+        for (let i = 1; i < n; i++) {
+          const X = Xc + dx * i * huella, Y = Yc + dy * i * huella;
+          if (dx) sv('line', { x1: wx(X), y1: wz(Yc - ancho / 2), x2: wx(X), y2: wz(Yc + ancho / 2), class: 'esc2' }, ge);
+          else sv('line', { x1: wx(Xc - ancho / 2), y1: wz(Y), x2: wx(Xc + ancho / 2), y2: wz(Y), class: 'esc2' }, ge);
+        }
+      }
+      if (e.descanso) { const [x0, x1, y0, y1] = e.descanso; sv('polygon', { points: pts2(rectP(x0, x1, y0, y1)), class: 'esc2' }, ge); }
+    }
+    if (p.id === 'p1') for (const L of LAVADO) {
+      const r = L.botas ? rectP(L.X - 0.4, L.X + 0.4, L.Y - 0.5, L.Y + 0.5) : L.cara === 'O' ? rectP(L.X - 0.2, L.X + 0.2, L.Y - 0.25, L.Y + 0.25) : rectP(L.X - 0.25, L.X + 0.25, L.Y - 0.2, L.Y + 0.2);
+      sv('polygon', { points: pts2(r), class: 'lav2' }, gp);
+      if (!L.botas) sv('circle', { cx: wx(L.X), cy: wz(L.Y), r: 0.11, class: 'lav2' }, gp);
+    }
+    // Nombres y áreas
+    const gt = sv('g', {}, gp);
+    for (const s of SALAS.filter((x) => x.piso === p.id)) {
+      if (s.visor || (s.tipo === 'circulacion' && s.nombre === 'Circulación') || s.tipo === 'escalera') continue;
+      const fs = Math.max(0.2, Math.min(0.36, Math.sqrt(s.area_calc) * 0.085));
+      const t = texto2(s.nombre, wx(s.c[0]), wz(s.c[1]) - fs * 0.15, 'sala2-t', gt); t.style.fontSize = `${fs}px`;
+      const a = texto2(`${m2(s.area_plano ?? s.area_calc)} m²`, wx(s.c[0]), wz(s.c[1]) + fs * 0.95, 'sala2-a', gt); a.style.fontSize = `${fs * 0.8}px`;
+    }
+  }
+  // Título, norte y escala
+  plano2E.titulo = texto2('', V.x + 0.9, V.y + 1.0, 'titulo2', g);
+  const gn = sv('g', { transform: `translate(${V.x + V.w - 1.4} ${V.y + 1.4})` }, g);
+  sv('circle', { r: 0.55, style: 'fill:none;stroke:var(--ink);stroke-width:0.03' }, gn);
+  sv('path', { d: 'M0 -0.45 L0.22 0.25 L0 0.12 L-0.22 0.25 Z', class: 'norte' }, gn);
+  texto2('N', 0, -0.68, 'escala-t', gn);
+  const ge2 = sv('g', { transform: `translate(${V.x + 0.9} ${V.y + V.h - 1.0})` }, g);
+  for (let i = 0; i < 5; i++) sv('rect', { x: i * 2, y: 0, width: 2, height: 0.16, style: `fill:var(${i % 2 ? '--plano-bg' : '--ink'});stroke:var(--ink);stroke-width:0.015` }, ge2);
+  for (const v of [0, 2, 4, 6, 8, 10]) texto2(String(v), v, 0.5, 'escala-t', ge2);
+  texto2('m', 10.5, 0.5, 'escala-t', ge2);
+}
+function aplicar2D() {
+  const ed = estado.ambito === 'edificio';
+  VB0 = ed ? VB_EDIF : VB_SALA;
+  const f = ed ? (paseo.activo ? paseo.piso : edif.piso === 'todo' ? 'p1' : edif.piso) : null;
+  plano2E.g.style.display = ed ? '' : 'none';
+  for (const id of PISO_IDS) plano2E.pisos[id].style.display = id === f ? '' : 'none';
+  plano.sala.style.display = !ed || f === 'p1' ? '' : 'none';
+  plano.grilla.style.display = ed ? 'none' : '';
+  plano.deco.forEach((n) => { n.style.display = ed ? 'none' : ''; });
+  if (ed) plano2E.titulo.textContent = `PLANTA ${NOMBRE_PISO[f].toUpperCase()} · ${PISO[f].nivel} · EDIFICIO COMPLETO`;
+  $('.plano-nota').textContent = ed ? 'Planta del piso elegido · arrastra para mover · rueda para acercar · toca una sala para ver su ficha'
+    : 'Planta · cotas interiores en metros · arrastra para mover · rueda para acercar · toca un equipo para ver su ficha';
+}
+
+// ---------- Recorridos guiados del edificio: planta completa, por piso, por sala y zonas de lavado
+const salaN = (n, f) => SALAS.find((s) => s.nombre === n && (!f || s.piso === f));
+const equiposDe = (s) => (ZONAS_SALA[s.nombre] || []).flatMap((z) => EQUIPOS.filter((e) => e.zona === z));
+const areaDe = (s) => m2(s.area_plano ?? s.area_calc);
+const pasoE = (dur, t, d, pose, extra = {}) => ({ dur, t, d, amb: 'edificio', piso: 'p1', sep: false, sala: null, eq: [], lineas: null, ...pose, ...extra });
+function posePiso(f, sep = false, der = [4, -1.5, -2.5]) {
+  const v = poseBaseEdificio(f, sep);
+  const bb = f === 'todo' ? null : BB_PISO[f];
+  return { p: v.p.toArray(), tg: v.t.toArray(), der, bb2: bb ? [wx(bb[0]), wx(bb[1]), wz(bb[3]), wz(bb[2])] : null };
+}
+// Vista de una o varias salas: la cámara gira despacio alrededor, en alto, con los muros cortados
+function poseSalas(salas, { az = -0.45, giro = 0.75, k = 1 } = {}) {
+  const b = cajaBB(salas.flatMap((s) => s.poly)), y = PISO[salas[0].piso].y0;
+  const tam = Math.max(b[1] - b[0], b[3] - b[2], 3);
+  const c = W((b[0] + b[1]) / 2, (b[2] + b[3]) / 2, y + 0.3);
+  const R = Math.max(5, tam * 1.05) * k, h = Math.max(5.5, R);
+  const en = (a, f) => c.clone().add(new V3(Math.sin(a) * R * f, h * f, Math.cos(a) * R * f));
+  const p0 = en(az, 1), p1 = en(az + giro, 0.9);
+  return { p: p0.toArray(), tg: c.toArray(), der: p1.sub(p0).toArray(), bb2: [wx(b[0]), wx(b[1]), wz(b[3]), wz(b[2])] };
+}
+function poseLavado(L) {
+  const c = W(L.X, L.Y, 0.7), p0 = c.clone().add(new V3(-2.6, 2.7, 2.8)), p1 = c.clone().add(new V3(-0.8, 2.3, 3.3));
+  return { p: p0.toArray(), tg: c.toArray(), der: p1.sub(p0).toArray(), bb2: [c.x - 3.5, c.x + 3.5, c.z - 2.5, c.z + 2.5] };
+}
+function textoSala(s) {
+  const eqs = equiposDe(s), lav = LAVADO.filter((L) => L.sala === s.id);
+  let d = `${NOMBRE_PISO[s.piso]} · ${areaDe(s)} m²`;
+  if (eqs.length) d += ` · ${eqs.length} equipos: ${eqs.slice(0, 4).map((e) => e.n).join(', ')}${eqs.length > 4 ? ' y más' : ''}.`;
+  else if (s.tipo === 'vacio') d += ' · Vacío sobre la sala de abajo.';
+  else if (!SIN_EQUIPOS.includes(s.tipo)) d += ' · Equipos por definir.';
+  else d += '.';
+  if (lav.length) d += ` Lavado: ${[...new Set(lav.map((L) => L.n.toLowerCase()))].join(' y ')}.`;
+  else if (s.tipo === 'lavado') d += ' Zona de lavado.';
+  return d;
+}
+const pasoSala = (s, dur = 6, extra = {}) => pasoE(dur, s.nombre, textoSala(s), poseSalas([s]), { piso: s.piso, sala: s.id, eq: equiposDe(s).map((e) => e.id), ...extra });
+function guionPlanta() {
+  const g = (...ns) => ns.map((n) => salaN(n)).filter(Boolean);
+  const grupo = (t, d, ss, extra = {}) => pasoE(extra.dur || 7, t, d, poseSalas(ss), { piso: ss[0].piso, sala: (extra.sala || ss[0]).id });
+  const A = (n) => areaDe(salaN(n));
+  const n1 = SALAS_UTILES.filter((s) => s.piso === 'p1').length;
+  const pasos = [
+    pasoE(6, 'Planta de lácteos de Marulanda', 'Edificio completo: piso −1, piso 1, piso 2 y cubierta.', posePiso('todo', false, [12, -2, -8]), { piso: 'todo' }),
+    pasoE(7, 'Tres pisos y cubierta', 'Piso −1 bajo las calderas, piso 1 con la producción y los servicios, piso 2 con el almacén de empaques y la oficina.', posePiso('todo', true, [9, 0, -7]), { piso: 'todo', sep: true }),
+    pasoE(7, 'Piso −1 · N −2,85', `Cuarto de residuos sólidos (${A('Cuarto de residuos sólidos')} m²) y cuarto de almacenamiento (${A('Cuarto de almacenamiento')} m²). Se baja por dos escaleras exteriores.`, posePiso('p-1', false, [3, -1, -2]), { piso: 'p-1' }),
+    pasoE(7, 'Piso 1 · N +0,15', `${n1} salas: recibo y producción, calderas, cuarto frío, laboratorio, vestuario, baños y administración.`, posePiso('p1'), { piso: 'p1' }),
+    grupo('Calderas y carbón', `Zona de calderas (${A('Zona de calderas')} m²) y almacenamiento de carbón (${A('Almacenamiento de carbón')} m²), al norte de la sala de producción.`, g('Zona de calderas', 'Almacenamiento de carbón')),
+    grupo('Recibo y producción', `La sala con sus ${EQUIPOS.length} equipos y ${LINEAS.length} líneas de proceso. Tiene su propio recorrido: «Proceso de producción».`, g('Zona de recibo', 'Zona de producción 1', 'Zona de producción 2'), { dur: 8, sala: salaN('Zona de producción 1') }),
+    grupo('Entrega de producto y cuarto frío', `El producto sale por la zona de entrega (${A('Zona de entrega de producto')} m²); el cuarto frío (${A('Cuarto frío')} m²) queda a su lado. De aquí sube la escalera al almacén de empaques.`, g('Zona de entrega de producto', 'Cuarto frío')),
+    grupo('Vestuario y lavado de botas', `Del vestuario (${A('Vestuario')} m²) se pasa a producción por el lavado de botas; junto a la puerta hay un lavamanos de pedal.`, g('Vestuario')),
+    grupo('Laboratorio', `Laboratorio de ${A('Laboratorio')} m², con puerta directa a la zona de producción.`, g('Laboratorio')),
+    grupo('Administración y servicios', 'Zona administrativa, bienestar, atención al usuario, dos baterías de baños y el cuarto de lavado.', g('Zona administrativa', 'Zona de bienestar', 'Atención al usuario', 'Batería de baños 1', 'Batería de baños 2', 'Cuarto de lavado')),
+    grupo('Planta eléctrica y bodega', 'En un bloque aparte, al oriente. El tanque de agua va sobre su cubierta.', g('Planta eléctrica', 'Bodega')),
+    pasoE(7, 'Piso 2 · N +3,19', 'Almacén de empaques, oficina y hall. Sobre la zona de producción queda la doble altura.', posePiso('p2'), { piso: 'p2' }),
+    grupo('Almacén de empaques', `${A('Almacén de empaques')} m² encima del cuarto frío y de la entrega de producto, con su escalera.`, g('Almacén de empaques')),
+    grupo('Oficina y hall', `Oficina de ${A('Oficina')} m² con su hall y la escalera que baja a la zona administrativa.`, g('Oficina', 'Hall')),
+    pasoE(7, 'Toda la planta', `${SALAS_UTILES.length} salas en tres pisos. Las que aún no tienen equipos quedan listas para ubicarlos. Modelado preliminar.`, posePiso('todo', false, [14, -3, -6]), { piso: 'todo' }),
+  ];
+  return guion('planta', 'Planta completa', pasos);
+}
+function salasDePiso(f) {
+  return SALAS.filter((s) => s.piso === f && s.tipo !== 'escalera' && s.nombre !== 'Circulación')
+    .sort((a, b) => a.c[0] - b.c[0] || b.c[1] - a.c[1]); // de occidente a oriente
+}
+function guionPiso(f) {
+  const ss = salasDePiso(f), p = PISO[f];
+  const pasos = [
+    pasoE(5, `${NOMBRE_PISO[f]} · ${p.nivel}`, `${ss.length} salas, de occidente a oriente.`, posePiso(f), { piso: f }),
+    ...ss.map((s) => pasoSala(s)),
+    pasoE(5, NOMBRE_PISO[f], 'Fin del recorrido por el piso. Toca cualquier sala para ver su ficha.', posePiso(f, false, [-4, 1, 2]), { piso: f }),
+  ];
+  return guion(`piso-${f}`, NOMBRE_PISO[f], pasos);
+}
+function guionSala(id) {
+  const s = salaPorId[id], p = PISO[s.piso];
+  const pasos = [
+    pasoE(4, s.nombre, `${NOMBRE_PISO[s.piso]} · nivel ${p.nivel}`, posePiso(s.piso, false, [2, -1, -1]), { piso: s.piso, sala: s.id }),
+    pasoSala(s, 12, { ...poseSalas([s], { az: -0.7, giro: 1.6, k: 0.95 }) }),
+    pasoE(4, s.nombre, NOTAS_SALA[s.nombre] || textoSala(s), poseSalas([s], { az: 0.9, giro: 0.3, k: 1.6 }), { piso: s.piso, sala: s.id }),
+  ];
+  return guion(`sala-${id}`, s.nombre, pasos);
+}
+function guionLavado() {
+  const cl = SALAS.filter((s) => s.tipo === 'lavado');
+  const orden = ['botas', 'lav-e', 'lav-ne', 'lav-n'].map((id) => LAVADO.find((L) => L.id === id));
+  const pasos = [
+    pasoE(5, 'Zonas de lavado', `${cl.length} cuarto de lavado, ${LAVADO.filter((L) => !L.botas).length} lavamanos de pedal y el lavado de botas, todos en el piso 1.`, posePiso('p1'), { piso: 'p1' }),
+    ...orden.map((L) => pasoE(6, L.n, L.botas ? `${L.d}. Ubicación tomada del plano de implantación general.` : `${L.d}. Se acciona con el pie, sin tocar la llave.`, poseLavado(L), { piso: 'p1', sala: L.sala })),
+    ...cl.map((s) => pasoE(7, s.nombre, `${areaDe(s)} m², junto a la batería de baños.`, poseSalas([s], { k: 1.3 }), { piso: 'p1', sala: s.id })),
+    pasoE(5, 'Zonas de lavado', 'Fin del recorrido. En la lista «Zonas de lavado» del panel se llega a cada punto.', posePiso('p1', false, [-4, 1, 2]), { piso: 'p1' }),
+  ];
+  return guion('lavado', 'Zonas de lavado', pasos);
+}
+function crearGuion(id, arg) {
+  if (id === 'proceso') return G_PROCESO;
+  if (id === 'planta') return guionPlanta();
+  if (id === 'lavado') return guionLavado();
+  if (id === 'piso') return PISO[arg] ? guionPiso(arg) : null;
+  if (id === 'sala') return salaPorId[arg] ? guionSala(arg) : null;
+  return null;
+}
+
+// Menú para escoger el recorrido
+const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
+function pintarMenuRec() {
+  for (const b of document.querySelectorAll('#menu-rec [data-rec]')) {
+    const G = crearGuion(b.dataset.rec, b.dataset.arg);
+    const i = b.querySelector('i'); if (G && i) i.textContent = mmss(G.dur);
+    if (G && !i) b.title = `${G.pasos.length - 2} paradas · ${mmss(G.dur)}`;
+  }
+  const opt = (s) => `<option value="${s.id}">${s.nombre} · ${areaDe(s)} m²</option>`;
+  $('#sel-sala-rec').innerHTML = ['p2', 'p1', 'p-1'].map((f) => `<optgroup label="${NOMBRE_PISO[f]}">${salasDePiso(f).sort((a, b) => a.nombre.localeCompare(b.nombre, 'es')).map(opt).join('')}</optgroup>`).join('');
+}
+function abrirMenuRec() {
+  const m = $('#menu-rec');
+  if (estado.sala && salaPorId[estado.sala] && [...$('#sel-sala-rec').options].some((o) => o.value === estado.sala)) $('#sel-sala-rec').value = estado.sala;
+  m.hidden = false; $('#b-recorrido').setAttribute('aria-expanded', 'true');
+  m.querySelector('[data-rec]').focus({ preventScroll: true });
+}
+function cerrarMenuRec() { const m = $('#menu-rec'); if (m && !m.hidden) { m.hidden = true; $('#b-recorrido').setAttribute('aria-expanded', 'false'); } }
+function alternarMenuRec() { if ($('#menu-rec').hidden) abrirMenuRec(); else cerrarMenuRec(); }
+$('#menu-rec').addEventListener('click', (ev) => {
+  const b = ev.target.closest('[data-rec]');
+  if (b) { iniciarTour(b.dataset.rec, b.dataset.arg); return; }
+  if (ev.target.closest('#b-rec-sala')) iniciarTour('sala', $('#sel-sala-rec').value);
+  if (ev.target.closest('#menu-rec-cerrar')) cerrarMenuRec();
+});
+document.addEventListener('pointerdown', (ev) => { if (!ev.target.closest?.('#menu-rec, #b-recorrido')) cerrarMenuRec(); });
+addEventListener('keydown', (ev) => { if (ev.code === 'Escape' && !$('#menu-rec').hidden) { cerrarMenuRec(); $('#b-recorrido').focus(); } });
+
+// ---------- Camión de leche (posición del plano, bloque «carro achurado camion» del DWG) y operario descargando
+// Caja de carga X 388,0 a 393,2 · Y −18,73 a −16,53; cabina hacia el occidente hasta X 386,35, junto a la plataforma de recibo.
+const CAMION = { X0: 386.35, X1: 393.2, Y0: -18.73, Y1: -16.53, Yc: -17.63 };
+const camionG = new THREE.Group(); camionG.name = 'Camión de leche con cantinas';
+const operarioG = new THREE.Group(); operarioG.name = 'Operario de recibo';
+raiz.add(camionG, operarioG);
+const SUELO_EXT = -0.15; // el terreno queda 15 cm por debajo del piso de la planta
+const PLATAFORMA = [385.45, 387.85, -15.418, -12.44];
+// cantina de 40 L: Ø 0,32 × 0,61 m
+const geoCantina = { cuerpo: new THREE.CylinderGeometry(0.16, 0.16, 0.45, 24), hombro: new THREE.CylinderGeometry(0.1, 0.16, 0.08, 24), cuello: new THREE.CylinderGeometry(0.1, 0.1, 0.08, 18) };
+function cantina(mat) {
+  const g = new THREE.Group();
+  const a = M(geoCantina.cuerpo, mat, 0, 0.225, 0), b = M(geoCantina.hombro, mat, 0, 0.49, 0), c = M(geoCantina.cuello, mat, 0, 0.57, 0);
+  for (const m of [a, b, c]) { m.castShadow = true; g.add(m); }
+  return g;
+}
+function construirCamion() {
+  const mCab = std(0xe9ecee, 0.2, 0.45), mOsc = std(0x23292d, 0.1, 0.7), mLlanta = std(0x1b1f22, 0.0, 0.9), mRin = std(0x9aa3a8, 0.7, 0.35);
+  const mMadera = std(0x8a6c4a, 0.0, 0.85), mEstaca = std(0x6f5438, 0.0, 0.85), mVid = std(0x9fc4d4, 0.2, 0.15, { transparent: true, opacity: 0.6 });
+  const mFaro = std(0xf3e7b0, 0.1, 0.3, { emissive: 0x332a10 }), mFranja = std(0x0b6d8e, 0.2, 0.5), mInox = std(0xdde2e5, 0.85, 0.3);
+  const { Yc } = CAMION, z = (Y) => wz(Y), g = camionG, s = SUELO_EXT;
+  const add = (m) => { m.castShadow = m.receiveShadow = true; g.add(m); return m; };
+  // ruedas: eje delantero y eje trasero con llanta doble
+  for (const [X, doble] of [[387.05, false], [391.75, true]]) for (const Y of [-16.68, -18.58]) {
+    for (const k of doble ? [0, 1] : [0]) {
+      const Yk = k ? (Y > Yc ? Y - 0.3 : Y + 0.3) : Y;
+      add(cilZ(0.46, 0.27, mLlanta, wx(X), s + 0.46, z(Yk), 28));
+      add(cilZ(0.24, 0.29, mRin, wx(X), s + 0.46, z(Yk), 18));
+    }
+  }
+  add(caja(393.05 - 386.6, 0.24, 1.0, mOsc, wx((386.6 + 393.05) / 2), s + 0.62, z(Yc)));                      // chasis
+  add(caja(1.6, 1.85, 1.73, mCab, wx(387.15), s + 0.86, z(Yc)));                                                // cabina
+  add(caja(1.62, 0.12, 1.75, mFranja, wx(387.15), s + 1.2, z(Yc)));                                             // franja
+  add(caja(0.04, 0.72, 1.5, mVid, wx(386.34), s + 1.82, z(Yc)));                                                // parabrisas
+  for (const Y of [-16.765, -18.505]) add(caja(0.72, 0.55, 0.03, mVid, wx(386.95), s + 1.9, z(Y)));            // ventanas
+  add(caja(0.14, 0.3, 1.95, mOsc, wx(386.3), s + 0.5, z(Yc)));                                                  // bómper
+  for (const Y of [-16.95, -18.31]) add(caja(0.05, 0.14, 0.26, mFaro, wx(386.33), s + 0.92, z(Y)));             // farolas
+  for (const Y of [-16.74, -18.52]) add(caja(0.42, 0.06, 0.22, mInox, wx(386.75), s + 0.45, z(Y)));            // estribos
+  // platón con estacas: abierto (baranda baja) por el lado de la plataforma para bajar las cantinas
+  const yb = s + 1.03, ytop = yb + 0.12;
+  add(caja(393.2 - 388.0, 0.12, 2.2, mMadera, wx(390.6), yb, z(Yc)));
+  for (const X of [388.05, 389.35, 390.65, 391.95, 393.15]) add(caja(0.08, 0.95, 0.08, mEstaca, wx(X), ytop, z(-18.69)));
+  for (const h of [0.35, 0.8]) add(caja(5.2, 0.1, 0.05, mEstaca, wx(390.6), ytop + h, z(-18.69)));
+  for (const X of [388.05, 393.15]) {
+    for (const Y of [-16.57, -17.63, -18.69]) add(caja(0.08, 0.95, 0.08, mEstaca, wx(X), ytop, z(Y)));
+    for (const h of [0.35, 0.8]) add(caja(0.05, 0.1, 2.2, mEstaca, wx(X), ytop + h, z(Yc)));
+  }
+  add(caja(5.2, 0.16, 0.05, mEstaca, wx(390.6), ytop, z(-16.57)));
+  // cantinas sobre el platón (5 filas); queda libre el puesto de la que baja el operario
+  const pos = [];
+  for (let i = 0; i < 12; i++) for (let j = 0; j < 5; j++) {
+    const X = 388.3 + i * 0.4, Y = -16.8 - j * 0.4;
+    if (Math.abs(X - OPERARIO.slot[0]) < 0.05 && Math.abs(Y - OPERARIO.slot[1]) < 0.05) continue;
+    if ((i * 7 + j * 3) % 10 < 8) pos.push([X, Y]);
+  }
+  for (const parte of ['cuerpo', 'hombro', 'cuello']) {
+    const im = new THREE.InstancedMesh(geoCantina[parte], mInox, pos.length);
+    const yy = { cuerpo: 0.225, hombro: 0.49, cuello: 0.57 }[parte], m4 = new THREE.Matrix4();
+    pos.forEach(([X, Y], k) => im.setMatrixAt(k, m4.makeTranslation(wx(X), ytop + yy, z(Y))));
+    im.castShadow = true; g.add(im);
+  }
+  const d = document.createElement('div'); d.className = 'etq-zona';
+  d.innerHTML = '<b>Camión de leche</b><span>cantinas de 40 L · posición del plano</span>';
+  const o = new CSS2DObject(d); o.position.copy(W(390.6, Yc, 3.0)); g.add(o); etqZonas.push(o);
+}
+
+// Operario: baja una cantina del camión, la lleva al volcador, la vuelca al tanque recibidor y regresa con la vacía.
+const OPERARIO = {
+  ciclo: 18, desfase: 5.3,                       // en el recorrido del proceso empieza a caminar al entrar a «Recibo de leche»
+  ruta: [[388.7, -16.05], [386.05, -16.0], [386.0, -13.06]],
+  slot: [388.7, -16.8],                          // puesto de la cantina en el platón
+  asiento: [386.74, -13.06, 0.76],               // volcador (ver EQUIPOS)
+};
+let operario = null;
+function construirOperario() {
+  const blanco = std(0xf2f4f5, 0.0, 0.75), botas = std(0xfafbfb, 0.05, 0.35), piel = std(0xc48a62, 0.0, 0.7), azul = std(0x2e61a3, 0.1, 0.6);
+  const g = operarioG, cuerpo = new THREE.Group(); g.add(cuerpo);
+  const add = (padre, m) => { m.castShadow = true; padre.add(m); return m; };
+  const piernas = [-0.1, 0.1].map((dz) => {
+    const p = new THREE.Group(); p.position.set(0, 0.88, dz); cuerpo.add(p);
+    add(p, caja(0.15, 0.62, 0.15, blanco, 0, -0.62, 0)); add(p, caja(0.24, 0.27, 0.15, botas, 0.04, -0.88, 0));
+    return p;
+  });
+  add(cuerpo, caja(0.26, 0.6, 0.42, blanco, 0, 0.86, 0));                 // tronco
+  add(cuerpo, caja(0.02, 0.62, 0.34, azul, 0.135, 0.62, 0));              // delantal
+  add(cuerpo, M(new THREE.SphereGeometry(0.11, 18, 14), piel, 0, 1.6, 0)).castShadow = true;
+  add(cuerpo, cil(0.118, 0.08, blanco, 0, 1.64, 0, 18));                 // gorro
+  add(cuerpo, caja(0.02, 0.06, 0.12, std(0xdfe8ec, 0, 0.8), 0.105, 1.52, 0)); // tapabocas
+  const brazos = [-0.27, 0.27].map((dz) => {
+    const p = new THREE.Group(); p.position.set(0, 1.42, dz); cuerpo.add(p);
+    add(p, caja(0.1, 0.58, 0.1, blanco, 0, -0.58, 0));
+    add(p, M(new THREE.SphereGeometry(0.05, 10, 8), piel, 0, -0.62, 0));
+    return p;
+  });
+  const lata = cantina(std(0xdde2e5, 0.85, 0.3)); lata.name = 'Cantina que se descarga'; camionG.add(lata);
+  operario = { g, cuerpo, piernas, brazos, lata };
+  // la cantina fija del volcador la reemplaza la del operario
+  const vol = objEq.volcador && objEq.volcador.g;
+  if (vol && vol.userData.anim) { vol.userData.anim.obj.visible = false; vol.userData.anim.tipo = 'quieto'; }
+}
+const lerpN = (a, b, k) => a + (b - a) * k;
+const suaveK = (x) => { const k = Math.min(1, Math.max(0, x)); return k * k * (3 - 2 * k); };
+function enRuta(f) { // posición y dirección a lo largo de la ruta (0 = camión, 1 = volcador)
+  const R = OPERARIO.ruta, L = []; let tot = 0;
+  for (let i = 1; i < R.length; i++) { const l = Math.hypot(R[i][0] - R[i - 1][0], R[i][1] - R[i - 1][1]); L.push(l); tot += l; }
+  let d = Math.min(1, Math.max(0, f)) * tot;
+  for (let i = 0; i < L.length; i++) {
+    if (d <= L[i] || i === L.length - 1) { const k = Math.min(1, d / L[i]), a = R[i], b = R[i + 1]; return { X: lerpN(a[0], b[0], k), Y: lerpN(a[1], b[1], k), dx: b[0] - a[0], dy: b[1] - a[1], dist: f * tot }; }
+    d -= L[i];
+  }
+}
+function animarOperario(t) {
+  if (!operario) return;
+  const O = OPERARIO, u = (((t - O.desfase) % O.ciclo) + O.ciclo) % O.ciclo;
+  const { slot, asiento } = O, yBed = SUELO_EXT + 1.15;
+  const sur = -Math.PI / 2, este = 0;
+  let X, Y, h, brazo = 0.5, paso = 0, lata = 'manos', tilt = 0, latPos = null;
+  const ruta = enRuta;
+  const head = (dx, dy) => Math.atan2(dy, dx); // DWG: Y al norte; en el mundo z = −Y, así que rotation.y = atan2(dy, dx)
+  if (u < 1.2) {                       // toma la cantina del platón
+    [X, Y] = O.ruta[0]; h = sur;
+    const k = suaveK((u - 0.3) / 0.9);
+    brazo = u < 0.3 ? lerpN(0.05, 1.9, u / 0.3) : lerpN(1.9, 0.5, k);
+    lata = k <= 0 ? 'platon' : 'manos';
+  } else if (u < 5.6) {                // camina al volcador
+    const f = (u - 1.2) / 4.4, r = ruta(f); X = r.X; Y = r.Y; h = head(r.dx, r.dy); paso = r.dist;
+    if (u < 1.5) h = lerpN(sur, h, (u - 1.2) / 0.3);
+  } else if (u < 6.6) {                // sube la cantina al volcador
+    [X, Y] = O.ruta[2]; h = este;
+    const k = suaveK((u - 5.6) / 0.8); brazo = lerpN(0.5, 1.25, k); lata = k >= 1 ? 'asiento' : 'manos';
+  } else if (u < 10.6) {               // vuelca
+    [X, Y] = O.ruta[2]; h = este; brazo = 1.15; lata = 'asiento';
+    const k = (u - 6.6) / 4; tilt = 1.2 * (0.5 - 0.5 * Math.cos(2 * Math.PI * k));
+  } else if (u < 11.6) {               // baja la vacía
+    [X, Y] = O.ruta[2]; h = este;
+    const k = suaveK((u - 10.6) / 0.8); brazo = lerpN(1.25, 0.5, k); lata = k <= 0 ? 'asiento' : 'manos';
+  } else if (u < 16) {                 // regresa al camión
+    const f = 1 - (u - 11.6) / 4.4, r = ruta(f); X = r.X; Y = r.Y; h = head(-r.dx, -r.dy); paso = r.dist;
+  } else if (u < 17) {                 // deja la vacía en el platón
+    [X, Y] = O.ruta[0]; h = sur;
+    const k = suaveK((u - 16) / 0.8); brazo = lerpN(0.5, 1.9, k); lata = k >= 1 ? 'platon' : 'manos';
+  } else { [X, Y] = O.ruta[0]; h = sur; brazo = lerpN(1.9, 0.05, suaveK((u - 17) / 0.5)); lata = 'platon'; }
+  const piso = enRect(PLATAFORMA, X, Y) ? 0 : SUELO_EXT;
+  const { g, cuerpo, piernas, brazos } = operario;
+  g.position.copy(W(X, Y, piso)); g.rotation.y = h;
+  const fase = paso / 0.32, swing = paso ? Math.sin(fase) * 0.5 : 0;
+  piernas[0].rotation.z = swing; piernas[1].rotation.z = -swing;
+  cuerpo.position.y = paso ? Math.abs(Math.sin(fase)) * 0.025 : 0;
+  for (const b of brazos) b.rotation.z = brazo;
+  // cantina: en el platón, en las manos o en el volcador
+  const L = operario.lata;
+  if (lata === 'platon') { L.position.copy(W(slot[0], slot[1], yBed)); L.rotation.set(0, 0, 0); }
+  else if (lata === 'asiento') { L.position.copy(W(asiento[0], asiento[1], asiento[2])); L.rotation.set(0, 0, -tilt); }
+  else {
+    const fwd = 0.62 * Math.sin(brazo) + 0.1, alto = 1.42 - 0.62 * Math.cos(brazo) - 0.5;
+    L.position.set(g.position.x + Math.cos(h) * fwd, piso + alto + cuerpo.position.y, g.position.z - Math.sin(h) * fwd);
+    L.rotation.set(0, h, 0);
+  }
+}
+function dibujarCamion2D() {
+  const g = sv('g', { class: 'camion2' }, plano.sala);
+  rect2(388.0, 393.2, -18.73, -16.53, {}, g);
+  rect2(386.35, 387.95, -18.5, -16.77, {}, g);
+  for (const Y of [-17.0, -17.4, -17.8, -18.2]) sv('line', { x1: wx(388.0), y1: wz(Y), x2: wx(392.9), y2: wz(Y) }, g);
+  texto2('CAMIÓN', wx(390.6), wz(-17.63) + 0.08, 'etq2', g);
+}
+
+construirEdificioCompleto();
+construirCamion();
+construirOperario();
+dibujarCamion2D();
+construirObstaculos();
+construirPlano2DEdificio();
+pintarSalas();
+pintarMenuRec();
+document.querySelectorAll('[data-ambito]').forEach((b) => b.addEventListener('click', () => { if (tour.activo) detenerTour(); ponerAmbito(b.dataset.ambito); }));
+document.querySelectorAll('#vistas-edif [data-piso]').forEach((b) => b.addEventListener('click', () => { if (tour.activo) detenerTour(); ponerPiso(b.dataset.piso); }));
+$('#b-separar').addEventListener('click', () => {
+  if (tour.activo) detenerTour();
+  const on = edif.expObj === 0;
+  edif.expObj = on ? 1 : 0;
+  if (on) edif.piso = 'todo';
+  aplicarEdificio(); pintarBarra(); aplicar2D();
+  const v = poseEdificio(edif.piso); marcarVista(null); volar(v.p, v.t);
+});
+$('#o-tomas').addEventListener('change', () => aplicarEdificio());
+$('#o-grilla').addEventListener('change', () => aplicarEdificio());
+$('#o-losa').addEventListener('change', () => aplicarEdificio());
+Object.assign(window.__sala, { iniciarTour, crearGuion, tour, aplicarTour, poseEdificio, ponerPiso, ponerAmbito, iniciarPaseo, salirPaseo, actualizarPaseo, usarEscalera, seleccionarSala, paseo, edif, mov, libre, camera, controls });
+
 ajustar();
 aplicarTema();
 if (camera.aspect < 1) { const v = poseVista('general'); camera.position.copy(v.p); controls.target.copy(v.t); controls.update(); }
 if (matchMedia('(max-width: 600px)').matches) { $('#o-nombres').checked = false; $('#o-nombres').dispatchEvent(new Event('change')); }
+// Arranca en el edificio completo (piso 1); #sala, #recorrido y #plano abren la sala de producción como antes
+const hashInicial = location.hash;
+if (['#sala', '#recorrido', '#plano'].includes(hashInicial)) { aplicarEdificio(); pintarBarra(); aplicar2D(); }
+else { ponerAmbito('edificio', false); const v = poseEdificio('p1'); camera.position.copy(v.p); controls.target.copy(v.t); controls.update(); }
 $('#cargando').hidden = true;
-if (location.hash === '#recorrido') setTimeout(iniciarTour, 600);
-if (location.hash === '#plano') ponerModo('2d');
+if (hashInicial === '#recorrido') setTimeout(() => iniciarTour('proceso'), 600);
+if (hashInicial === '#recorrido-planta') setTimeout(() => iniciarTour('planta'), 600);
+if (hashInicial === '#plano') ponerModo('2d');
+if (hashInicial === '#caminar') iniciarPaseo('p1');
 requestAnimationFrame(cuadro);
 </script>
