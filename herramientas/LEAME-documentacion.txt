@@ -1,6 +1,6 @@
 PLANTA DE LÁCTEOS · MARULANDA, CALDAS
-Sala de recibo y producción · documentación del modelado preliminar
-10 de noviembre de 2026
+Planta completa y sala de recibo y producción · documentación del modelado preliminar
+13 de noviembre de 2026
 
 Sitio del proyecto: https://planta-marulanda-3d.vercel.app
 Visor 3D y plano 2D: https://planta-marulanda-3d.vercel.app/visor
@@ -17,9 +17,10 @@ medidas/planta-marulanda-medidas-equipos.xlsx
 modelo/planta-marulanda-sala.glb
     Modelo 3D de la sala. Abre en Blender, SketchUp (con complemento para GLB)
     o el Visor 3D de Windows. Cada equipo es un objeto con su nombre.
-video/planta-marulanda-recorrido-liviano.mp4
-    Recorrido de 78 s por las 8 etapas del proceso (versión liviana para WhatsApp).
-    La versión en alta calidad se descarga aparte desde el visor.
+video/planta-marulanda-planta-completa.mp4
+    Recorrido por toda la planta: exterior, los tres pisos y cada área (1:45, sin audio).
+    El video del proceso de producción y los videos de cada área se descargan aparte
+    desde el visor, en la sección «Videos».
 
 DE DÓNDE SALEN LOS DATOS
 - Muros, puertas, ventanas y columnas: DWG arquitectónico, planta piso 1, en metros.

@@ -7,9 +7,9 @@
 // GET /<archivo>        -> cualquier archivo del repositorio (documentos/, etc.)
 // POST /guardar-glb     -> guarda el modelo exportado en documentos/modelo/planta-marulanda-sala.glb
 // POST /guardar?nombre= -> guarda un archivo de apoyo en herramientas/salida/ (por ejemplo el plano en SVG)
-// POST /cuadro?i=N      -> guarda un cuadro JPEG del video en la carpeta temporal de cuadros
+// POST /cuadro?i=N[&v=carpeta] -> guarda un cuadro JPEG del video en la carpeta temporal de cuadros (o en su subcarpeta)
 // POST /prueba?t=S      -> guarda un cuadro de prueba
-// POST /fin             -> marca el final de la grabación (fin.json)
+// POST /fin[?v=carpeta] -> marca el final de la grabación (fin.json)
 import http from 'node:http';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -48,10 +48,16 @@ http.createServer(async (req, res) => {
       fs.writeFileSync(f, buf);
       return json(res, { ok: true, bytes: buf.length, archivo: path.relative(raiz, f) });
     }
+    const carpeta = () => {
+      const v = seguro(url.searchParams.get('v') || '');
+      const d = v ? path.join(cuadros, v) : cuadros;
+      fs.mkdirSync(d, { recursive: true });
+      return d;
+    };
     if (url.pathname === '/cuadro') {
       const i = Number(url.searchParams.get('i'));
-      fs.writeFileSync(path.join(cuadros, `f_${String(i).padStart(5, '0')}.jpg`), buf);
-      if (i % 150 === 0) console.log(`cuadro ${i}`);
+      fs.writeFileSync(path.join(carpeta(), `f_${String(i).padStart(5, '0')}.jpg`), buf);
+      if (i % 300 === 0) console.log(`cuadro ${i} ${url.searchParams.get('v') || ''}`);
       return json(res, { ok: true });
     }
     if (url.pathname === '/prueba') {
@@ -59,8 +65,8 @@ http.createServer(async (req, res) => {
       return json(res, { ok: true });
     }
     if (url.pathname === '/fin') {
-      fs.writeFileSync(path.join(cuadros, 'fin.json'), buf);
-      console.log('fin de la grabación');
+      fs.writeFileSync(path.join(carpeta(), 'fin.json'), buf);
+      console.log(`fin de la grabación ${url.searchParams.get('v') || ''}`);
       return json(res, { ok: true });
     }
     res.writeHead(404); return res.end('no encontrado');

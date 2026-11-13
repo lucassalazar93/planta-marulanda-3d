@@ -181,7 +181,7 @@ dialog button { border: 1px solid #33404f; background: transparent; color: #e5ea
         <div class="chips">
           <span class="chip">Marulanda, Caldas</span>
           <span class="chip"><b>3</b> pisos</span>
-          <span class="chip"><b>26</b> equipos</span>
+          <span class="chip"><b>27</b> equipos</span>
           <span class="chip"><b>7</b> líneas de proceso</span>
           <span class="chip"><b>8</b> etapas</span>
         </div>
@@ -326,17 +326,20 @@ const DOCS = [
   { n: 'Planos arquitectónicos', d: 'Plantas, fachadas y cortes leídos del DWG', f: 'documentos/planos/planta-marulanda-planos-arquitectonicos.pdf', t: 'PDF' },
   { n: 'Medidas de los equipos', d: 'Medida, fuente y estado de cada equipo', f: 'documentos/medidas/planta-marulanda-medidas-equipos.xlsx', t: 'XLSX' },
   { n: 'Modelo 3D', d: 'Abre en Blender, SketchUp o el Visor 3D de Windows', f: 'documentos/modelo/planta-marulanda-sala.glb', t: 'GLB' },
-  { n: 'Video del recorrido', d: '78 s · 1080p · alta calidad', f: 'documentos/video/planta-marulanda-recorrido.mp4', t: 'MP4' },
-  { n: 'Video del recorrido, liviano', d: 'Para enviar por WhatsApp', f: 'documentos/video/planta-marulanda-recorrido-liviano.mp4', t: 'MP4' },
+  { n: 'Video de la planta completa', d: 'Exterior, los tres pisos y cada área · 1080p', f: 'documentos/video/planta-marulanda-planta-completa.mp4', t: 'MP4' },
+  { n: 'Video del proceso de producción', d: '8 etapas · 1080p · alta calidad', f: 'documentos/video/planta-marulanda-recorrido.mp4', t: 'MP4' },
+  { n: 'Video del proceso, liviano', d: 'Para enviar por WhatsApp', f: 'documentos/video/planta-marulanda-recorrido-liviano.mp4', t: 'MP4' },
 ];
 const tamano = (f) => { const b = (window.TAMANOS || {})[f]; if (!b) return ''; return b >= 1048576 ? `${(b / 1048576).toLocaleString('es-CO', { maximumFractionDigits: 1 })} MB` : `${Math.max(1, Math.round(b / 1024))} kB`; };
-document.getElementById('docs').innerHTML = DOCS.map((d) => `<li><a href="${d.f}" download><span class="tipo">${d.t}</span><span class="nm">${d.n}<small>${d.d}</small></span><span class="tam">${tamano(d.f)}</span></a></li>`).join('');
+const existe = (f) => !window.TAMANOS || !!window.TAMANOS[f];
+document.getElementById('docs').innerHTML = DOCS.filter((d) => existe(d.f)).map((d) => `<li><a href="${d.f}" download><span class="tipo">${d.t}</span><span class="nm">${d.n}<small>${d.d}</small></span><span class="tam">${tamano(d.f)}</span></a></li>`).join('');
 const zip = 'documentos/planta-marulanda-documentacion.zip';
 if (tamano(zip)) document.getElementById('b-zip').textContent = `Descargar todo (ZIP · ${tamano(zip)})`;
 
 const dlg = document.getElementById('dlg-video'), video = document.getElementById('video');
 document.getElementById('b-video').addEventListener('click', () => {
-  if (!video.src) video.src = 'documentos/video/planta-marulanda-recorrido-liviano.mp4';
+  const planta = 'documentos/video/planta-marulanda-planta-completa.mp4';
+  if (!video.src) video.src = existe(planta) ? planta : 'documentos/video/planta-marulanda-recorrido-liviano.mp4';
   dlg.showModal();
   video.play().catch(() => {});
 });

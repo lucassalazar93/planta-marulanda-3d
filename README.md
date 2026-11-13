@@ -35,6 +35,7 @@ Arriba a la izquierda se elige qué ver: **Edificio** (toda la infraestructura) 
 | **Pisos** | Exterior (con cubierta), Piso 2, Piso 1 y Piso −1. Al elegir un piso se ocultan los de arriba y los muros se cortan a 1,2 m para ver la planta. |
 | **Separar pisos** | Abre el edificio como una maqueta: cada piso a su altura con la cubierta encima, para ver todo a la vez. |
 | **Salas** | 33 recintos leídos del DWG con su nombre, área del plano y área medida entre muros. Al tocar una sala (en el 3D, en el plano o en la lista) se ve su ficha: piso, nivel, alto libre, equipos que tiene y nota. Las que aún no tienen máquinas aparecen como «por definir». |
+| **Mobiliario** | Ilustrativo, para ver cómo se usa cada sala: escritorios con computador en la zona administrativa, atención al usuario y la oficina; mesón y mesa en bienestar; baños de mujeres (2 sanitarios en cabina, lavamanos doble) y de hombres (sanitario, 2 orinales, lavamanos); casilleros y banca en el vestuario; generador, tableros de breakers y transferencia en la planta eléctrica; estantería en la bodega. La ficha de cada sala lo lista. |
 | **Zonas de lavado** | Cuarto de lavado, tres lavamanos de pedal y el lavado de botas en el paso del vestuario a producción, en el 3D, en el plano y en su propia lista. |
 | **Caminar** | Recorrido a pie en primera persona: arrastrar para mirar, flechas o WASD para caminar (Mayús para ir más rápido). Choca con muros y equipos; junto a cada escalera aparece el botón para subir o bajar de piso. Arriba se ve en qué sala y piso se está. Esc para salir. |
 | **Plano 2D** | La planta del piso elegido con salas coloreadas por uso, muros, puertas, ventanas, escaleras, lavamanos y áreas. En el piso 1 se ven además los equipos y las líneas de la sala de producción. |
@@ -44,14 +45,15 @@ Arriba a la izquierda se elige qué ver: **Edificio** (toda la infraestructura) 
 
 | Parte | Qué hace |
 | --- | --- |
-| **Vista 3D** | La sala completa: muros del DWG, 26 equipos y 7 líneas de proceso con el producto en movimiento. Los muros que tapan la vista se bajan solos. |
+| **Vista 3D** | La sala completa: muros del DWG, 27 equipos y 7 líneas de proceso con el producto en movimiento. Los muros que tapan la vista se bajan solos. Hay trabajadores en las dos dosificadoras, en las mesas de escurrido y moldeo y en el carro escabiladero. |
 | **Plano 2D** | Plano de arquitectura dibujado con los mismos datos: muros, puertas, ventanas, columnas, equipos, líneas, tomas y cotas en metros. |
 | **3D + 2D** | Las dos vistas lado a lado; al tocar un equipo en el plano, la cámara 3D va hasta él. |
 | **Recorrido** | 80 segundos por las 8 etapas: recibo, enfriamiento, descremado y pasteurización, tinas, queso, mantequilla, arequipe y yogurt. La vista que no es la principal aparece en un recuadro de la esquina. |
 | **Camión y operario** | El camión de leche está donde lo ubica el plano (bloque del DWG, 6,85 × 2,20 m), junto a la plataforma de recibo, cargado de cantinas. Un operario baja una cantina, la sube al volcador, la vacía al tanque recibidor y regresa con la vacía; el ciclo se repite y coincide con la etapa «Recibo de leche» del recorrido. La carga y el operario son ilustrativos. |
 | **Fichas** | Al tocar un equipo: qué es, capacidad, medidas, de dónde salen, qué recibe y a dónde envía, y lo que falta confirmar. |
 | **Color por estado** | Pinta cada equipo según qué tan segura es su medida (lista de la planta, catálogo, referencia web, estimado). |
-| **Documentación** | Descarga de planos, medidas, modelo 3D y video, uno por uno o todo en un ZIP. |
+| **Documentación** | Descarga de planos, medidas, modelo 3D y videos, uno por uno o todo en un ZIP. |
+| **Videos** | En el panel se ven el de la **planta completa** y el del **proceso de producción**, con botón para guardarlos, y abajo la lista de **videos por área** para descargar cada uno por separado. |
 
 ### Cómo moverse en el 3D
 
@@ -70,9 +72,11 @@ Arriba a la izquierda se elige qué ver: **Edificio** (toda la infraestructura) 
 | `documentos/planos/planta-marulanda-planos-arquitectonicos.pdf` | PDF | Versión de lectura del DWG arquitectónico: plantas, cubierta, fachadas y cortes. |
 | `documentos/medidas/planta-marulanda-medidas-equipos.xlsx` | Excel | Cada equipo con su medida, fuente, estado y pendiente; otros equipos de la planta y notas de la visita. |
 | `documentos/modelo/planta-marulanda-sala.glb` | GLB | Modelo 3D. Abre en Blender, SketchUp (con complemento para GLB) o el Visor 3D de Windows. |
-| `documentos/video/planta-marulanda-recorrido.mp4` | MP4, 1080p | Recorrido en alta calidad (78 s, sin audio). |
-| `documentos/video/planta-marulanda-recorrido-liviano.mp4` | MP4, 1080p | El mismo recorrido, liviano para WhatsApp. |
-| `documentos/planta-marulanda-documentacion.zip` | ZIP | Todo lo anterior con el video liviano y un LEAME. |
+| `documentos/video/planta-marulanda-planta-completa.mp4` | MP4, 1080p | Recorrido por toda la planta: exterior, los tres pisos separados y cada área (1:45, sin audio). |
+| `documentos/video/planta-marulanda-recorrido.mp4` | MP4, 1080p | Recorrido por el proceso de producción en alta calidad (1:20, sin audio), con el camión, el operario de recibo y los trabajadores. |
+| `documentos/video/planta-marulanda-recorrido-liviano.mp4` | MP4, 1080p | El mismo recorrido del proceso, liviano para WhatsApp. |
+| `documentos/video/areas/planta-marulanda-<área>.mp4` | MP4, 720p | Un video por área: calderas, entrega y cuarto frío, vestuario, laboratorio, administración, baños, planta eléctrica, piso −1, piso 2 y zonas de lavado. |
+| `documentos/planta-marulanda-documentacion.zip` | ZIP | Planos, medidas, modelo 3D, el video de la planta completa y un LEAME. |
 
 ---
 
@@ -93,6 +97,8 @@ Arriba a la izquierda se elige qué ver: **Edificio** (toda la infraestructura) 
 - Puerta entre la zona de recibo y la plataforma.
 - Número de canastas por carro y de carros.
 - Uso del espacio sobre la zona de producción 2 en el piso 2: el plano lo marca con aspa y el corte D-D' muestra losa.
+- Dosificadora de arequipe (pedido del 13 de noviembre de 2026): marca, modelo y medidas; se modeló igual a la de yogurt.
+- Qué batería de baños es de mujeres y cuál de hombres (se tomó la del norte para mujeres).
 - Equipos de las salas que aún no los tienen definidos.
 - Altos de los equipos que la lista no trae.
 
@@ -113,7 +119,8 @@ herramientas/
   documento.mjs             Envuelve el visor en su documento HTML (lo usan el servidor y el generador)
   construir-index.mjs       Genera index.html y visor.html
   plano-pdf.mjs             Arma el plano 2D en PDF (A3, 1:75) con Chrome sin ventana
-  codificar-video.sh        Convierte los cuadros grabados en los dos MP4
+  codificar-video.sh        Convierte los cuadros de un solo video en los dos MP4 del proceso
+  codificar-videos.sh       Convierte todos los videos grabados con grabarVarios (planta, proceso y áreas)
   LEAME-documentacion.txt   Texto que va dentro del ZIP
   edificio/
     dxf_cache.py            Lee el DXF (convertido del DWG) una sola vez y guarda líneas, textos y bloques en JSON
@@ -163,9 +170,10 @@ Con el servidor local abierto, desde la consola del navegador en el visor:
 | Modelo 3D (GLB) | `await window.__sala.exportGLB()` | — |
 | Imágenes de la portada | `await window.__sala.capturaLimpia('portada.jpg', {p: [...], t: [...]}, 2000, 1125)` | mover de `herramientas/salida/` a `assets/` |
 | Plano 2D (PDF) | `await window.__sala.exportarPlanoSVG()` | `node herramientas/plano-pdf.mjs` |
-| Video | `window.__sala.grabarVideo()` (unos minutos; deja los cuadros en la carpeta temporal) | `bash herramientas/codificar-video.sh` (necesita ffmpeg) |
+| Todos los videos | `window.__sala.grabarVarios(window.__sala.LISTA_VIDEOS)` (unos 20 minutos con la pestaña al frente; cada video queda en su carpeta de cuadros) | `bash herramientas/codificar-videos.sh` (necesita ffmpeg; se puede lanzar antes y va codificando cada video cuando termina) |
+| Un solo recorrido | `window.__sala.grabarVideo({ guion: 'area', arg: 'banos', carpeta: 'area-banos', ancho: 1280, alto: 720 })` | `bash herramientas/codificar-videos.sh "" area-banos` |
 
-El ZIP se arma con los archivos de `documentos/` (planos, medidas, modelo y video liviano) más `herramientas/LEAME-documentacion.txt` renombrado a `LEAME.txt`. Al terminar, correr `construir-index.mjs` para actualizar los pesos que muestra el visor.
+La grabación debe correr en la pestaña que está al frente: en segundo plano el navegador la frena. El ZIP se arma con los archivos de `documentos/` (planos, medidas, modelo y video de la planta completa) más `herramientas/LEAME-documentacion.txt` renombrado a `LEAME.txt`. Al terminar, correr `construir-index.mjs` para actualizar los pesos que muestra el visor.
 
 ---
 

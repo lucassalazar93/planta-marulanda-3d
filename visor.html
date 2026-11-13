@@ -325,6 +325,9 @@ dl.datos dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 #plano .esc2 { fill: none; stroke: var(--muted); stroke-width: 0.022; }
 #plano .lav2 { fill: var(--plano-bg); stroke: var(--lav); stroke-width: 0.04; }
 #plano .camion2 rect { fill: var(--panel); stroke: var(--ink); stroke-width: 0.03; }
+#plano .mueble2 { fill: var(--plano-bg); fill-opacity: 0.7; stroke: var(--muted); stroke-width: 0.02; pointer-events: none; }
+#plano .mueble2.div2 { fill: var(--muted); }
+#plano .persona2 { fill: #2e61a3; stroke: var(--plano-bg); stroke-width: 0.04; pointer-events: none; }
 #plano .camion2 line { stroke: var(--muted); stroke-width: 0.02; }
 #plano .sala2-t { font-weight: 700; fill: var(--ink); text-anchor: middle; pointer-events: none; paint-order: stroke; stroke: var(--plano-bg); stroke-width: 0.05px; stroke-linejoin: round; }
 #plano .sala2-a { font-weight: 500; fill: var(--muted); text-anchor: middle; pointer-events: none; font-variant-numeric: tabular-nums; }
@@ -371,14 +374,21 @@ dl.datos dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
     </section>
 
     <section class="sec" aria-labelledby="t-video" id="sec-video" hidden>
-      <h2 id="t-video">Video del recorrido</h2>
+      <h2 id="t-video">Videos del recorrido</h2>
+      <div class="seg" role="group" aria-label="Video que se ve">
+        <button type="button" data-video="planta" aria-pressed="true">Planta completa</button>
+        <button type="button" data-video="proceso" aria-pressed="false">Proceso de producción</button>
+      </div>
       <video id="video" controls preload="metadata" playsinline></video>
       <div class="fila">
         <button type="button" class="btn" id="b-guardar" hidden>Guardar video (MP4)</button>
         <button type="button" class="btn alt" id="b-enlace">Copiar enlace del visor</button>
       </div>
-      <p class="nota-video" id="video-estado">78 s · 1920 × 1080 · 12 MB · sin audio. Para compartirlo, guárdalo y envíalo por WhatsApp o por correo.</p>
+      <p class="nota-video" id="video-estado">Sin audio. Para compartirlo, guárdalo y envíalo por WhatsApp o por correo.</p>
       <p class="nota-video">Enlace del visor: <span class="sel" id="enlace-visor">https://claude.ai/artifact/XAUQug2jBGYToKcePVoimE</span>. <span id="enlace-nota">Solo lo abre quien tenga acceso desde el menú Compartir.</span></p>
+      <h2 id="t-videos-area">Videos por área</h2>
+      <ul class="docs" id="videos-area"></ul>
+      <p class="nota-video" id="videos-area-nota">Cada área en su propio video, para enviarla por separado.</p>
     </section>
 
     <section class="sec" aria-labelledby="t-docs" id="sec-docs">
@@ -433,6 +443,7 @@ dl.datos dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
       <p>Zona de recibo (4,25 m de ancho) y plataforma: plano de distribución de equipos. Ese plano no trae cotas, así que su ancho es una lectura a escala.</p>
       <p>Alturas: corte C-C' (Zona 1 con ≈ 5,7 m libres) y corte D-D' (la «L» con ≈ 2,8 m bajo losa).</p>
       <p>Edificio completo: plantas de los pisos −1, 1 y 2 y cortes del mismo DWG. Niveles N −2,85, N +0,15 y N +3,19; aleros a N +5,93 y cumbrera a N +7,23. Las áreas «modelo» se miden entre muros y pueden diferir unas décimas de las del plano. Escaleras, lavamanos y lavado de botas: posición leída del plano, forma simplificada. Camión: posición y tamaño del bloque del plano (6,85 × 2,20 m); la carga de cantinas y el operario son ilustrativos.</p>
+      <p>Mobiliario de oficinas, baños, vestuario, planta eléctrica y bodega, y los trabajadores en sus puestos: ilustrativos, para ver cómo se usa cada sala; no salen del plano. La dosificadora de arequipe es un pedido del cliente del 13 de noviembre de 2026, con medidas supuestas.</p>
       <p>Medidas de equipos: lista de dimensiones de la planta (10 de noviembre de 2026). Volcador, compresores y carro de canastas no están en la lista y siguen estimados.</p>
       <p>Agua helada del chiller al fermentador de yogurt: tubería proyectada con los ingenieros en la visita. Tomas eléctricas (220 V) y de agua (1/2"): posición aproximada leída del plano.</p>
     </section>
@@ -537,6 +548,8 @@ dl.datos dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
       <button type="button" class="op-rec" data-rec="lavado"><b>Zonas de lavado</b><span>Lavado de botas, lavamanos de pedal y cuarto de lavado</span><i></i></button>
       <div class="menu-rec-sub">Por piso, sala por sala</div>
       <div class="fila-rec"><button type="button" data-rec="piso" data-arg="p2">Piso 2</button><button type="button" data-rec="piso" data-arg="p1">Piso 1</button><button type="button" data-rec="piso" data-arg="p-1">Piso −1</button></div>
+      <div class="menu-rec-sub">Un área</div>
+      <div class="fila-rec"><select id="sel-area-rec" aria-label="Área para recorrer"></select><button type="button" class="btn" id="b-rec-area">▶ Recorrer</button></div>
       <div class="menu-rec-sub">Una sala</div>
       <div class="fila-rec"><select id="sel-sala-rec" aria-label="Sala para recorrer"></select><button type="button" class="btn" id="b-rec-sala">▶ Recorrer</button></div>
     </div>
@@ -644,6 +657,8 @@ const EQUIPOS = [
     que: 'Tanque de mezcla con agitador', cap: 'Por confirmar (L)', fuente: 'Lista de la planta: Ø 80 × 80 cm de alto. El motor del agitador va encima', recibe: 'Fermentador de yogurt', envia: 'Dosificadora de yogurt', preg: 'Capacidad en L.' },
   { id: 'dosificador', n: 'Dosificadora de yogurt', zona: 'prod2', tipo: 'dosificador', X: 406.21, Y: -19.31, L: 1000, A: 500, H: 1500, rot: 90, estado: 'planta',
     que: 'Dosificadora de pistón', cap: 'Por confirmar (envases por minuto)', fuente: 'Lista de la planta: 50 × 100 cm. Alto estimado', recibe: 'Tanque de mezcla de yogurt', envia: 'Cuarto frío', preg: 'Marca y modelo.' },
+  { id: 'dosif_arequipe', n: 'Dosificadora de arequipe', zona: 'prod2', tipo: 'dosificador', X: 407.75, Y: -16.62, L: 1000, A: 500, H: 1500, estado: 'prop',
+    que: 'Dosificadora de pistón para envasar el arequipe', cap: 'Por confirmar (envases por minuto)', fuente: 'Pedido del cliente (13 de noviembre de 2026): al lado de la marmita, para dosificar y empacar el arequipe. Medidas supuestas iguales a las de la dosificadora de yogurt', recibe: 'Marmita de arequipe', envia: 'Empaque y cuarto frío', preg: 'Marca, modelo y medidas reales.' },
 ];
 const porId = Object.fromEntries(EQUIPOS.map((e) => [e.id, e]));
 
@@ -655,7 +670,7 @@ const LINEAS = [
   { id: 'queso', n: 'Queso', d: 'Traslados a mano por el corredor sur', c: '#d4851a', mano: true,
     tramos: [['tina_at', 'mesa_escurrido'], ['tina_s', 'mesa_escurrido'], ['mesa_escurrido', 'hiladora'], ['hiladora', 'formadora'], ['formadora', 'mesa_moldeo'], ['mesa_moldeo', 'carro']] },
   { id: 'crema', n: 'Crema', d: 'De la descremadora a la mantequillera', c: '#d6b11f', rack: 2.45, tramos: [['descremadora', 'mantequillera']] },
-  { id: 'arequipe', n: 'Arequipe', d: 'Del pasteurizador a la marmita', c: '#9a5a2b', rack: 2.55, tramos: [['pasteurizador', 'marmita']] },
+  { id: 'arequipe', n: 'Arequipe', d: 'Del pasteurizador a la marmita y de la marmita a la dosificadora', c: '#9a5a2b', rack: 2.55, tramos: [['pasteurizador', 'marmita'], ['marmita', 'dosif_arequipe']] },
   { id: 'yogurt', n: 'Yogurt', d: 'Pasteurizador, fermentador, tanque de mezcla y dosificadora', c: '#c23d7d', rack: 2.65,
     tramos: [['pasteurizador', 'madurador'], ['madurador', 'mezclador'], ['mezclador', 'dosificador']] },
   { id: 'frio', n: 'Refrigeración de tanques', d: 'Supuesto: compresores 1 y 2 al TQ 5000, el 3 al TQ 3000', c: '#18a9bf', radio: 0.016, especial: 'frio' },
@@ -1346,6 +1361,7 @@ function animarPartes(t) {
     else if (a.tipo === 'volcar') a.obj.rotation.z = -0.2 - 0.6 * (0.5 - 0.5 * Math.cos(t * 0.9));
   }
   animarOperario(tour.activo && tour.g && tour.g.id === 'proceso' ? tour.t : t);
+  animarTrabajadores(t);
 }
 function actualizarFlujos(t) {
   for (const f of flujos) {
@@ -1522,9 +1538,9 @@ const PASOS = [
   { id: 'tinas', dur: 8, t: 'Tinas de 2.000 L', d: 'La leche entra a la tina semiautomática y a la tina sencilla, donde se cuaja y se corta.', p: [3.2, 4.2, 2.4], tg: [-0.9, 1.0, -3.0], der: [-1.6, 0.3, 0.8], lineas: ['leche'], eq: ['tina_at', 'tina_s'] },
   { id: 'queso', dur: 10, t: 'Queso', d: 'La cuajada se lleva a mano a la mesa de escurrido, la hiladora, la formadora y la mesa de moldeo. El queso sale en canastas apiladas hacia la bodega.', p: [2.6, 6.8, 5.6], tg: [2.6, 0.7, -2.4], der: [7.0, 0, 0], derT: [7.0, 0, 0], cortarL: true, lineas: ['queso'], eq: ['mesa_escurrido', 'hiladora', 'formadora', 'mesa_moldeo', 'carro'] },
   { id: 'mantequilla', dur: 7, t: 'Mantequilla', d: 'La crema de la descremadora llega por tubería a la mantequillera.', p: [6.6, 3.6, -1.6], tg: [11.6, 0.9, -3.5], der: [0.5, 0.1, 0.6], lineas: ['crema'], eq: ['mantequillera'] },
-  { id: 'arequipe', dur: 7, t: 'Arequipe', d: 'La leche pasteurizada llega a la marmita, que la cocina con agitador raspador.', p: [9.6, 4.4, -2.8], tg: [11.6, 0.8, 2.0], der: [-0.6, 0.1, 0.4], lineas: ['arequipe'], eq: ['marmita'] },
+  { id: 'arequipe', dur: 7, t: 'Arequipe', d: 'La leche pasteurizada llega a la marmita, que la cocina con agitador raspador. A su lado, la dosificadora lo envasa.', p: [9.6, 4.4, -2.8], tg: [11.6, 0.8, 2.0], der: [-0.6, 0.1, 0.4], lineas: ['arequipe'], eq: ['marmita'] },
   { id: 'yogurt', dur: 9, t: 'Yogurt', d: 'Del pasteurizador pasa al fermentador, enfriado con agua del chiller, y luego al tanque de mezcla y a la dosificadora.', p: [5.4, 4.9, 11.2], tg: [9.9, 1.0, 4.4], der: [1.6, 0.2, -0.4], lineas: ['yogurt', 'chiller'], eq: ['madurador', 'mezclador', 'dosificador'] },
-  { id: 'cierre', dur: 7, t: 'Toda la sala en marcha', d: '26 equipos y 7 líneas de proceso. Modelado preliminar.', p: [-17, 21, 22], tg: [0.5, 0.6, 0.6], der: [12, -3, -5], lineas: null, eq: [] },
+  { id: 'cierre', dur: 7, t: 'Toda la sala en marcha', d: `${EQUIPOS.length} equipos y ${LINEAS.length} líneas de proceso. Modelado preliminar.`, p: [-17, 21, 22], tg: [0.5, 0.6, 0.6], der: [12, -3, -5], lineas: null, eq: [] },
 ];
 const INICIO = []; let DUR_TOUR = 0;
 for (const p of PASOS) { INICIO.push(DUR_TOUR); DUR_TOUR += p.dur; }
@@ -1532,12 +1548,14 @@ const N_ETAPAS = PASOS.length - 2;
 const suave = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 // Un guion es una lista de pasos con su tiempo de inicio. El del proceso (PASOS) es el del video;
 // los del edificio (planta completa, por piso, por sala, zonas de lavado) se arman con los datos del DWG.
-function guion(id, nombre, pasos, etiqueta = 'Parada') {
+function guion(id, nombre, pasos, etiqueta = 'Parada', extra = {}) {
   const inicio = []; let dur = 0;
   for (const q of pasos) { inicio.push(dur); dur += q.dur; }
-  return { id, nombre, pasos, inicio, dur, n: pasos.length - 2, etiqueta };
+  return { id, nombre, pasos, inicio, dur, n: pasos.length - 2, etiqueta, titulo: nombre, subtitulo: 'Recorrido · modelado preliminar', resumen: '', ...extra };
 }
-const G_PROCESO = guion('proceso', 'Proceso de producción', PASOS, 'Etapa');
+const G_PROCESO = guion('proceso', 'Proceso de producción', PASOS, 'Etapa', {
+  titulo: 'Sala de recibo y producción', subtitulo: 'Recorrido por el proceso · modelado preliminar', resumen: `${EQUIPOS.length} equipos · ${LINEAS.length} líneas de proceso · 8 etapas`,
+});
 const tour = { activo: false, t: 0, paso: -1, g: G_PROCESO };
 
 function poseTour(t) {
@@ -1644,7 +1662,7 @@ function cargarLogos() {
   })));
 }
 function dibujarOverlay(ctx, w, h, t) {
-  const r = poseTour(t), P = r.P, k = r.k, u = r.u;
+  const r = poseTour(t), P = r.P, k = r.k, u = r.u, G = tour.g;
   const s = w / 1920;
   const alfaPaso = Math.min(1, Math.max(0, (u - (k === 0 ? 0.2 : 1.4)) / 0.6)) * Math.min(1, Math.max(0, (P.dur - u) / 0.35));
   // Etiquetas de los equipos de la etapa
@@ -1670,7 +1688,7 @@ function dibujarOverlay(ctx, w, h, t) {
     const lw = LOGOS.eq ? (LOGOS.eq.width / LOGOS.eq.height) * lh : 0;
     const tx = hx + 24 * s + (lw ? lw + 30 * s : 0);
     ctx.font = `700 ${34 * s}px ${FD}`;
-    const cw = tx - hx + Math.max(ctx.measureText('Sala de recibo y producción').width, 380 * s) + 28 * s;
+    const cw = tx - hx + Math.max(ctx.measureText(G.titulo).width, 380 * s) + 28 * s;
     rr(ctx, hx, hy, cw, hh, 10 * s); ctx.fillStyle = 'rgba(255,255,255,0.95)'; ctx.fill();
     if (LOGOS.eq) {
       ctx.drawImage(LOGOS.eq, hx + 22 * s, hy + (hh - lh) / 2, lw, lh);
@@ -1678,7 +1696,7 @@ function dibujarOverlay(ctx, w, h, t) {
     }
     ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
     ctx.fillStyle = '#586773'; ctx.font = `600 ${18 * s}px ${FD}`; ctx.fillText('PLANTA DE LÁCTEOS · MARULANDA, CALDAS', tx, hy + 40 * s);
-    ctx.fillStyle = '#15202a'; ctx.font = `700 ${34 * s}px ${FD}`; ctx.fillText('Sala de recibo y producción', tx, hy + 76 * s);
+    ctx.fillStyle = '#15202a'; ctx.font = `700 ${34 * s}px ${FD}`; ctx.fillText(G.titulo, tx, hy + 76 * s);
     // Crédito de Lukbyte abajo a la derecha
     ctx.font = `500 ${18 * s}px ${FB}`;
     const credito = 'Diseñado y desarrollado por Lukbyte', crw = ctx.measureText(credito).width;
@@ -1692,7 +1710,7 @@ function dibujarOverlay(ctx, w, h, t) {
     ctx.restore();
   }
   // Título inicial y cierre
-  if (k === 0 || k === PASOS.length - 1) {
+  if (k === 0 || k === G.pasos.length - 1) {
     const a = k === 0 ? Math.min(1, (P.dur - u) / 0.8) : Math.min(1, Math.max(0, (u - 1.2) / 0.8));
     ctx.save(); ctx.globalAlpha = Math.max(0, a);
     const bw = 1080 * s, bh = (k === 0 ? 350 : 420) * s, bx = (w - bw) / 2, by = (h - bh) / 2;
@@ -1707,11 +1725,11 @@ function dibujarOverlay(ctx, w, h, t) {
     if (k === 0) {
       placaEq(w / 2, by + 34 * s, 80 * s);
       ctx.fillStyle = '#9fd3e6'; ctx.font = `600 ${24 * s}px ${FD}`; ctx.fillText('PRESENTA · PLANTA DE LÁCTEOS · MARULANDA, CALDAS', w / 2, by + 192 * s);
-      ctx.fillStyle = '#ffffff'; ctx.font = `700 ${72 * s}px ${FD}`; ctx.fillText('Sala de recibo y producción', w / 2, by + 266 * s);
-      ctx.fillStyle = '#c9d4da'; ctx.font = `500 ${26 * s}px ${FB}`; ctx.fillText('Recorrido por el proceso · modelado preliminar', w / 2, by + 314 * s);
+      ctx.fillStyle = '#ffffff'; ctx.font = `700 ${72 * s}px ${FD}`; ctx.fillText(G.titulo, w / 2, by + 266 * s);
+      ctx.fillStyle = '#c9d4da'; ctx.font = `500 ${26 * s}px ${FB}`; ctx.fillText(G.subtitulo, w / 2, by + 314 * s);
     } else {
       ctx.fillStyle = '#ffffff'; ctx.font = `700 ${64 * s}px ${FD}`; ctx.fillText(P.t, w / 2, by + 86 * s);
-      ctx.fillStyle = '#9fd3e6'; ctx.font = `600 ${32 * s}px ${FD}`; ctx.fillText('26 equipos · 7 líneas de proceso · 8 etapas', w / 2, by + 138 * s);
+      ctx.fillStyle = '#9fd3e6'; ctx.font = `600 ${32 * s}px ${FD}`; ctx.fillText(G.resumen, w / 2, by + 138 * s);
       ctx.fillStyle = '#c9d4da'; ctx.font = `500 ${24 * s}px ${FB}`; ctx.fillText('Modelado preliminar', w / 2, by + 178 * s);
       ctx.fillStyle = 'rgba(255,255,255,0.14)'; ctx.fillRect(bx + 60 * s, by + 206 * s, bw - 120 * s, 1.5 * s);
       ctx.fillStyle = '#9aa9b4'; ctx.font = `500 ${20 * s}px ${FB}`;
@@ -1728,16 +1746,16 @@ function dibujarOverlay(ctx, w, h, t) {
     ctx.restore();
   }
   // Tarjeta de la etapa
-  if (k > 0 && k < PASOS.length - 1) {
+  if (k > 0 && k < G.pasos.length - 1) {
     ctx.save(); ctx.globalAlpha = alfaPaso;
     ctx.font = `500 ${29 * s}px ${FB}`;
     const lns = lineasTexto(ctx, P.d, 820 * s);
     const cw = 900 * s, ch = (150 + lns.length * 40) * s, cx = 40 * s, cy = h - ch - 56 * s;
     rr(ctx, cx, cy, cw, ch, 12 * s); ctx.fillStyle = 'rgba(245,247,248,0.94)'; ctx.fill();
-    const cols = (P.lineas || []).map((id) => LINEAS.find((L) => L.id === id).c);
+    const cols = P.lineas ? P.lineas.map((id) => LINEAS.find((L) => L.id === id).c) : (P.sala && salaPorId[P.sala] ? [TIPOS[salaPorId[P.sala].tipo].c] : []);
     cols.forEach((c, i) => { ctx.fillStyle = c; ctx.fillRect(cx, cy + 14 * s + i * ((ch - 28 * s) / cols.length), 8 * s, (ch - 28 * s) / cols.length - 4 * s); });
     ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-    ctx.fillStyle = '#0b6d8e'; ctx.font = `700 ${22 * s}px ${FD}`; ctx.fillText(`ETAPA ${k} DE ${N_ETAPAS}`, cx + 36 * s, cy + 46 * s);
+    ctx.fillStyle = '#0b6d8e'; ctx.font = `700 ${22 * s}px ${FD}`; ctx.fillText(G.n > 1 ? `${G.etiqueta.toUpperCase()} ${k} DE ${G.n} · ${G.titulo.toUpperCase()}` : G.titulo.toUpperCase(), cx + 36 * s, cy + 46 * s);
     ctx.fillStyle = '#15202a'; ctx.font = `700 ${52 * s}px ${FD}`; ctx.fillText(P.t, cx + 36 * s, cy + 102 * s);
     ctx.fillStyle = '#33414c'; ctx.font = `500 ${29 * s}px ${FB}`;
     lns.forEach((ln, i) => ctx.fillText(ln, cx + 36 * s, cy + (146 + i * 40) * s));
@@ -1746,20 +1764,24 @@ function dibujarOverlay(ctx, w, h, t) {
   // Barra de avance por etapas
   ctx.save();
   const by = h - 14 * s, gap = 6 * s, totalW = w - 80 * s;
-  PASOS.forEach((Q, i) => {
-    const x0 = 40 * s + (INICIO[i] / DUR_TOUR) * totalW, ww = (Q.dur / DUR_TOUR) * totalW - gap;
+  G.pasos.forEach((Q, i) => {
+    const x0 = 40 * s + (G.inicio[i] / G.dur) * totalW, ww = (Q.dur / G.dur) * totalW - gap;
     ctx.fillStyle = 'rgba(21,32,42,0.18)'; ctx.fillRect(x0, by, ww, 6 * s);
-    const f = Math.min(1, Math.max(0, (t - INICIO[i]) / Q.dur));
+    const f = Math.min(1, Math.max(0, (t - G.inicio[i]) / Q.dur));
     ctx.fillStyle = '#0b6d8e'; ctx.fillRect(x0, by, ww * f, 6 * s);
   });
   ctx.restore();
 }
 
-async function grabarVideo({ fps = 30, ancho = 1920, alto = 1080, desde = 0, hasta = DUR_TOUR, calidad = 0.92 } = {}) {
+async function grabarVideo({ guion: gid = 'proceso', arg, carpeta = '', fps = 30, ancho = 1920, alto = 1080, desde = 0, hasta, calidad = 0.92 } = {}) {
   if (!['127.0.0.1', 'localhost'].includes(location.hostname)) throw new Error('Solo desde el servidor local');
   await document.fonts.ready;
   await cargarLogos();
-  grabando = true; detenerTour(); seleccionar(null, false); tour.g = G_PROCESO;
+  grabando = true; detenerTour(); seleccionar(null, false);
+  if (paseo.activo) salirPaseo();
+  const G = crearGuion(gid, arg); tour.g = G; hasta = hasta ?? G.dur;
+  edif.exp = 0; edif.expObj = 0;
+  const v = encodeURIComponent(carpeta);
   const prevPR = renderer.getPixelRatio();
   renderer.setPixelRatio(1); renderer.setSize(ancho, alto, false);
   camera.aspect = ancho / alto; camera.updateProjectionMatrix();
@@ -1772,15 +1794,15 @@ async function grabarVideo({ fps = 30, ancho = 1920, alto = 1080, desde = 0, has
   for (let i = i0; i < i1; i++) {
     const t = i / fps;
     aplicarTour(t);
-    animarPartes(t); actualizarFlujos(t); aplicarMuros();
+    animarEdificio(1 / fps); animarPartes(t); actualizarFlujos(t); aplicarMuros();
     renderer.render(scene, camera);
     ctx.drawImage(renderer.domElement, 0, 0, ancho, alto);
     dibujarOverlay(ctx, ancho, alto, t);
     const blob = await new Promise((res) => lienzo.toBlob(res, 'image/jpeg', calidad));
-    await fetch(`/cuadro?i=${i}`, { method: 'POST', body: blob });
+    await fetch(`/cuadro?i=${i}&v=${v}`, { method: 'POST', body: blob });
     progreso.i = i + 1;
   }
-  await fetch('/fin', { method: 'POST', body: JSON.stringify({ fps, desde: i0, hasta: i1 }) });
+  await fetch(`/fin?v=${v}`, { method: 'POST', body: JSON.stringify({ fps, desde: i0, hasta: i1, guion: G.id, ancho, alto }) });
   progreso.listo = true;
   tour.paso = -1; detenerTour();
   renderer.setPixelRatio(prevPR); ajustar(); aplicarTema();
@@ -2336,20 +2358,31 @@ new ResizeObserver(() => colocarNav()).observe($('#p3d'));
 // ---------- Video y documentación: en Claude se descargan con permiso del visor; en el sitio publicado, con enlaces normales
 const EN_CLAUDE = !!(window.claude && typeof window.claude.use === 'function');
 const SITIO_URL = 'https://planta-marulanda-3d.vercel.app';
-const VIDEO_URL = EN_CLAUDE ? '/_blob/3af0da5eb92435342eba1c424f8b25ee' : 'documentos/video/planta-marulanda-recorrido-liviano.mp4';
-const VIDEO_NOMBRE = 'Sala-recibo-produccion-Marulanda-recorrido.mp4';
+// En Claude los dos videos principales salen de los archivos subidos al artifact; en el sitio, de documentos/video
+const VIDEOS = {
+  planta: { f: 'documentos/video/planta-marulanda-planta-completa.mp4', guardar: 'documentos/video/planta-marulanda-planta-completa.mp4', blob: '/_blob/PENDIENTE_PLANTA', nombre: 'Planta-lacteos-Marulanda-planta-completa.mp4' },
+  proceso: { f: 'documentos/video/planta-marulanda-recorrido-liviano.mp4', guardar: 'documentos/video/planta-marulanda-recorrido.mp4', blob: '/_blob/3af0da5eb92435342eba1c424f8b25ee', nombre: 'Sala-recibo-produccion-Marulanda-recorrido.mp4' },
+};
+// Un video que todavía no se ha grabado no se muestra: en el sitio se sabe por window.TAMANOS; en Claude, por su asset
+const VIDEOS_AREA_LISTOS = false; // en Claude: pasar a true cuando los videos por área estén publicados en el sitio
+const existe = (f) => !window.TAMANOS || !!window.TAMANOS[f];
+const videoListo = (k) => (EN_CLAUDE ? !VIDEOS[k].blob.includes('PENDIENTE') : existe(VIDEOS[k].f));
+let videoSel = videoListo('planta') ? 'planta' : 'proceso';
+const urlVideo = (k) => (EN_CLAUDE ? VIDEOS[k].blob : VIDEOS[k].f);
+const VIDEO_URL = urlVideo(videoSel);
 const ENLACE_VISOR = EN_CLAUDE ? 'https://claude.ai/artifact/XAUQug2jBGYToKcePVoimE' : location.origin + location.pathname;
 const DOCS = [
   { n: 'Plano 2D de la sala', d: 'Muros, equipos, líneas de proceso y cotas · A3', f: 'documentos/planos/planta-marulanda-plano-2d-sala.pdf', t: 'PDF' },
   { n: 'Planos arquitectónicos', d: 'Plantas, fachadas y cortes leídos del DWG', f: 'documentos/planos/planta-marulanda-planos-arquitectonicos.pdf', t: 'PDF' },
   { n: 'Medidas de los equipos', d: 'Medida, fuente y estado de cada equipo', f: 'documentos/medidas/planta-marulanda-medidas-equipos.xlsx', t: 'XLSX' },
   { n: 'Modelo 3D', d: 'Abre en Blender, SketchUp o el Visor 3D de Windows', f: 'documentos/modelo/planta-marulanda-sala.glb', t: 'GLB' },
-  { n: 'Video del recorrido', d: '78 s · 1080p · alta calidad', f: 'documentos/video/planta-marulanda-recorrido.mp4', t: 'MP4' },
-  { n: 'Video del recorrido, liviano', d: 'Para enviar por WhatsApp', f: 'documentos/video/planta-marulanda-recorrido-liviano.mp4', t: 'MP4' },
+  { n: 'Video de la planta completa', d: 'Exterior, los tres pisos y cada área · 1080p', f: 'documentos/video/planta-marulanda-planta-completa.mp4', t: 'MP4' },
+  { n: 'Video del proceso de producción', d: '8 etapas · 1080p · alta calidad', f: 'documentos/video/planta-marulanda-recorrido.mp4', t: 'MP4' },
+  { n: 'Video del proceso, liviano', d: 'Para enviar por WhatsApp', f: 'documentos/video/planta-marulanda-recorrido-liviano.mp4', t: 'MP4' },
 ];
 const tamano = (f) => { const b = (window.TAMANOS || {})[f]; if (!b) return ''; return b >= 1048576 ? `${(b / 1048576).toLocaleString('es-CO', { maximumFractionDigits: 1 })} MB` : `${Math.max(1, Math.round(b / 1024))} kB`; };
 const urlDoc = (f) => (EN_CLAUDE ? `${SITIO_URL}/${f}` : f);
-$('#docs').innerHTML = DOCS.map((d) => `<li><a href="${urlDoc(d.f)}" ${EN_CLAUDE ? 'target="_blank" rel="noopener"' : 'download'}><span class="tipo">${d.t}</span><span class="nm">${d.n}<small>${d.d}</small></span><span class="tam">${tamano(d.f)}</span></a></li>`).join('');
+$('#docs').innerHTML = DOCS.filter((d) => (d.f === VIDEOS.planta.f ? videoListo('planta') : EN_CLAUDE || existe(d.f))).map((d) => `<li><a href="${urlDoc(d.f)}" ${EN_CLAUDE ? 'target="_blank" rel="noopener"' : 'download'}><span class="tipo">${d.t}</span><span class="nm">${d.n}<small>${d.d}</small></span><span class="tam">${tamano(d.f)}</span></a></li>`).join('');
 const zip = 'documentos/planta-marulanda-documentacion.zip';
 $('#b-zip').href = urlDoc(zip);
 if (tamano(zip)) $('#b-zip').textContent = `Descargar todo (ZIP · ${tamano(zip)})`;
@@ -2369,15 +2402,28 @@ else $('#b-inicio').hidden = false;
 $('#enlace-visor').textContent = ENLACE_VISOR;
 if (!EN_CLAUDE) $('#enlace-nota').textContent = 'Compártelo por WhatsApp o por correo.';
 function avisoVideo(txt) { $('#video-estado').textContent = txt; }
+function ponerVideo(k) {
+  videoSel = k;
+  document.querySelectorAll('[data-video]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.video === k)));
+  $('#video').src = urlVideo(k);
+  avisoVideo('Sin audio. Para compartirlo, guárdalo y envíalo por WhatsApp o por correo.');
+}
+document.querySelectorAll('[data-video]').forEach((b) => b.addEventListener('click', () => ponerVideo(b.dataset.video)));
+$('#video').addEventListener('loadedmetadata', () => {
+  const v = $('#video'), d = v.duration, f = VIDEOS[videoSel].f;
+  if (d) avisoVideo(`${mmss(d)} · ${v.videoWidth} × ${v.videoHeight}${tamano(f) ? ` · ${tamano(f)}` : ''} · sin audio. Para compartirlo, guárdalo y envíalo por WhatsApp o por correo.`);
+});
+if (EN_CLAUDE) { $('#videos-area-nota').textContent = `Se descargan desde el sitio publicado: ${SITIO_URL}`; }
+document.querySelector('[data-video="planta"]').parentElement.hidden = !(videoListo('planta') && videoListo('proceso'));
 if (VIDEO_URL) {
   $('#sec-video').hidden = false;
-  $('#video').src = VIDEO_URL;
+  ponerVideo(videoSel);
   if (!EN_CLAUDE) {
     const b = $('#b-guardar');
     b.hidden = false;
     b.addEventListener('click', () => {
       const a = document.createElement('a');
-      a.href = 'documentos/video/planta-marulanda-recorrido.mp4'; a.download = VIDEO_NOMBRE;
+      a.href = VIDEOS[videoSel].guardar; a.download = VIDEOS[videoSel].nombre;
       document.body.appendChild(a); a.click(); a.remove();
       avisoVideo('Descarga iniciada. Ya lo puedes enviar por WhatsApp o por correo.');
     });
@@ -2391,10 +2437,10 @@ if (VIDEO_URL) {
       b.disabled = true;
       avisoVideo('Preparando el archivo…');
       try {
-        const r = await fetch(VIDEO_URL);
+        const r = await fetch(urlVideo(videoSel));
         if (!r.ok) throw { code: 'unavailable' };
         const blob = await r.blob();
-        await dl.save({ filename: VIDEO_NOMBRE, data: blob });
+        await dl.save({ filename: VIDEOS[videoSel].nombre, data: blob });
         avisoVideo('Video guardado. Ya lo puedes enviar por WhatsApp o por correo.');
       } catch (e) {
         const c = e && e.code;
@@ -2440,14 +2486,24 @@ const NOTAS_SALA = {
   'Espacio sobre producción 2': 'El plano del piso 2 la marca con aspa y el corte D-D\' muestra losa a N +3,19. Uso por confirmar.',
   'Doble altura de producción': 'Vacío sobre la zona de producción 1: desde el piso 2 se ve la sala de abajo.',
   'Doble altura de recibo': 'Vacío sobre la zona de recibo.',
-  'Zona administrativa': 'En el plano, sus 25,15 m² incluyen la escalera a la oficina.',
+  'Zona administrativa': 'Dos puestos de trabajo con computador y un archivador (mobiliario ilustrativo). En el plano, sus 25,15 m² incluyen la escalera a la oficina.',
   'Hall': 'En el plano, 8,85 m² sin contar la escalera.',
   'Almacén de empaques': 'Queda encima del cuarto frío y de la entrega de producto.',
   'Cuarto de lavado': 'Zona de lavado del plano (1,85 m²).',
   'Zona de recibo': 'Sala modelada con sus equipos (ver «Sala de producción»).',
   'Zona de producción 1': 'Sala modelada con sus equipos (ver «Sala de producción»). Tiene lavamanos de pedal y lavado de botas.',
-  'Zona de producción 2': 'Sala modelada con sus equipos (ver «Sala de producción»).',
+  'Zona de producción 2': 'Sala modelada con sus equipos (ver «Sala de producción»). Junto a la marmita va la dosificadora de arequipe.',
+  'Baños de mujeres': 'Dos sanitarios en cabina y lavamanos doble con espejo. El plano marca la batería de baños; la distribución es una propuesta.',
+  'Baños de hombres': 'Un sanitario en cabina, dos orinales y lavamanos con espejo. Distribución propuesta.',
+  'Vestuario': 'Casilleros para guardar las cosas y una banca. De aquí se pasa a producción por el lavado de botas.',
+  'Atención al usuario': 'Puesto de atención con computador y sillas para visitantes (mobiliario ilustrativo).',
+  'Oficina': 'Escritorio con computador, estantería y archivador (mobiliario ilustrativo).',
+  'Zona de bienestar': 'Mesón con microondas y cafetera, y una mesa con sillas (mobiliario ilustrativo).',
+  'Planta eléctrica': 'Generador y cuarto de tableros de breakers con la transferencia automática. Ilustrativos: faltan potencia, marca y medidas.',
+  'Bodega': 'Estantería (ilustrativa).',
 };
+// La batería de baños 1 (norte) se usa como baños de mujeres y la 2 como de hombres
+const RENOMBRAR = { 'Batería de baños 1': 'Baños de mujeres', 'Batería de baños 2': 'Baños de hombres' };
 const SIN_EQUIPOS = ['vacio', 'circulacion', 'escalera'];
 // Puntos de lavado leídos del plano (lavamanos de pedal) y de la implantación general (lavado de botas)
 const LAVADO = [
@@ -2524,7 +2580,7 @@ const SALAS = [];
 for (const p of EDIF.pisos) p.salas.forEach((s, i) => {
   let c = centroPoly(s.poly);
   if (!enPoly(s.poly, c[0], c[1])) c = s.etiqueta;
-  SALAS.push({ ...s, id: `${p.id}-${i}`, piso: p.id, c, visor: p.id === 'p1' && SALAS_VISOR.includes(s.nombre) });
+  SALAS.push({ ...s, nombre: RENOMBRAR[s.nombre] || s.nombre, id: `${p.id}-${i}`, piso: p.id, c, visor: p.id === 'p1' && SALAS_VISOR.includes(s.nombre) });
 });
 const salaPorId = Object.fromEntries(SALAS.map((s) => [s.id, s]));
 const salaEn = (f, X, Y) => SALAS.find((s) => s.piso === f && enPoly(s.poly, X, Y)) || null;
@@ -2722,6 +2778,7 @@ function aplicarEdificio() {
   const p1 = n >= 1;
   edificio.visible = equiposG.visible = lineasG.visible = lavadoG.visible = camionG.visible = operarioG.visible = p1;
   tomasG.visible = p1 && $('#o-tomas').checked;
+  personasG.visible = p1;
   techoG.visible = ed && (paseo.activo || sel === 'todo');
   if (!terreno) terreno = edificio.getObjectByName('Terreno');
   if (terreno) terreno.visible = !(ed && edif.expObj > 0);
@@ -2832,7 +2889,8 @@ function fichaSalaHTML(s) {
   const T = TIPOS[s.tipo], p = PISO[s.piso], alto = altoSala(s);
   const eqs = (ZONAS_SALA[s.nombre] || []).flatMap((z) => EQUIPOS.filter((e) => e.zona === z));
   const lav = LAVADO.filter((L) => L.sala === s.id);
-  const sinEq = SIN_EQUIPOS.includes(s.tipo);
+  // salas de apoyo con mobiliario (baños, oficinas, vestuario, planta eléctrica): no esperan equipos de proceso
+  const sinEq = SIN_EQUIPOS.includes(s.tipo) || (!!mueblesDe(s) && !['produccion', 'frio', 'laboratorio', 'porDefinir'].includes(s.tipo));
   const equipos = eqs.length ? `${eqs.length}: ${eqs.map((e) => e.n).join(', ')}` : (sinEq ? '—' : 'Por definir');
   const nota = NOTAS_SALA[s.nombre] || (sinEq ? '' : 'Equipos por definir. La sala ya está modelada con sus muros, puertas y ventanas para ubicarlos cuando se decidan.');
   const lavTxt = lav.length ? lav.map((L) => L.n).join(', ') : (s.tipo === 'lavado' ? 'Sí, es zona de lavado' : '');
@@ -2844,7 +2902,7 @@ function fichaSalaHTML(s) {
       <div><span>Área modelo m²</span><b>${m2(s.area_calc)}</b></div>
       <div><span>Alto libre m</span><b>${alto ? '≈ ' + m2(alto) : '—'}</b></div>
     </div>
-    <dl class="datos"><dt>Equipos</dt><dd>${equipos}</dd>${lavTxt ? `<dt>Lavado</dt><dd>${lavTxt}</dd>` : ''}</dl>
+    <dl class="datos"><dt>Equipos</dt><dd>${equipos}</dd>${mueblesDe(s) ? `<dt>Mobiliario</dt><dd>${mueblesDe(s)}</dd>` : ''}${lavTxt ? `<dt>Lavado</dt><dd>${lavTxt}</dd>` : ''}</dl>
     ${nota ? `<div class="pendiente">${nota}</div>` : ''}
     <div class="acciones"><button type="button" class="btn" data-rec-sala="${s.id}">▶ Recorrer esta sala</button>${s.tipo === 'vacio' ? '' : `<button type="button" class="btn alt" data-pie="${s.id}">Caminar por esta sala</button>`}${eqs.length ? '<button type="button" class="btn alt" data-ver-sala="1">Ver en «Sala de producción»</button>' : ''}</div>`;
 }
@@ -2936,6 +2994,7 @@ function construirObstaculos() {
   for (const [X, Y] of COLUMNAS) for (const f of ['p1', 'p2']) add(f, rectP(X - 0.15, X + 0.15, Y - 0.15, Y + 0.15));
   for (const e of EQUIPOS) { const h = huella(e); add('p1', rectP(e.X - h.hx, e.X + h.hx, e.Y - h.hz, e.Y + h.hz)); }
   add('p1', rectP(CAMION.X0, CAMION.X1, CAMION.Y0, CAMION.Y1));
+  for (const m of MUEBLES) add(m.piso, rectP(...m.rect));
   for (const L of LAVADO) if (!L.botas) add('p1', L.cara === 'O' ? rectP(L.X - 0.2, L.X + 0.2, L.Y - 0.25, L.Y + 0.25) : rectP(L.X - 0.25, L.X + 0.25, L.Y - 0.2, L.Y + 0.2));
 }
 function libre(f, X, Y) {
@@ -3102,6 +3161,12 @@ function construirPlano2DEdificio() {
       }
       if (e.descanso) { const [x0, x1, y0, y1] = e.descanso; sv('polygon', { points: pts2(rectP(x0, x1, y0, y1)), class: 'esc2' }, ge); }
     }
+    for (const m of MUEBLES.filter((x) => x.piso === p.id)) {
+      const [x0, x1, y0, y1] = m.rect;
+      if (m.tipo === 'persona') sv('circle', { cx: wx((x0 + x1) / 2), cy: wz((y0 + y1) / 2), r: 0.22, class: 'persona2' }, gp);
+      else if (m.tipo === 'sanitario') sv('ellipse', { cx: wx((x0 + x1) / 2), cy: wz((y0 + y1) / 2), rx: (x1 - x0) / 2, ry: (y1 - y0) / 2, class: 'mueble2' }, gp);
+      else sv('polygon', { points: pts2(rectP(x0, x1, y0, y1)), class: `mueble2${m.tipo === 'division' ? ' div2' : ''}` }, gp);
+    }
     if (p.id === 'p1') for (const L of LAVADO) {
       const r = L.botas ? rectP(L.X - 0.4, L.X + 0.4, L.Y - 0.5, L.Y + 0.5) : L.cara === 'O' ? rectP(L.X - 0.2, L.X + 0.2, L.Y - 0.25, L.Y + 0.25) : rectP(L.X - 0.25, L.X + 0.25, L.Y - 0.2, L.Y + 0.2);
       sv('polygon', { points: pts2(r), class: 'lav2' }, gp);
@@ -3170,6 +3235,7 @@ function textoSala(s) {
   let d = `${NOMBRE_PISO[s.piso]} · ${areaDe(s)} m²`;
   if (eqs.length) d += ` · ${eqs.length} equipos: ${eqs.slice(0, 4).map((e) => e.n).join(', ')}${eqs.length > 4 ? ' y más' : ''}.`;
   else if (s.tipo === 'vacio') d += ' · Vacío sobre la sala de abajo.';
+  else if (mueblesDe(s)) d += ` · ${mueblesDe(s)}.`;
   else if (!SIN_EQUIPOS.includes(s.tipo)) d += ' · Equipos por definir.';
   else d += '.';
   if (lav.length) d += ` Lavado: ${[...new Set(lav.map((L) => L.n.toLowerCase()))].join(' y ')}.`;
@@ -3192,14 +3258,14 @@ function guionPlanta() {
     grupo('Entrega de producto y cuarto frío', `El producto sale por la zona de entrega (${A('Zona de entrega de producto')} m²); el cuarto frío (${A('Cuarto frío')} m²) queda a su lado. De aquí sube la escalera al almacén de empaques.`, g('Zona de entrega de producto', 'Cuarto frío')),
     grupo('Vestuario y lavado de botas', `Del vestuario (${A('Vestuario')} m²) se pasa a producción por el lavado de botas; junto a la puerta hay un lavamanos de pedal.`, g('Vestuario')),
     grupo('Laboratorio', `Laboratorio de ${A('Laboratorio')} m², con puerta directa a la zona de producción.`, g('Laboratorio')),
-    grupo('Administración y servicios', 'Zona administrativa, bienestar, atención al usuario, dos baterías de baños y el cuarto de lavado.', g('Zona administrativa', 'Zona de bienestar', 'Atención al usuario', 'Batería de baños 1', 'Batería de baños 2', 'Cuarto de lavado')),
-    grupo('Planta eléctrica y bodega', 'En un bloque aparte, al oriente. El tanque de agua va sobre su cubierta.', g('Planta eléctrica', 'Bodega')),
+    grupo('Administración y servicios', 'Puestos con computador en la zona administrativa y en atención al usuario, bienestar, baños de mujeres y de hombres y el cuarto de lavado.', g('Zona administrativa', 'Zona de bienestar', 'Atención al usuario', 'Baños de mujeres', 'Baños de hombres', 'Cuarto de lavado')),
+    grupo('Planta eléctrica y bodega', 'En un bloque aparte, al oriente: el generador, los tableros de breakers y la bodega. El tanque de agua va sobre su cubierta.', g('Planta eléctrica', 'Bodega')),
     pasoE(7, 'Piso 2 · N +3,19', 'Almacén de empaques, oficina y hall. Sobre la zona de producción queda la doble altura.', posePiso('p2'), { piso: 'p2' }),
     grupo('Almacén de empaques', `${A('Almacén de empaques')} m² encima del cuarto frío y de la entrega de producto, con su escalera.`, g('Almacén de empaques')),
     grupo('Oficina y hall', `Oficina de ${A('Oficina')} m² con su hall y la escalera que baja a la zona administrativa.`, g('Oficina', 'Hall')),
     pasoE(7, 'Toda la planta', `${SALAS_UTILES.length} salas en tres pisos. Las que aún no tienen equipos quedan listas para ubicarlos. Modelado preliminar.`, posePiso('todo', false, [14, -3, -6]), { piso: 'todo' }),
   ];
-  return guion('planta', 'Planta completa', pasos);
+  return guion('planta', 'Planta completa', pasos, 'Parada', { subtitulo: 'Recorrido por el edificio, piso a piso · modelado preliminar', resumen: `3 pisos · ${SALAS_UTILES.length} salas · ${EQUIPOS.length} equipos` });
 }
 function salasDePiso(f) {
   return SALAS.filter((s) => s.piso === f && s.tipo !== 'escalera' && s.nombre !== 'Circulación')
@@ -3212,7 +3278,7 @@ function guionPiso(f) {
     ...ss.map((s) => pasoSala(s)),
     pasoE(5, NOMBRE_PISO[f], 'Fin del recorrido por el piso. Toca cualquier sala para ver su ficha.', posePiso(f, false, [-4, 1, 2]), { piso: f }),
   ];
-  return guion(`piso-${f}`, NOMBRE_PISO[f], pasos);
+  return guion(`piso-${f}`, NOMBRE_PISO[f], pasos, 'Parada', { titulo: `${NOMBRE_PISO[f]} · ${p.nivel}`, resumen: `${ss.length} salas · nivel ${p.nivel}` });
 }
 function guionSala(id) {
   const s = salaPorId[id], p = PISO[s.piso];
@@ -3221,7 +3287,7 @@ function guionSala(id) {
     pasoSala(s, 12, { ...poseSalas([s], { az: -0.7, giro: 1.6, k: 0.95 }) }),
     pasoE(4, s.nombre, NOTAS_SALA[s.nombre] || textoSala(s), poseSalas([s], { az: 0.9, giro: 0.3, k: 1.6 }), { piso: s.piso, sala: s.id }),
   ];
-  return guion(`sala-${id}`, s.nombre, pasos);
+  return guion(`sala-${id}`, s.nombre, pasos, 'Parada', { resumen: `${NOMBRE_PISO[s.piso]} · ${areaDe(s)} m²` });
 }
 function guionLavado() {
   const cl = SALAS.filter((s) => s.tipo === 'lavado');
@@ -3232,7 +3298,7 @@ function guionLavado() {
     ...cl.map((s) => pasoE(7, s.nombre, `${areaDe(s)} m², junto a la batería de baños.`, poseSalas([s], { k: 1.3 }), { piso: 'p1', sala: s.id })),
     pasoE(5, 'Zonas de lavado', 'Fin del recorrido. En la lista «Zonas de lavado» del panel se llega a cada punto.', posePiso('p1', false, [-4, 1, 2]), { piso: 'p1' }),
   ];
-  return guion('lavado', 'Zonas de lavado', pasos);
+  return guion('lavado', 'Zonas de lavado', pasos, 'Parada', { resumen: `${cl.length} cuarto de lavado · ${LAVADO.filter((L) => !L.botas).length} lavamanos de pedal · lavado de botas` });
 }
 function crearGuion(id, arg) {
   if (id === 'proceso') return G_PROCESO;
@@ -3240,8 +3306,68 @@ function crearGuion(id, arg) {
   if (id === 'lavado') return guionLavado();
   if (id === 'piso') return PISO[arg] ? guionPiso(arg) : null;
   if (id === 'sala') return salaPorId[arg] ? guionSala(arg) : null;
+  if (id === 'area') return guionArea(arg);
   return null;
 }
+// Áreas de la planta: cada una tiene su recorrido y su video para descargar
+const AREAS = [
+  { id: 'calderas', n: 'Calderas y carbón', salas: ['Zona de calderas', 'Almacenamiento de carbón', 'Hall de calderas'], d: 'Al norte de la sala de producción: la zona de calderas, el almacenamiento de carbón y el hall que los une.' },
+  { id: 'entrega', n: 'Entrega de producto y cuarto frío', salas: ['Zona de entrega de producto', 'Cuarto frío'], d: 'Por aquí sale el producto terminado; el cuarto frío queda al lado y de aquí sube la escalera al almacén de empaques.' },
+  { id: 'vestuario', n: 'Vestuario y lavado de botas', salas: ['Vestuario'], d: 'Casilleros y banca. Del vestuario se pasa a producción por el lavado de botas, con un lavamanos de pedal junto a la puerta.' },
+  { id: 'laboratorio', n: 'Laboratorio', salas: ['Laboratorio'], d: 'Laboratorio con puerta directa a la zona de producción.' },
+  { id: 'administracion', n: 'Administración y bienestar', salas: ['Zona administrativa', 'Atención al usuario', 'Zona de bienestar'], d: 'Puestos de trabajo con computador, atención al usuario y la zona de bienestar del personal.' },
+  { id: 'banos', n: 'Baños y cuarto de lavado', salas: ['Baños de mujeres', 'Baños de hombres', 'Cuarto de lavado'], d: 'Baños de mujeres y de hombres, y el cuarto de lavado.' },
+  { id: 'electrica', n: 'Planta eléctrica y bodega', salas: ['Planta eléctrica', 'Bodega'], d: 'Bloque aparte al oriente: el generador, los tableros de breakers y la bodega.' },
+  { id: 'sotano', n: 'Piso −1', piso: 'p-1' },
+  { id: 'piso2', n: 'Piso 2: almacén de empaques y oficina', piso: 'p2' },
+  { id: 'lavado', n: 'Zonas de lavado', guion: 'lavado' },
+];
+const archivoArea = (id) => `documentos/video/areas/planta-marulanda-${id}.mp4`;
+function guionArea(id) {
+  const A = AREAS.find((a) => a.id === id);
+  if (!A) return null;
+  let G;
+  if (A.piso) G = guionPiso(A.piso);
+  else if (A.guion) G = crearGuion(A.guion);
+  else {
+    const ss = A.salas.map((n) => salaN(n)).filter(Boolean), f = ss[0].piso;
+    const eq = ss.flatMap((s) => equiposDe(s).map((e) => e.id));
+    const pasos = [
+      pasoE(4, A.n, `${NOMBRE_PISO[f]} · nivel ${PISO[f].nivel}`, posePiso(f, false, [2, -1, -1]), { piso: f, sala: ss[0].id }),
+      pasoE(8, A.n, A.d, poseSalas(ss, { giro: 1.0 }), { piso: f, sala: ss[0].id, eq }),
+      ...(ss.length > 1 ? ss.map((s) => pasoSala(s)) : [pasoSala(ss[0], 8, poseSalas([ss[0]], { az: 0.6, giro: 0.9, k: 0.85 }))]),
+      pasoE(4, A.n, 'Modelado preliminar.', poseSalas(ss, { az: 1.0, giro: 0.3, k: 1.7 }), { piso: f }),
+    ];
+    G = guion(`area-${id}`, A.n, pasos);
+    const total = ss.reduce((a, s) => a + (s.area_plano ?? s.area_calc), 0);
+    G.resumen = `${ss.length} ${ss.length === 1 ? 'sala' : 'salas'} · ${m2(total)} m² · ${NOMBRE_PISO[f]}`;
+  }
+  return Object.assign(G, { id: `area-${id}`, nombre: A.n, titulo: A.n, subtitulo: 'Recorrido por el área · modelado preliminar' });
+}
+// Grabar varios videos seguidos (solo desde el servidor local): cada uno en su carpeta de cuadros
+async function grabarVarios(lista) {
+  const hechos = [];
+  for (const it of lista) { progreso.actual = it.carpeta; await grabarVideo(it); hechos.push(it.carpeta); }
+  progreso.actual = 'listo';
+  ponerAmbito('edificio', false); ponerPiso('p1', false);
+  return hechos;
+}
+const LISTA_VIDEOS = [
+  { guion: 'planta', carpeta: 'planta', ancho: 1920, alto: 1080 },
+  { guion: 'proceso', carpeta: 'proceso', ancho: 1920, alto: 1080 },
+  ...AREAS.map((a) => ({ guion: 'area', arg: a.id, carpeta: `area-${a.id}`, ancho: 1280, alto: 720, calidad: 0.88 })),
+];
+function pintarVideosArea() {
+  const listas = AREAS.filter((a) => (EN_CLAUDE ? VIDEOS_AREA_LISTOS : existe(archivoArea(a.id))));
+  for (const s of ['#t-videos-area', '#videos-area', '#videos-area-nota']) $(s).hidden = !listas.length;
+  $('#videos-area').innerHTML = listas.map((a) => {
+    const G = guionArea(a.id), f = archivoArea(a.id);
+    return `<li><a href="${urlDoc(f)}" ${EN_CLAUDE ? 'target="_blank" rel="noopener"' : 'download'}><span class="tipo">MP4</span><span class="nm">${a.n}<small>${mmss(G.dur)} · 720p</small></span><span class="tam">${tamano(f)}</span></a></li>`;
+  }).join('');
+  const sel = $('#sel-area-rec');
+  sel.innerHTML = AREAS.map((a) => `<option value="${a.id}">${a.n}</option>`).join('');
+}
+
 
 // Menú para escoger el recorrido
 const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
@@ -3266,6 +3392,7 @@ $('#menu-rec').addEventListener('click', (ev) => {
   const b = ev.target.closest('[data-rec]');
   if (b) { iniciarTour(b.dataset.rec, b.dataset.arg); return; }
   if (ev.target.closest('#b-rec-sala')) iniciarTour('sala', $('#sel-sala-rec').value);
+  if (ev.target.closest('#b-rec-area')) iniciarTour('area', $('#sel-area-rec').value);
   if (ev.target.closest('#menu-rec-cerrar')) cerrarMenuRec();
 });
 document.addEventListener('pointerdown', (ev) => { if (!ev.target.closest?.('#menu-rec, #b-recorrido')) cerrarMenuRec(); });
@@ -3346,25 +3473,7 @@ const OPERARIO = {
 };
 let operario = null;
 function construirOperario() {
-  const blanco = std(0xf2f4f5, 0.0, 0.75), botas = std(0xfafbfb, 0.05, 0.35), piel = std(0xc48a62, 0.0, 0.7), azul = std(0x2e61a3, 0.1, 0.6);
-  const g = operarioG, cuerpo = new THREE.Group(); g.add(cuerpo);
-  const add = (padre, m) => { m.castShadow = true; padre.add(m); return m; };
-  const piernas = [-0.1, 0.1].map((dz) => {
-    const p = new THREE.Group(); p.position.set(0, 0.88, dz); cuerpo.add(p);
-    add(p, caja(0.15, 0.62, 0.15, blanco, 0, -0.62, 0)); add(p, caja(0.24, 0.27, 0.15, botas, 0.04, -0.88, 0));
-    return p;
-  });
-  add(cuerpo, caja(0.26, 0.6, 0.42, blanco, 0, 0.86, 0));                 // tronco
-  add(cuerpo, caja(0.02, 0.62, 0.34, azul, 0.135, 0.62, 0));              // delantal
-  add(cuerpo, M(new THREE.SphereGeometry(0.11, 18, 14), piel, 0, 1.6, 0)).castShadow = true;
-  add(cuerpo, cil(0.118, 0.08, blanco, 0, 1.64, 0, 18));                 // gorro
-  add(cuerpo, caja(0.02, 0.06, 0.12, std(0xdfe8ec, 0, 0.8), 0.105, 1.52, 0)); // tapabocas
-  const brazos = [-0.27, 0.27].map((dz) => {
-    const p = new THREE.Group(); p.position.set(0, 1.42, dz); cuerpo.add(p);
-    add(p, caja(0.1, 0.58, 0.1, blanco, 0, -0.58, 0));
-    add(p, M(new THREE.SphereGeometry(0.05, 10, 8), piel, 0, -0.62, 0));
-    return p;
-  });
+  const { g, cuerpo, piernas, brazos } = crearPersona(operarioG);
   const lata = cantina(std(0xdde2e5, 0.85, 0.3)); lata.name = 'Cantina que se descarga'; camionG.add(lata);
   operario = { g, cuerpo, piernas, brazos, lata };
   // la cantina fija del volcador la reemplaza la del operario
@@ -3438,13 +3547,208 @@ function dibujarCamion2D() {
   texto2('CAMIÓN', wx(390.6), wz(-17.63) + 0.08, 'etq2', g);
 }
 
+// ---------- Mobiliario ilustrativo de las salas (oficinas, baños, vestuario, planta eléctrica) y trabajadores en sus puestos
+// Cada pieza se arma con el frente hacia +z local y se coloca con la cara hacia donde mira: S, N, E u O (como el plano).
+const CARA = { S: 0, N: Math.PI, E: Math.PI / 2, O: -Math.PI / 2 };
+const MUEBLES = []; // { piso, rect: [x0, x1, y0, y1], tipo, n, sala }
+const MOB = {
+  tablero: std(0xd8cdb6, 0.0, 0.6), metal: std(0x7d8589, 0.6, 0.4), oscuro: std(0x1c2124, 0.2, 0.6),
+  pantalla: std(0x2f6b8f, 0.1, 0.3, { emissive: 0x12384f }), tela: std(0x2b3a46, 0.0, 0.85), gris: std(0xb4bcc1, 0.4, 0.45),
+  blanco: std(0xf3f5f6, 0.05, 0.25), granito: std(0x4b5054, 0.1, 0.35), espejo: std(0xcfdde4, 0.9, 0.05),
+  division: std(0x9fb4c0, 0.2, 0.5), casillero: std(0x7f9aac, 0.45, 0.45), madera: std(0xa47b52, 0.0, 0.75),
+  amarillo: std(0xd9a82b, 0.3, 0.5), rojo: std(0xc0392b, 0.2, 0.5), carpeta: [std(0x2e61a3, 0, 0.7), std(0xb8352a, 0, 0.7), std(0x3c8d5a, 0, 0.7), std(0xd9a82b, 0, 0.7)],
+};
+function grupoMueble(partes) { const g = new THREE.Group(); for (const m of partes) { m.castShadow = true; m.receiveShadow = true; g.add(m); } return g; }
+function pon(g, n, tipo, X, Y, cara, w, d, piso = 'p1', y = 0) {
+  g.name = n; g.position.copy(W(X, Y, PISO[piso].y0 + y)); g.rotation.y = CARA[cara];
+  pisoG[piso].add(g);
+  const ns = cara === 'S' || cara === 'N';
+  const rect = ns ? [X - w / 2, X + w / 2, Y - d / 2, Y + d / 2] : [X - d / 2, X + d / 2, Y - w / 2, Y + w / 2];
+  const s = salaEn(piso, X, Y);
+  MUEBLES.push({ piso, rect, tipo, n, sala: s ? s.id : null });
+  return g;
+}
+const escritorio = (w = 1.4, d = 0.7) => grupoMueble([
+  caja(w, 0.04, d, MOB.tablero, 0, 0.72, 0),
+  ...[-1, 1].map((k) => caja(0.04, 0.72, d - 0.04, MOB.metal, k * (w / 2 - 0.03), 0, 0)),
+  caja(w - 0.1, 0.4, 0.02, MOB.metal, 0, 0.3, -d / 2 + 0.04),
+  caja(0.22, 0.02, 0.16, MOB.oscuro, 0, 0.76, -d / 2 + 0.2), caja(0.04, 0.18, 0.04, MOB.oscuro, 0, 0.78, -d / 2 + 0.2),
+  caja(0.56, 0.34, 0.03, MOB.oscuro, 0, 0.92, -d / 2 + 0.2), caja(0.51, 0.29, 0.006, MOB.pantalla, 0, 0.945, -d / 2 + 0.218),
+  caja(0.44, 0.02, 0.15, MOB.oscuro, 0, 0.76, 0.06), caja(0.06, 0.02, 0.1, MOB.oscuro, 0.32, 0.76, 0.06),
+  caja(0.2, 0.44, 0.44, MOB.oscuro, w / 2 - 0.26, 0, -0.04),
+]);
+const silla = () => {
+  const g = grupoMueble([caja(0.46, 0.07, 0.46, MOB.tela, 0, 0.44, 0), caja(0.44, 0.5, 0.06, MOB.tela, 0, 0.52, -0.21), cil(0.025, 0.4, MOB.metal, 0, 0.05, 0, 10)]);
+  for (const r of [0, Math.PI / 2]) { const b = caja(0.56, 0.04, 0.05, MOB.metal, 0, 0.02, 0); b.rotation.y = r; g.add(b); }
+  return g;
+};
+const archivador = () => grupoMueble([caja(0.45, 1.3, 0.6, MOB.gris, 0, 0, 0), ...[0.15, 0.47, 0.79, 1.11].map((y) => caja(0.16, 0.03, 0.02, MOB.oscuro, 0, y + 0.12, 0.305))]);
+const estante = (w = 0.9, d = 0.35, h = 1.9) => {
+  const p = [caja(0.03, h, d, MOB.madera, -w / 2, 0, 0), caja(0.03, h, d, MOB.madera, w / 2, 0, 0), caja(w, h, 0.02, MOB.madera, 0, 0, -d / 2)];
+  for (let i = 0; i < 5; i++) {
+    p.push(caja(w, 0.025, d, MOB.madera, 0, 0.05 + i * 0.44, 0));
+    if (i < 4) for (let k = 0; k < 6; k++) p.push(caja(0.07, 0.3, d * 0.75, MOB.carpeta[(i + k) % 4], -w / 2 + 0.1 + k * 0.13, 0.08 + i * 0.44, 0));
+  }
+  return grupoMueble(p);
+};
+const meson = (w, d = 0.55) => grupoMueble([
+  caja(w, 0.86, d, MOB.blanco, 0, 0, 0), caja(w + 0.02, 0.04, d + 0.02, MOB.granito, 0, 0.86, 0),
+  caja(0.46, 0.28, 0.34, MOB.gris, -w / 2 + 0.35, 0.9, -0.04), caja(0.36, 0.2, 0.01, MOB.oscuro, -w / 2 + 0.33, 0.94, 0.13),
+  cil(0.08, 0.3, MOB.oscuro, w / 2 - 0.3, 0.9, -0.05, 14),
+]);
+const mesaRedonda = (r = 0.45) => grupoMueble([cil(r, 0.03, MOB.tablero, 0, 0.72, 0, 32), cil(0.04, 0.72, MOB.metal, 0, 0, 0, 10), cil(0.25, 0.03, MOB.metal, 0, 0, 0, 20)]);
+const sanitario = () => {
+  const taza = cil(0.17, 0.4, MOB.blanco, 0, 0, 0.08, 24, 0.2); taza.scale.z = 1.3;
+  const asiento = cil(0.2, 0.03, MOB.blanco, 0, 0.4, 0.08, 24); asiento.scale.z = 1.3;
+  return grupoMueble([taza, asiento, caja(0.38, 0.38, 0.17, MOB.blanco, 0, 0.42, -0.22)]);
+};
+const orinal = () => grupoMueble([caja(0.36, 0.6, 0.3, MOB.blanco, 0, 0.42, 0.0), caja(0.26, 0.4, 0.06, MOB.granito, 0, 0.52, 0.13), cil(0.015, 0.4, MOB.metal, 0, 1.02, -0.08, 8)]);
+const lavamanosBano = (w, n) => {
+  const p = [caja(w, 0.06, 0.5, MOB.granito, 0, 0.82, 0), caja(w, 0.2, 0.02, MOB.granito, 0, 0.64, 0.24), caja(w, 0.7, 0.01, MOB.espejo, 0, 1.1, -0.245)];
+  for (let i = 0; i < n; i++) { const x = (i - (n - 1) / 2) * (w / n); p.push(cil(0.17, 0.13, MOB.blanco, x, 0.72, 0.02, 24), cil(0.015, 0.2, MOB.metal, x, 0.88, -0.16, 8)); }
+  return grupoMueble(p);
+};
+const casilleros = (n, colW = 0.48, d = 0.45, h = 1.8) => {
+  const w = n * colW, p = [caja(w, h - 0.1, d, MOB.casillero, 0, 0.1, 0), caja(w, 0.1, d - 0.05, MOB.oscuro, 0, 0, -0.02)];
+  for (let i = 0; i < n; i++) {
+    const x = -w / 2 + colW * (i + 0.5);
+    if (i) p.push(caja(0.012, h - 0.12, 0.01, MOB.oscuro, x - colW / 2, 0.11, d / 2 + 0.003));
+    for (const y of [1.5, 1.56, 1.62]) p.push(caja(colW * 0.45, 0.012, 0.01, MOB.oscuro, x, y, d / 2 + 0.003));
+    p.push(caja(0.03, 0.12, 0.03, MOB.metal, x + colW * 0.32, 0.95, d / 2 + 0.01));
+  }
+  return grupoMueble(p);
+};
+const banca = (w) => grupoMueble([caja(w, 0.05, 0.35, MOB.madera, 0, 0.4, 0), ...[-1, 1].map((k) => caja(0.05, 0.4, 0.3, MOB.metal, k * (w / 2 - 0.15), 0, 0))]);
+const generador = () => grupoMueble([
+  caja(2.2, 0.15, 0.9, MOB.oscuro, 0, 0, 0), caja(2.1, 1.2, 0.85, MOB.amarillo, 0, 0.15, 0),
+  caja(0.02, 0.9, 0.7, MOB.oscuro, 1.06, 0.3, 0), caja(0.3, 0.4, 0.04, MOB.oscuro, -0.75, 0.75, 0.43),
+  ...[-0.4, 0, 0.4].map((x) => caja(0.3, 0.6, 0.012, MOB.oscuro, x, 0.4, 0.43)),
+  cil(0.06, 1.65, MOB.metal, 0.6, 1.35, -0.2, 12),
+]);
+const tablero = (w = 0.8, d = 0.3, h = 2.0) => grupoMueble([
+  caja(w, h, d, MOB.gris, 0, 0, 0), caja(0.01, h - 0.2, 0.01, MOB.oscuro, 0, 0.1, d / 2 + 0.003),
+  caja(0.03, 0.18, 0.04, MOB.rojo, w * 0.3, 1.0, d / 2 + 0.01), caja(0.14, 0.12, 0.01, MOB.amarillo, -w * 0.25, 1.55, d / 2 + 0.004),
+  caja(w * 0.7, 0.1, 0.02, MOB.oscuro, 0, 1.8, d / 2 + 0.005),
+]);
+const extintor = () => grupoMueble([cil(0.09, 0.55, MOB.rojo, 0, 0.3, 0, 16), cil(0.03, 0.08, MOB.oscuro, 0, 0.85, 0, 8)]);
+function division(X0, X1, Y0, Y1, piso = 'p1', h = 1.8, base = 0.15) {
+  const m = caja(Math.max(0.03, X1 - X0), h, Math.max(0.03, Y1 - Y0), MOB.division, wx((X0 + X1) / 2), PISO[piso].y0 + base, wz((Y0 + Y1) / 2));
+  m.castShadow = true; m.name = 'División'; pisoG[piso].add(m);
+  MUEBLES.push({ piso, rect: [X0, X1, Y0, Y1], tipo: 'division', n: 'División', sala: null });
+}
+function construirMobiliario() {
+  // Zona administrativa: dos puestos con computador y un archivador
+  pon(escritorio(1.4, 0.7), 'Escritorio con computador', 'escritorio', 414.33, -16.4, 'E', 1.4, 0.7);
+  pon(silla(), 'Silla', 'silla', 415.02, -16.4, 'O', 0.5, 0.5);
+  pon(archivador(), 'Archivador', 'archivador', 414.28, -15.2, 'E', 0.45, 0.6);
+  pon(escritorio(1.2, 0.65), 'Escritorio con computador', 'escritorio', 417.37, -17.25, 'O', 1.2, 0.65);
+  pon(silla(), 'Silla', 'silla', 416.72, -17.25, 'E', 0.5, 0.5);
+  // Atención al usuario: puesto de atención y dos sillas para visitantes
+  pon(escritorio(1.4, 0.7), 'Puesto de atención con computador', 'escritorio', 419.9, -14.0, 'O', 1.4, 0.7);
+  pon(silla(), 'Silla', 'silla', 419.12, -14.0, 'E', 0.5, 0.5);
+  for (const Y of [-13.6, -14.4]) pon(silla(), 'Silla de visitante', 'silla', 420.62, Y, 'O', 0.5, 0.5);
+  // Zona de bienestar: mesón con microondas y cafetera, mesa y sillas
+  pon(meson(1.6), 'Mesón con microondas y cafetera', 'meson', 417.5, -13.16, 'S', 1.6, 0.55);
+  pon(mesaRedonda(), 'Mesa', 'mesa', 417.3, -14.4, 'S', 0.9, 0.9);
+  for (const [X, Y, c] of [[416.68, -14.4, 'E'], [417.92, -14.4, 'O'], [417.3, -14.98, 'N']]) pon(silla(), 'Silla', 'silla', X, Y, c, 0.5, 0.5);
+  // Oficina del piso 2: escritorio, sillas, estantería y archivador
+  pon(escritorio(1.6, 0.75), 'Escritorio con computador', 'escritorio', 411.9, -12.2, 'O', 1.6, 0.75, 'p2');
+  pon(silla(), 'Silla', 'silla', 411.15, -12.2, 'E', 0.5, 0.5, 'p2');
+  for (const Y of [-11.8, -12.6]) pon(silla(), 'Silla de visitante', 'silla', 412.75, Y, 'O', 0.5, 0.5, 'p2');
+  pon(estante(), 'Estantería', 'estante', 413.4, -9.83, 'S', 0.9, 0.35, 'p2');
+  pon(archivador(), 'Archivador', 'archivador', 411.15, -14.6, 'E', 0.45, 0.6, 'p2');
+  // Baños de mujeres: dos sanitarios en cabina y lavamanos doble
+  division(419.5, 420.98, -16.635, -16.605);
+  for (const [a, b] of [[-15.62, -15.38], [-16.62, -16.28], [-16.86, -16.62], [-17.88, -17.52]]) division(419.485, 419.515, a, b);
+  for (const Y of [-16.0, -17.24]) pon(sanitario(), 'Sanitario', 'sanitario', 420.66, Y, 'O', 0.4, 0.62);
+  pon(lavamanosBano(1.1, 2), 'Lavamanos doble con espejo', 'lavamanos', 418.07, -17.3, 'E', 1.1, 0.5);
+  // Baños de hombres: un sanitario en cabina, dos orinales y lavamanos
+  division(419.55, 420.95, -19.315, -19.285);
+  for (const [a, b] of [[-19.52, -19.3], [-20.5, -20.15]]) division(419.535, 419.565, a, b);
+  pon(sanitario(), 'Sanitario', 'sanitario', 420.62, -19.9, 'O', 0.4, 0.62);
+  for (const Y of [-18.42, -18.98]) pon(orinal(), 'Orinal', 'orinal', 420.79, Y, 'O', 0.36, 0.3);
+  division(420.5, 420.95, -18.715, -18.685, 'p1', 1.2, 0.4);
+  pon(lavamanosBano(0.7, 1), 'Lavamanos con espejo', 'lavamanos', 418.4, -20.27, 'N', 0.7, 0.5);
+  // Vestuario: casilleros en dos muros y una banca
+  pon(casilleros(6, 0.47), 'Casilleros', 'casilleros', 412.42, -17.155, 'N', 2.82, 0.45);
+  pon(casilleros(5, 0.5), 'Casilleros', 'casilleros', 411.125, -15.5, 'E', 2.5, 0.45);
+  pon(banca(1.8), 'Banca', 'banca', 412.45, -15.4, 'E', 1.8, 0.35);
+  // Planta eléctrica: generador, tableros de breakers, transferencia y extintor
+  pon(generador(), 'Planta eléctrica (generador)', 'generador', 423.6, -19.98, 'N', 2.2, 0.9);
+  for (const Y of [-18.05, -18.9]) pon(tablero(), 'Tablero de breakers', 'tablero', 424.9, Y, 'O', 0.8, 0.3);
+  pon(tablero(0.6, 0.25, 0.8), 'Transferencia automática', 'tablero', 422.43, -18.9, 'E', 0.6, 0.25, 'p1', 1.0);
+  pon(extintor(), 'Extintor', 'extintor', 422.45, -17.85, 'E', 0.2, 0.2);
+  const tapete = caja(0.6, 0.012, 1.6, MOB.oscuro, wx(424.45), 0, wz(-18.47)); tapete.name = 'Tapete aislante'; pisoG.p1.add(tapete);
+  // Bodega: estantería
+  pon(estante(2.0, 0.5, 2.0), 'Estantería', 'estante', 427.78, -19.0, 'O', 2.0, 0.5);
+}
+function mueblesDe(s) {
+  const c = new Map();
+  for (const m of MUEBLES) if (m.sala === s.id && m.tipo !== 'division') c.set(m.n, (c.get(m.n) || 0) + 1);
+  return [...c].map(([n, k]) => (k > 1 ? `${n} ×${k}` : n)).join(', ');
+}
+
+// Trabajadores en sus puestos (figuras ilustrativas que se mueven mientras trabajan)
+function crearPersona(g) {
+  const blanco = std(0xf2f4f5, 0.0, 0.75), botas = std(0xfafbfb, 0.05, 0.35), piel = std(0xc48a62, 0.0, 0.7), azul = std(0x2e61a3, 0.1, 0.6);
+  const cuerpo = new THREE.Group(); g.add(cuerpo);
+  const add = (padre, m) => { m.castShadow = true; padre.add(m); return m; };
+  const piernas = [-0.1, 0.1].map((dz) => {
+    const p = new THREE.Group(); p.position.set(0, 0.88, dz); cuerpo.add(p);
+    add(p, caja(0.15, 0.62, 0.15, blanco, 0, -0.62, 0)); add(p, caja(0.24, 0.27, 0.15, botas, 0.04, -0.88, 0));
+    return p;
+  });
+  add(cuerpo, caja(0.26, 0.6, 0.42, blanco, 0, 0.86, 0));
+  add(cuerpo, caja(0.02, 0.62, 0.34, azul, 0.135, 0.62, 0));
+  add(cuerpo, M(new THREE.SphereGeometry(0.11, 18, 14), piel, 0, 1.6, 0));
+  add(cuerpo, cil(0.118, 0.08, blanco, 0, 1.64, 0, 18));
+  add(cuerpo, caja(0.02, 0.06, 0.12, std(0xdfe8ec, 0, 0.8), 0.105, 1.52, 0));
+  const brazos = [-0.27, 0.27].map((dz) => {
+    const p = new THREE.Group(); p.position.set(0, 1.42, dz); cuerpo.add(p);
+    add(p, caja(0.1, 0.58, 0.1, blanco, 0, -0.58, 0));
+    add(p, M(new THREE.SphereGeometry(0.05, 10, 8), piel, 0, -0.62, 0));
+    return p;
+  });
+  return { g, cuerpo, piernas, brazos };
+}
+const TRABAJADORES = [ // X, Y en el DWG; mira hacia el equipo
+  { n: 'Operario de la dosificadora de yogurt', X: 406.86, Y: -19.3, cara: 'O', base: 1.0, amp: 0.25, vel: 2.4, fase: 0 },
+  { n: 'Operario de la dosificadora de arequipe', X: 407.75, Y: -17.3, cara: 'N', base: 1.0, amp: 0.25, vel: 2.1, fase: 1.3 },
+  { n: 'Operario de la mesa de escurrido', X: 401.02, Y: -11.55, cara: 'O', base: 0.8, amp: 0.3, vel: 1.6, fase: 2.1 },
+  { n: 'Operario de la mesa de moldeo', X: 402.35, Y: -11.16, cara: 'N', base: 0.8, amp: 0.3, vel: 1.8, fase: 0.7 },
+  { n: 'Operario del carro escabiladero', X: 408.1, Y: -11.16, cara: 'N', base: 1.2, amp: 0.35, vel: 1.2, fase: 1.8 },
+];
+const HEAD = { E: 0, N: Math.PI / 2, O: Math.PI, S: -Math.PI / 2 }; // la persona mira hacia +x local
+const personasG = new THREE.Group(); personasG.name = 'Trabajadores'; raiz.add(personasG);
+const personas = [];
+function construirTrabajadores() {
+  for (const T of TRABAJADORES) {
+    const g = new THREE.Group(); g.name = T.n; personasG.add(g);
+    const p = crearPersona(g);
+    g.position.copy(W(T.X, T.Y, 0)); g.rotation.y = HEAD[T.cara];
+    personas.push({ ...p, T });
+    MUEBLES.push({ piso: 'p1', rect: [T.X - 0.25, T.X + 0.25, T.Y - 0.25, T.Y + 0.25], tipo: 'persona', n: T.n, sala: null });
+  }
+}
+function animarTrabajadores(t) {
+  for (const { cuerpo, brazos, T } of personas) {
+    const a = Math.sin(t * T.vel + T.fase);
+    brazos[0].rotation.z = T.base + T.amp * a;
+    brazos[1].rotation.z = T.base + T.amp * Math.sin(t * T.vel + T.fase + 0.9);
+    cuerpo.rotation.z = -0.06 - 0.03 * (0.5 + 0.5 * a); // se inclina un poco hacia el equipo
+  }
+}
+
 construirEdificioCompleto();
 construirCamion();
 construirOperario();
 dibujarCamion2D();
+construirMobiliario();
+construirTrabajadores();
 construirObstaculos();
 construirPlano2DEdificio();
 pintarSalas();
+pintarVideosArea();
 pintarMenuRec();
 document.querySelectorAll('[data-ambito]').forEach((b) => b.addEventListener('click', () => { if (tour.activo) detenerTour(); ponerAmbito(b.dataset.ambito); }));
 document.querySelectorAll('#vistas-edif [data-piso]').forEach((b) => b.addEventListener('click', () => { if (tour.activo) detenerTour(); ponerPiso(b.dataset.piso); }));
@@ -3459,7 +3763,7 @@ $('#b-separar').addEventListener('click', () => {
 $('#o-tomas').addEventListener('change', () => aplicarEdificio());
 $('#o-grilla').addEventListener('change', () => aplicarEdificio());
 $('#o-losa').addEventListener('change', () => aplicarEdificio());
-Object.assign(window.__sala, { iniciarTour, crearGuion, tour, aplicarTour, poseEdificio, ponerPiso, ponerAmbito, iniciarPaseo, salirPaseo, actualizarPaseo, usarEscalera, seleccionarSala, paseo, edif, mov, libre, camera, controls });
+Object.assign(window.__sala, { grabarVarios, LISTA_VIDEOS, AREAS, iniciarTour, crearGuion, tour, aplicarTour, poseEdificio, ponerPiso, ponerAmbito, iniciarPaseo, salirPaseo, actualizarPaseo, usarEscalera, seleccionarSala, paseo, edif, mov, libre, camera, controls });
 
 ajustar();
 aplicarTema();
