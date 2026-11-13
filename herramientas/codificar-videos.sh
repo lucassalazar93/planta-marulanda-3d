@@ -17,9 +17,8 @@ COLOR="-pix_fmt yuv420p -color_range tv -colorspace bt709 -color_primaries bt709
 LISTA=("$@")
 [ ${#LISTA[@]} -gt 0 ] || LISTA=(planta proceso area-calderas area-entrega area-vestuario area-laboratorio area-administracion area-banos area-electrica area-sotano area-piso2 area-lavado)
 
-dos_pasadas() { # $1 carpeta, $2 tasa, $3 salida
-  ffmpeg -hide_banner -loglevel error -y -framerate 30 -i "$1/f_%05d.jpg" -vf "$VF" -c:v libx264 -preset medium -b:v "$2" -maxrate "$((${2%k} * 2))k" -bufsize "$((${2%k} * 4))k" -pass 1 -passlogfile "$1/x264" -an -f mp4 /dev/null
-  ffmpeg -hide_banner -loglevel error -y -framerate 30 -i "$1/f_%05d.jpg" -vf "$VF" -c:v libx264 -preset medium -b:v "$2" -maxrate "$((${2%k} * 2))k" -bufsize "$((${2%k} * 4))k" -pass 2 -passlogfile "$1/x264" $COLOR "$3"
+liviano() { # $1 carpeta, $2 tasa máxima, $3 salida · una pasada con calidad constante y tope de tasa (cabe en WhatsApp)
+  ffmpeg -hide_banner -loglevel error -y -framerate 30 -i "$1/f_%05d.jpg" -vf "$VF" -c:v libx264 -preset medium -crf 25 -maxrate "$2" -bufsize "$((${2%k} * 2))k" $COLOR "$3"
 }
 
 for v in "${LISTA[@]}"; do
@@ -27,10 +26,10 @@ for v in "${LISTA[@]}"; do
   until [ -f "$d/fin.json" ]; do sleep 15; done
   case "$v" in
     planta)
-      dos_pasadas "$d" 1400k "$SALIDA/planta-marulanda-planta-completa.mp4" ;;
+      liviano "$d" 1400k "$SALIDA/planta-marulanda-planta-completa.mp4" ;;
     proceso)
       ffmpeg -hide_banner -loglevel error -y -framerate 30 -i "$d/f_%05d.jpg" -vf "$VF" -c:v libx264 -preset slow -crf 20 $COLOR "$SALIDA/planta-marulanda-recorrido.mp4"
-      dos_pasadas "$d" 1300k "$SALIDA/planta-marulanda-recorrido-liviano.mp4" ;;
+      liviano "$d" 1300k "$SALIDA/planta-marulanda-recorrido-liviano.mp4" ;;
     area-*)
       ffmpeg -hide_banner -loglevel error -y -framerate 30 -i "$d/f_%05d.jpg" -vf "$VF" -c:v libx264 -preset medium -crf 24 -maxrate 1200k -bufsize 2400k $COLOR "$SALIDA/areas/planta-marulanda-${v#area-}.mp4" ;;
   esac
