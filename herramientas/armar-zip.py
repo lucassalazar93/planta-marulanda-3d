@@ -14,7 +14,7 @@ ARCHIVOS = [
     "planos/planta-marulanda-planos-arquitectonicos.pdf",
     "medidas/planta-marulanda-medidas-equipos.xlsx",
     "modelo/planta-marulanda-sala.glb",
-    "video/planta-marulanda-planta-completa.mp4",
+    "video/planta-marulanda-planta-completa-liviano.mp4",
 ]
 destino = os.path.join(DOC, "planta-marulanda-documentacion.zip")
 tmp = destino + ".tmp"

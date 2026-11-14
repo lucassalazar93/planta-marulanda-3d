@@ -17,8 +17,13 @@ COLOR="-pix_fmt yuv420p -color_range tv -colorspace bt709 -color_primaries bt709
 LISTA=("$@")
 [ ${#LISTA[@]} -gt 0 ] || LISTA=(planta proceso area-calderas area-entrega area-vestuario area-laboratorio area-administracion area-banos area-electrica area-sotano area-piso2 area-lavado)
 
-liviano() { # $1 carpeta, $2 tasa máxima, $3 salida · una pasada con calidad constante y tope de tasa (cabe en WhatsApp)
-  ffmpeg -hide_banner -loglevel error -y -framerate 30 -i "$1/f_%05d.jpg" -vf "$VF" -c:v libx264 -preset medium -crf 25 -maxrate "$2" -bufsize "$((${2%k} * 2))k" $COLOR "$3"
+# Alta calidad (1080p): tune animation conserva bordes y colores planos; tope alto para los movimientos de cámara
+hq() { # $1 carpeta, $2 crf, $3 salida
+  ffmpeg -hide_banner -loglevel error -y -framerate 30 -i "$1/f_%05d.jpg" -vf "$VF" -c:v libx264 -preset slow -tune animation -crf "$2" -g 60 -maxrate 6000k -bufsize 12000k $COLOR "$3"
+}
+# Liviana (720p) para WhatsApp y para el artifact de Claude (cada archivo debe quedar por debajo de 20 MB)
+liviano() { # $1 carpeta, $2 salida
+  ffmpeg -hide_banner -loglevel error -y -framerate 30 -i "$1/f_%05d.jpg" -vf "scale=1280:720:flags=lanczos,$VF" -c:v libx264 -preset slow -tune animation -crf 22 -g 60 -maxrate 2200k -bufsize 4400k $COLOR "$2"
 }
 
 for v in "${LISTA[@]}"; do
@@ -26,12 +31,13 @@ for v in "${LISTA[@]}"; do
   until [ -f "$d/fin.json" ]; do sleep 15; done
   case "$v" in
     planta)
-      liviano "$d" 1400k "$SALIDA/planta-marulanda-planta-completa.mp4" ;;
+      hq "$d" 21 "$SALIDA/planta-marulanda-planta-completa.mp4"
+      liviano "$d" "$SALIDA/planta-marulanda-planta-completa-liviano.mp4" ;;
     proceso)
-      ffmpeg -hide_banner -loglevel error -y -framerate 30 -i "$d/f_%05d.jpg" -vf "$VF" -c:v libx264 -preset slow -crf 20 $COLOR "$SALIDA/planta-marulanda-recorrido.mp4"
-      liviano "$d" 1300k "$SALIDA/planta-marulanda-recorrido-liviano.mp4" ;;
+      hq "$d" 20 "$SALIDA/planta-marulanda-recorrido.mp4"
+      liviano "$d" "$SALIDA/planta-marulanda-recorrido-liviano.mp4" ;;
     area-*)
-      ffmpeg -hide_banner -loglevel error -y -framerate 30 -i "$d/f_%05d.jpg" -vf "$VF" -c:v libx264 -preset medium -crf 24 -maxrate 1200k -bufsize 2400k $COLOR "$SALIDA/areas/planta-marulanda-${v#area-}.mp4" ;;
+      hq "$d" 22 "$SALIDA/areas/planta-marulanda-${v#area-}.mp4" ;;
   esac
   rm -rf "$d"
   echo "$(date +%H:%M:%S) listo: $v"

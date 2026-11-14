@@ -17,8 +17,9 @@ medidas/planta-marulanda-medidas-equipos.xlsx
 modelo/planta-marulanda-sala.glb
     Modelo 3D de la sala. Abre en Blender, SketchUp (con complemento para GLB)
     o el Visor 3D de Windows. Cada equipo es un objeto con su nombre.
-video/planta-marulanda-planta-completa.mp4
-    Recorrido por toda la planta: exterior, los tres pisos y cada área (1:45, sin audio).
+video/planta-marulanda-planta-completa-liviano.mp4
+    Recorrido por toda la planta: exterior, los tres pisos y cada área (1:45, 720p, sin audio).
+    La versión en alta calidad (1080p) se descarga desde el visor.
     El video del proceso de producción y los videos de cada área se descargan aparte
     desde el visor, en la sección «Videos».
 

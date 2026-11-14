@@ -326,9 +326,10 @@ const DOCS = [
   { n: 'Planos arquitectónicos', d: 'Plantas, fachadas y cortes leídos del DWG', f: 'documentos/planos/planta-marulanda-planos-arquitectonicos.pdf', t: 'PDF' },
   { n: 'Medidas de los equipos', d: 'Medida, fuente y estado de cada equipo', f: 'documentos/medidas/planta-marulanda-medidas-equipos.xlsx', t: 'XLSX' },
   { n: 'Modelo 3D', d: 'Abre en Blender, SketchUp o el Visor 3D de Windows', f: 'documentos/modelo/planta-marulanda-sala.glb', t: 'GLB' },
-  { n: 'Video de la planta completa', d: 'Exterior, los tres pisos y cada área · 1080p', f: 'documentos/video/planta-marulanda-planta-completa.mp4', t: 'MP4' },
+  { n: 'Video de la planta completa', d: 'Exterior, los tres pisos y cada área · 1080p, alta calidad', f: 'documentos/video/planta-marulanda-planta-completa.mp4', t: 'MP4' },
+  { n: 'Video de la planta completa, liviano', d: 'Para enviar por WhatsApp · 720p', f: 'documentos/video/planta-marulanda-planta-completa-liviano.mp4', t: 'MP4' },
   { n: 'Video del proceso de producción', d: '8 etapas · 1080p · alta calidad', f: 'documentos/video/planta-marulanda-recorrido.mp4', t: 'MP4' },
-  { n: 'Video del proceso, liviano', d: 'Para enviar por WhatsApp', f: 'documentos/video/planta-marulanda-recorrido-liviano.mp4', t: 'MP4' },
+  { n: 'Video del proceso, liviano', d: 'Para enviar por WhatsApp · 720p', f: 'documentos/video/planta-marulanda-recorrido-liviano.mp4', t: 'MP4' },
 ];
 const tamano = (f) => { const b = (window.TAMANOS || {})[f]; if (!b) return ''; return b >= 1048576 ? `${(b / 1048576).toLocaleString('es-CO', { maximumFractionDigits: 1 })} MB` : `${Math.max(1, Math.round(b / 1024))} kB`; };
 const existe = (f) => !window.TAMANOS || !!window.TAMANOS[f];

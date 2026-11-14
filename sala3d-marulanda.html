@@ -1754,7 +1754,8 @@ function dibujarOverlay(ctx, w, h, t) {
   ctx.restore();
 }
 
-async function grabarVideo({ guion: gid = 'proceso', arg, carpeta = '', fps = 30, ancho = 1920, alto = 1080, desde = 0, hasta, calidad = 0.92 } = {}) {
+// ss: el 3D se dibuja ss veces más grande y se reduce al tamaño del video (bordes y líneas finas sin dientes)
+async function grabarVideo({ guion: gid = 'proceso', arg, carpeta = '', fps = 30, ancho = 1920, alto = 1080, desde = 0, hasta, calidad = 0.95, ss = 2 } = {}) {
   if (!['127.0.0.1', 'localhost'].includes(location.hostname)) throw new Error('Solo desde el servidor local');
   await document.fonts.ready;
   await cargarLogos();
@@ -1764,11 +1765,12 @@ async function grabarVideo({ guion: gid = 'proceso', arg, carpeta = '', fps = 30
   edif.exp = 0; edif.expObj = 0;
   const v = encodeURIComponent(carpeta);
   const prevPR = renderer.getPixelRatio();
-  renderer.setPixelRatio(1); renderer.setSize(ancho, alto, false);
+  renderer.setPixelRatio(1); renderer.setSize(ancho * ss, alto * ss, false);
   camera.aspect = ancho / alto; camera.updateProjectionMatrix();
   renderer.setClearColor(0xdfe5e8); matSuelo.color.set(0xcdd3cc);
   const lienzo = document.createElement('canvas'); lienzo.width = ancho; lienzo.height = alto;
   const ctx = lienzo.getContext('2d');
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
   const i0 = Math.round(desde * fps), i1 = Math.round(hasta * fps);
   Object.assign(progreso, { i: i0, total: i1, listo: false });
   tour.paso = -1;
@@ -2341,11 +2343,11 @@ const EN_CLAUDE = !!(window.claude && typeof window.claude.use === 'function');
 const SITIO_URL = 'https://planta-marulanda-3d.vercel.app';
 // En Claude los dos videos principales salen de los archivos subidos al artifact; en el sitio, de documentos/video
 const VIDEOS = {
-  planta: { f: 'documentos/video/planta-marulanda-planta-completa.mp4', guardar: 'documentos/video/planta-marulanda-planta-completa.mp4', blob: '/_blob/8899d044b1c9eb849c2706359a9d3c73', nombre: 'Planta-lacteos-Marulanda-planta-completa.mp4' },
-  proceso: { f: 'documentos/video/planta-marulanda-recorrido-liviano.mp4', guardar: 'documentos/video/planta-marulanda-recorrido.mp4', blob: '/_blob/a08a2ce676843ccb9dde8b805748f266', nombre: 'Sala-recibo-produccion-Marulanda-recorrido.mp4' },
+  planta: { f: 'documentos/video/planta-marulanda-planta-completa.mp4', guardar: 'documentos/video/planta-marulanda-planta-completa.mp4', blob: '/_blob/f12b881d52a028117e1a098c70e63464', nombre: 'Planta-lacteos-Marulanda-planta-completa.mp4' },
+  proceso: { f: 'documentos/video/planta-marulanda-recorrido.mp4', guardar: 'documentos/video/planta-marulanda-recorrido.mp4', blob: '/_blob/e9e5570cc73abf02ea0bdd8bc0e2fc37', nombre: 'Sala-recibo-produccion-Marulanda-recorrido.mp4' },
 };
 // Un video que todavía no se ha grabado no se muestra: en el sitio se sabe por window.TAMANOS; en Claude, por su asset
-const VIDEOS_AREA_LISTOS = false; // en Claude: pasar a true cuando los videos por área estén publicados en el sitio
+const VIDEOS_AREA_LISTOS = true; // en Claude: pasar a true cuando los videos por área estén publicados en el sitio
 const existe = (f) => !window.TAMANOS || !!window.TAMANOS[f];
 const videoListo = (k) => (EN_CLAUDE ? !VIDEOS[k].blob.includes('PENDIENTE') : existe(VIDEOS[k].f));
 let videoSel = videoListo('planta') ? 'planta' : 'proceso';
@@ -2357,9 +2359,10 @@ const DOCS = [
   { n: 'Planos arquitectónicos', d: 'Plantas, fachadas y cortes leídos del DWG', f: 'documentos/planos/planta-marulanda-planos-arquitectonicos.pdf', t: 'PDF' },
   { n: 'Medidas de los equipos', d: 'Medida, fuente y estado de cada equipo', f: 'documentos/medidas/planta-marulanda-medidas-equipos.xlsx', t: 'XLSX' },
   { n: 'Modelo 3D', d: 'Abre en Blender, SketchUp o el Visor 3D de Windows', f: 'documentos/modelo/planta-marulanda-sala.glb', t: 'GLB' },
-  { n: 'Video de la planta completa', d: 'Exterior, los tres pisos y cada área · 1080p', f: 'documentos/video/planta-marulanda-planta-completa.mp4', t: 'MP4' },
+  { n: 'Video de la planta completa', d: 'Exterior, los tres pisos y cada área · 1080p, alta calidad', f: 'documentos/video/planta-marulanda-planta-completa.mp4', t: 'MP4' },
+  { n: 'Video de la planta completa, liviano', d: 'Para enviar por WhatsApp · 720p', f: 'documentos/video/planta-marulanda-planta-completa-liviano.mp4', t: 'MP4' },
   { n: 'Video del proceso de producción', d: '8 etapas · 1080p · alta calidad', f: 'documentos/video/planta-marulanda-recorrido.mp4', t: 'MP4' },
-  { n: 'Video del proceso, liviano', d: 'Para enviar por WhatsApp', f: 'documentos/video/planta-marulanda-recorrido-liviano.mp4', t: 'MP4' },
+  { n: 'Video del proceso, liviano', d: 'Para enviar por WhatsApp · 720p', f: 'documentos/video/planta-marulanda-recorrido-liviano.mp4', t: 'MP4' },
 ];
 const tamano = (f) => { const b = (window.TAMANOS || {})[f]; if (!b) return ''; return b >= 1048576 ? `${(b / 1048576).toLocaleString('es-CO', { maximumFractionDigits: 1 })} MB` : `${Math.max(1, Math.round(b / 1024))} kB`; };
 const urlDoc = (f) => (EN_CLAUDE ? `${SITIO_URL}/${f}` : f);
@@ -3336,14 +3339,14 @@ async function grabarVarios(lista) {
 const LISTA_VIDEOS = [
   { guion: 'planta', carpeta: 'planta', ancho: 1920, alto: 1080 },
   { guion: 'proceso', carpeta: 'proceso', ancho: 1920, alto: 1080 },
-  ...AREAS.map((a) => ({ guion: 'area', arg: a.id, carpeta: `area-${a.id}`, ancho: 1280, alto: 720, calidad: 0.88 })),
+  ...AREAS.map((a) => ({ guion: 'area', arg: a.id, carpeta: `area-${a.id}`, ancho: 1920, alto: 1080 })),
 ];
 function pintarVideosArea() {
   const listas = AREAS.filter((a) => (EN_CLAUDE ? VIDEOS_AREA_LISTOS : existe(archivoArea(a.id))));
   for (const s of ['#t-videos-area', '#videos-area', '#videos-area-nota']) $(s).hidden = !listas.length;
   $('#videos-area').innerHTML = listas.map((a) => {
     const G = guionArea(a.id), f = archivoArea(a.id);
-    return `<li><a href="${urlDoc(f)}" ${EN_CLAUDE ? 'target="_blank" rel="noopener"' : 'download'}><span class="tipo">MP4</span><span class="nm">${a.n}<small>${mmss(G.dur)} · 720p</small></span><span class="tam">${tamano(f)}</span></a></li>`;
+    return `<li><a href="${urlDoc(f)}" ${EN_CLAUDE ? 'target="_blank" rel="noopener"' : 'download'}><span class="tipo">MP4</span><span class="nm">${a.n}<small>${mmss(G.dur)} · 1080p</small></span><span class="tam">${tamano(f)}</span></a></li>`;
   }).join('');
   const sel = $('#sel-area-rec');
   sel.innerHTML = AREAS.map((a) => `<option value="${a.id}">${a.n}</option>`).join('');

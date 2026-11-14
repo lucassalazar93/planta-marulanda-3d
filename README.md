@@ -72,11 +72,14 @@ Arriba a la izquierda se elige qué ver: **Edificio** (toda la infraestructura) 
 | `documentos/planos/planta-marulanda-planos-arquitectonicos.pdf` | PDF | Versión de lectura del DWG arquitectónico: plantas, cubierta, fachadas y cortes. |
 | `documentos/medidas/planta-marulanda-medidas-equipos.xlsx` | Excel | Cada equipo con su medida, fuente, estado y pendiente; otros equipos de la planta y notas de la visita. |
 | `documentos/modelo/planta-marulanda-sala.glb` | GLB | Modelo 3D. Abre en Blender, SketchUp (con complemento para GLB) o el Visor 3D de Windows. |
-| `documentos/video/planta-marulanda-planta-completa.mp4` | MP4, 1080p | Recorrido por toda la planta: exterior, los tres pisos separados y cada área (1:45, sin audio). |
+| `documentos/video/planta-marulanda-planta-completa.mp4` | MP4, 1080p | Recorrido por toda la planta: exterior, los tres pisos separados y cada área (1:45, sin audio), en alta calidad. |
+| `documentos/video/planta-marulanda-planta-completa-liviano.mp4` | MP4, 720p | La planta completa, liviana para WhatsApp. |
 | `documentos/video/planta-marulanda-recorrido.mp4` | MP4, 1080p | Recorrido por el proceso de producción en alta calidad (1:20, sin audio), con el camión, el operario de recibo y los trabajadores. |
-| `documentos/video/planta-marulanda-recorrido-liviano.mp4` | MP4, 1080p | El mismo recorrido del proceso, liviano para WhatsApp. |
-| `documentos/video/areas/planta-marulanda-<área>.mp4` | MP4, 720p | Un video por área: calderas, entrega y cuarto frío, vestuario, laboratorio, administración, baños, planta eléctrica, piso −1, piso 2 y zonas de lavado. |
-| `documentos/planta-marulanda-documentacion.zip` | ZIP | Planos, medidas, modelo 3D, el video de la planta completa y un LEAME. |
+| `documentos/video/planta-marulanda-recorrido-liviano.mp4` | MP4, 720p | El mismo recorrido del proceso, liviano para WhatsApp. |
+| `documentos/video/areas/planta-marulanda-<área>.mp4` | MP4, 1080p | Un video por área: calderas, entrega y cuarto frío, vestuario, laboratorio, administración, baños, planta eléctrica, piso −1, piso 2 y zonas de lavado. |
+| `documentos/planta-marulanda-documentacion.zip` | ZIP | Planos, medidas, modelo 3D, el video liviano de la planta completa y un LEAME. |
+
+Los videos se graban con el 3D a doble resolución y reducido (bordes sin dientes) y se codifican con `-tune animation`, que conserva las líneas finas cuando la cámara se mueve.
 
 ---
 
