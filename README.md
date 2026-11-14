@@ -79,7 +79,7 @@ Arriba a la izquierda se elige qué ver: **Edificio** (toda la infraestructura) 
 | `documentos/video/areas/planta-marulanda-<área>.mp4` | MP4, 1080p | Un video por área: calderas, entrega y cuarto frío, vestuario, laboratorio, administración, baños, planta eléctrica, piso −1, piso 2 y zonas de lavado. |
 | `documentos/planta-marulanda-documentacion.zip` | ZIP | Planos, medidas, modelo 3D, el video liviano de la planta completa y un LEAME. |
 
-Los videos se graban con el 3D a doble resolución y reducido (bordes sin dientes) y se codifican con `-tune animation`, que conserva las líneas finas cuando la cámara se mueve.
+Los videos se graban con el 3D a doble resolución, con antialiasing FXAA (los cortes de muro salen sin dientes) y reducido a 1080p; se codifican en x264 `-preset slower -tune animation -crf 16`, con los bits repartidos también a los cuadros intermedios para que las líneas finas no se laven cuando la cámara se mueve.
 
 ---
 
