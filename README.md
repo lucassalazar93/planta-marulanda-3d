@@ -39,7 +39,7 @@ Arriba a la izquierda se elige qué ver: **Edificio** (toda la infraestructura) 
 | **Zonas de lavado** | Cuarto de lavado, tres lavamanos de pedal y el lavado de botas en el paso del vestuario a producción, en el 3D, en el plano y en su propia lista. |
 | **Caminar** | Recorrido a pie en primera persona: arrastrar para mirar, flechas o WASD para caminar (Mayús para ir más rápido). Choca con muros y equipos; junto a cada escalera aparece el botón para subir o bajar de piso. Arriba se ve en qué sala y piso se está. Esc para salir. |
 | **Plano 2D** | La planta del piso elegido con salas coloreadas por uso, muros, puertas, ventanas, escaleras, lavamanos y áreas. En el piso 1 se ven además los equipos y las líneas de la sala de producción. |
-| **Recorridos guiados** | El botón «▶ Recorrido» abre el menú: **planta completa** (exterior, los tres pisos y cada zona, 1:45), **proceso de producción** (las 8 etapas, 1:18), **zonas de lavado** (0:41), **por piso** (sala por sala, de occidente a oriente) o **una sala** escogida de la lista. La ficha de cada sala también tiene «▶ Recorrer esta sala». Mientras avanza, la ficha del panel muestra la sala en la que va y el plano sigue la cámara en un recuadro. |
+| **Recorridos guiados** | El botón «▶ Recorrido» abre el menú: **planta completa** (exterior, los tres pisos y cada zona, 2:00), **proceso de producción** (las 8 etapas, 1:18), **zonas de lavado** (0:41), **por piso** (sala por sala, de occidente a oriente) o **una sala** escogida de la lista. La ficha de cada sala también tiene «▶ Recorrer esta sala». Mientras avanza, la ficha del panel muestra la sala en la que va y el plano sigue la cámara en un recuadro. |
 
 ### Sala de producción
 
@@ -72,7 +72,7 @@ Arriba a la izquierda se elige qué ver: **Edificio** (toda la infraestructura) 
 | `documentos/planos/planta-marulanda-planos-arquitectonicos.pdf` | PDF | Versión de lectura del DWG arquitectónico: plantas, cubierta, fachadas y cortes. |
 | `documentos/medidas/planta-marulanda-medidas-equipos.xlsx` | Excel | Cada equipo con su medida, fuente, estado y pendiente; otros equipos de la planta y notas de la visita. |
 | `documentos/modelo/planta-marulanda-sala.glb` | GLB | Modelo 3D. Abre en Blender, SketchUp (con complemento para GLB) o el Visor 3D de Windows. |
-| `documentos/video/planta-marulanda-planta-completa.mp4` | MP4, 1080p | Recorrido por toda la planta: exterior, los tres pisos separados y cada área (1:45, sin audio), en alta calidad. |
+| `documentos/video/planta-marulanda-planta-completa.mp4` | MP4, 1080p | Recorrido por toda la planta: exterior, los tres pisos separados y cada área (2:00, sin audio), en alta calidad. |
 | `documentos/video/planta-marulanda-planta-completa-liviano.mp4` | MP4, 720p | La planta completa, liviana para WhatsApp. |
 | `documentos/video/planta-marulanda-recorrido.mp4` | MP4, 1080p | Recorrido por el proceso de producción en alta calidad (1:20, sin audio), con el camión, el operario de recibo y los trabajadores. |
 | `documentos/video/planta-marulanda-recorrido-liviano.mp4` | MP4, 720p | El mismo recorrido del proceso, liviano para WhatsApp. |
