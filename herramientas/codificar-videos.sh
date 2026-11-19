@@ -15,7 +15,7 @@ mkdir -p "$SALIDA/areas"
 VF="scale=out_range=tv:out_color_matrix=bt709,format=yuv420p"
 COLOR="-pix_fmt yuv420p -color_range tv -colorspace bt709 -color_primaries bt709 -color_trc bt709 -movflags +faststart"
 LISTA=("$@")
-[ ${#LISTA[@]} -gt 0 ] || LISTA=(planta proceso area-calderas area-entrega area-vestuario area-laboratorio area-administracion area-banos area-electrica area-sotano area-piso2 area-lavado)
+[ ${#LISTA[@]} -gt 0 ] || LISTA=(planta proceso area-calderas area-entrega area-vestuario area-laboratorio area-administracion area-banos area-electrica area-piso2 area-lavado)
 
 # Alta calidad (1080p): -tune animation conserva bordes y colores planos; ipratio/pbratio bajos reparten los bits
 # también a los cuadros intermedios (si no, los detalles finos se lavan cuando la cámara se mueve)

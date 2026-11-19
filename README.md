@@ -35,7 +35,7 @@ Arriba a la izquierda se elige qué ver: **Edificio** (toda la infraestructura) 
 | **Pisos** | Exterior (con cubierta), Piso 2, Piso 1 y Piso −1. Al elegir un piso se ocultan los de arriba y los muros se cortan a 1,2 m para ver la planta. |
 | **Separar pisos** | Abre el edificio como una maqueta: cada piso a su altura con la cubierta encima, para ver todo a la vez. |
 | **Salas** | 33 recintos leídos del DWG con su nombre, área del plano y área medida entre muros. Al tocar una sala (en el 3D, en el plano o en la lista) se ve su ficha: piso, nivel, alto libre, equipos que tiene y nota. Las que aún no tienen máquinas aparecen como «por definir». |
-| **Mobiliario** | Ilustrativo, para ver cómo se usa cada sala: escritorios con computador en la zona administrativa, atención al usuario y la oficina; mesón y mesa en bienestar; baños de mujeres (2 sanitarios en cabina, lavamanos doble) y de hombres (sanitario, 2 orinales, lavamanos); casilleros y banca en el vestuario; generador, tableros de breakers y transferencia en la planta eléctrica; estantería en la bodega. La ficha de cada sala lo lista. |
+| **Mobiliario** | Ilustrativo, para ver cómo se usa cada sala: escritorios con computador en la zona administrativa, atención al usuario y la oficina; mesón y mesa en bienestar; baños de mujeres (2 sanitarios en cabina, lavamanos doble) y de hombres (sanitario, 2 orinales, lavamanos); casilleros y banca en el vestuario; generador, tableros de breakers y transferencia en la planta eléctrica (pasó al cuarto de la bodega); chiller y compresor de enfriamiento en el cuarto del chiller; caldera de carbón y carbón almacenado en el piso −1; estanterías con canastillas en el cuarto frío. La ficha de cada sala lo lista. |
 | **Zonas de lavado** | Cuarto de lavado, tres lavamanos de pedal y el lavado de botas en el paso del vestuario a producción, en el 3D, en el plano y en su propia lista. |
 | **Caminar** | Recorrido a pie en primera persona: arrastrar para mirar, flechas o WASD para caminar (Mayús para ir más rápido). Choca con muros y equipos; junto a cada escalera aparece el botón para subir o bajar de piso. Arriba se ve en qué sala y piso se está. Esc para salir. |
 | **Plano 2D** | La planta del piso elegido con salas coloreadas por uso, muros, puertas, ventanas, escaleras, lavamanos y áreas. En el piso 1 se ven además los equipos y las líneas de la sala de producción. |
@@ -45,7 +45,7 @@ Arriba a la izquierda se elige qué ver: **Edificio** (toda la infraestructura) 
 
 | Parte | Qué hace |
 | --- | --- |
-| **Vista 3D** | La sala completa: muros del DWG, 27 equipos y 7 líneas de proceso con el producto en movimiento. Los muros que tapan la vista se bajan solos. Hay trabajadores en las dos dosificadoras, en las mesas de escurrido y moldeo y en el carro escabiladero. |
+| **Vista 3D** | La sala completa: muros del DWG, 27 equipos y 10 líneas con el producto en movimiento, incluidos el vapor que sube desde la caldera del piso −1, el agua helada del chiller y las redes eléctrica (14 tomas de 220 V bifásicas) y de agua potable (10 tomas de 1/2") del plano de distribución. Los muros que tapan la vista se bajan solos. Hay trabajadores en las dos dosificadoras, en las mesas de escurrido y moldeo y en el carro escabiladero. |
 | **Plano 2D** | Plano de arquitectura dibujado con los mismos datos: muros, puertas, ventanas, columnas, equipos, líneas, tomas y cotas en metros. |
 | **3D + 2D** | Las dos vistas lado a lado; al tocar un equipo en el plano, la cámara 3D va hasta él. |
 | **Recorrido** | 80 segundos por las 8 etapas: recibo, enfriamiento, descremado y pasteurización, tinas, queso, mantequilla, arequipe y yogurt. La vista que no es la principal aparece en un recuadro de la esquina. |
@@ -76,7 +76,7 @@ Arriba a la izquierda se elige qué ver: **Edificio** (toda la infraestructura) 
 | `documentos/video/planta-marulanda-planta-completa-liviano.mp4` | MP4, 720p | La planta completa, liviana para WhatsApp. |
 | `documentos/video/planta-marulanda-recorrido.mp4` | MP4, 1080p | Recorrido por el proceso de producción en alta calidad (1:20, sin audio), con el camión, el operario de recibo y los trabajadores. |
 | `documentos/video/planta-marulanda-recorrido-liviano.mp4` | MP4, 720p | El mismo recorrido del proceso, liviano para WhatsApp. |
-| `documentos/video/areas/planta-marulanda-<área>.mp4` | MP4, 1080p | Un video por área: calderas, entrega y cuarto frío, vestuario, laboratorio, administración, baños, planta eléctrica, piso −1, piso 2 y zonas de lavado. |
+| `documentos/video/areas/planta-marulanda-<área>.mp4` | MP4, 1080p | Un video por área: calderas y carbón (piso −1), entrega y cuarto frío, vestuario, laboratorio, administración, baños, chiller y planta eléctrica, piso 2 y zonas de lavado. |
 | `documentos/planta-marulanda-documentacion.zip` | ZIP | Planos, medidas, modelo 3D, el video liviano de la planta completa y un LEAME. |
 
 Los videos se graban con el 3D a doble resolución, con antialiasing FXAA (los cortes de muro salen sin dientes) y reducido a 1080p; se codifican en x264 `-preset slower -tune animation -crf 16`, con los bits repartidos también a los cuadros intermedios para que las líneas finas no se laven cuando la cámara se mueve.
