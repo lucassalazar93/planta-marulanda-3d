@@ -1,2 +1,25 @@
+# Buscadores: no indexar (también lo dicen la cabecera X-Robots-Tag y la etiqueta robots de cada página).
+# Los robots de vista previa de enlaces sí pueden leer la página y la imagen, para que al compartir se vea la tarjeta con el logo.
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Facebot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Slackbot-LinkExpanding
+Allow: /
+
 User-agent: *
 Disallow: /

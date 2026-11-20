@@ -18,6 +18,11 @@ export function tamanos(raiz) {
   return out;
 }
 
+// Vista previa al compartir el enlace (WhatsApp, Facebook, Telegram…): imagen de 1200 × 630 con el logo de Equinox al centro,
+// para que se vea aunque la recorten cuadrada. Al cambiar la imagen, subir v= para que WhatsApp no use la guardada.
+const SITIO = 'https://planta-marulanda-3d.vercel.app';
+const OG = `${SITIO}/assets/og.jpg?v=2`;
+
 export function documento(contenido, raiz) {
   const tam = raiz ? tamanos(raiz) : {};
   return `<!doctype html>
@@ -30,11 +35,22 @@ export function documento(contenido, raiz) {
 <meta property="og:title" content="Planta de lácteos de Marulanda · Industrias Equinox Colombia">
 <meta property="og:description" content="Recorrido 3D, plano 2D y documentación de la sala de recibo y producción. Diseñado y desarrollado por Lukbyte.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://planta-marulanda-3d.vercel.app/assets/og.jpg">
+<meta property="og:site_name" content="Industrias Equinox Colombia">
+<meta property="og:locale" content="es_CO">
+<meta property="og:url" content="${SITIO}/">
+<meta property="og:image" content="${OG}">
+<meta property="og:image:secure_url" content="${OG}">
+<meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Logo de Industrias Equinox Colombia sobre el modelo 3D de la planta de lácteos de Marulanda">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Planta de lácteos de Marulanda · Industrias Equinox Colombia">
+<meta name="twitter:description" content="Recorrido 3D, plano 2D y documentación de la sala de recibo y producción. Diseñado y desarrollado por Lukbyte.">
+<meta name="twitter:image" content="${OG}">
 <meta name="theme-color" content="#0b6d8e">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>window.TAMANOS = ${JSON.stringify(tam)};</script>
 </head>
