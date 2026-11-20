@@ -89,10 +89,35 @@ h1 { margin: 10px 0 14px; font-family: var(--f-display); font-weight: 700; font-
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
 .chip { font-size: 13px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); }
 .chip b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
-.foto { margin: 0; position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--steel); box-shadow: 0 18px 40px rgba(10, 20, 40, 0.12); }
-.foto img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
-.foto figcaption { position: absolute; left: 12px; bottom: 12px; font-size: 13px; padding: 4px 10px; border-radius: 6px; background: rgba(255, 255, 255, 0.92); color: #233042; }
-@media (max-width: 900px) { .hero .envoltura { grid-template-columns: minmax(0, 1fr); } .hero { padding-block: 32px 24px; } }
+.hero { position: relative; overflow: clip; }
+.hero::before { content: ""; position: absolute; z-index: 0; pointer-events: none; width: 900px; height: 700px; right: -220px; top: -140px;
+  background: radial-gradient(closest-side, rgba(56, 212, 255, 0.22), rgba(58, 79, 196, 0.16) 55%, transparent); }
+.hero .envoltura { position: relative; z-index: 1; }
+/* Escena: el modelo 3D en movimiento, con un aro de color (cian → azul Equinox → violeta) y una leve perspectiva */
+.escena { margin: 0; position: relative; aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden; border: 2px solid transparent;
+  background: linear-gradient(#dfe5e8, #dfe5e8) padding-box, linear-gradient(135deg, #38d4ff, var(--navy) 50%, #9b6bff) border-box;
+  box-shadow: 0 34px 70px -24px rgba(12, 24, 70, 0.55), 0 0 60px -10px rgba(56, 212, 255, 0.28);
+  transform: perspective(1600px) rotateY(-7deg) rotateX(2deg); transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.escena:hover { transform: perspective(1600px) rotateY(0deg) rotateX(0deg); }
+.escena video, .escena img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.vidrio { background: rgba(10, 16, 32, 0.72); color: #eef4ff; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.14); }
+.vivo { position: absolute; left: 14px; top: 14px; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 10px; border-radius: 999px;
+  font-family: var(--f-display); font-weight: 600; font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase; }
+.vivo i { width: 9px; height: 9px; border-radius: 50%; background: #38d4ff; box-shadow: 0 0 0 0 rgba(56, 212, 255, 0.7); animation: latido 1.8s ease-out infinite; }
+@keyframes latido { 0% { box-shadow: 0 0 0 0 rgba(56, 212, 255, 0.7); } 80%, 100% { box-shadow: 0 0 0 9px rgba(56, 212, 255, 0); } }
+.leyenda { position: absolute; left: 14px; bottom: 14px; max-width: calc(100% - 76px); display: flex; flex-wrap: wrap; gap: 4px 12px; padding: 7px 12px; border-radius: 10px; font-size: 12.5px; }
+.leyenda span { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.leyenda i { width: 14px; height: 4px; border-radius: 2px; background: var(--c); }
+.pausa { position: absolute; right: 14px; bottom: 14px; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; padding: 0; }
+.pausa svg { width: 16px; height: 16px; fill: currentColor; }
+.pausa:hover { background: rgba(10, 16, 32, 0.9); }
+@media (prefers-reduced-motion: reduce) { .escena { transition: none; } .vivo i { animation: none; } }
+@media (max-width: 900px) {
+  .hero .envoltura { grid-template-columns: minmax(0, 1fr); } .hero { padding-block: 32px 24px; }
+  .escena, .escena:hover { transform: none; }
+  .hero::before { width: 520px; height: 520px; right: -200px; top: auto; bottom: -120px; }
+}
+@media (max-width: 520px) { .leyenda { font-size: 11.5px; gap: 3px 9px; padding: 6px 9px; } .leyenda span:nth-child(n+4) { display: none; } .vivo { font-size: 12.5px; } }
 
 /* Secciones */
 section.bloque { padding-block: 48px; scroll-margin-top: 64px; }
@@ -201,13 +226,24 @@ dialog button { border: 1px solid #33404f; background: transparent; color: #e5ea
           <span class="chip">Marulanda, Caldas</span>
           <span class="chip"><b>3</b> pisos</span>
           <span class="chip"><b>27</b> equipos</span>
-          <span class="chip"><b>7</b> líneas de proceso</span>
+          <span class="chip"><b>10</b> líneas de proceso</span>
           <span class="chip"><b>8</b> etapas</span>
         </div>
       </div>
-      <figure class="foto">
-        <img src="assets/portada.jpg" alt="Vista general del modelo 3D de la sala de recibo y producción, con tanques, tinas y líneas de proceso" width="2000" height="1125">
-        <figcaption>Modelo 3D · vista general</figcaption>
+      <figure class="escena">
+        <video id="v-portada" autoplay muted loop playsinline preload="auto" poster="assets/portada.jpg" width="1280" height="720"
+          aria-label="Modelo 3D de la planta en movimiento: el piso 1 completo con la producción, el cuarto frío, el chiller y las líneas de leche, vapor, agua y electricidad">
+          <source src="assets/portada.mp4" type="video/mp4">
+        </video>
+        <span class="vivo vidrio"><i aria-hidden="true"></i>Modelo 3D en vivo</span>
+        <figcaption class="leyenda vidrio">
+          <span><i style="--c:#2f7fc4"></i>Leche</span>
+          <span><i style="--c:#d32f2f"></i>Vapor</span>
+          <span><i style="--c:#00838f"></i>Agua helada</span>
+          <span><i style="--c:#43a047"></i>Agua potable</span>
+          <span><i style="--c:#9b7be0"></i>Eléctrica</span>
+        </figcaption>
+        <button type="button" class="pausa vidrio" id="b-pausa" aria-label="Pausar la animación"></button>
       </figure>
     </div>
   </section>
@@ -317,20 +353,20 @@ dialog button { border: 1px solid #33404f; background: transparent; color: #e5ea
 
 <footer>
   <div class="envoltura">
-    <div class="pie-eq"><span class="placa"><img src="assets/logo-equinox.png" alt="Industrias Equinox Colombia" width="78" height="26" loading="lazy"></span><span>Proyecto de Industrias Equinox Colombia · Planta de lácteos Marulanda, Caldas · Modelado preliminar, 10 de noviembre de 2026</span></div>
+    <div class="pie-eq"><span class="placa"><img src="assets/logo-equinox.png" alt="Industrias Equinox Colombia" width="78" height="26" loading="lazy"></span><span>Proyecto de Industrias Equinox Colombia · Planta de lácteos Marulanda, Caldas · Modelado preliminar, actualizado el 19 de noviembre de 2026</span></div>
     <a class="pie-lk" href="https://lukbyte-my-website.vercel.app/" target="_blank" rel="noopener"><img src="assets/logo-lukbyte-mini.png" alt="" width="30" height="31" loading="lazy"><span>Diseñado y desarrollado por <b>Lukbyte</b></span></a>
   </div>
 </footer>
 
 <dialog id="dlg-video" aria-label="Video del recorrido">
   <video id="video" controls playsinline preload="none"></video>
-  <div class="barra-dlg"><span>Recorrido por la sala · 78 s</span><button type="button" id="cerrar-video">Cerrar</button></div>
+  <div class="barra-dlg"><span>Recorrido por la planta completa · 2:00</span><button type="button" id="cerrar-video">Cerrar</button></div>
 </dialog>
 
 <script>
 const ETAPAS = [
   ['Recibo de leche', 'La leche llega en cantinas, se vuelca al tanque recibidor de 500 L y la bomba la lleva a los tanques.', '#2f7fc4'],
-  ['Enfriamiento', 'Dos tanques de enfriamiento, de 5.000 L y 3.000 L, con el frío de tres compresores.', '#18a9bf'],
+  ['Enfriamiento', 'Dos tanques de enfriamiento, de 5.000 L y 3.000 L, con el frío de tres compresores.', '#7fd6e6'],
   ['Descremado y pasteurización', 'Descremadora, pasteurizador de placas de 1.500 L/h y homogenizador.', '#2f7fc4'],
   ['Tinas de 2.000 L', 'Tina semiautomática y tina sencilla, donde la leche se cuaja y se corta.', '#2f7fc4'],
   ['Queso', 'Mesa de escurrido, hiladora, formadora y mesa de moldeo; el queso sale en canastas hacia la bodega.', '#d4851a'],
@@ -367,6 +403,15 @@ const cerrar = () => { video.pause(); dlg.close(); };
 document.getElementById('cerrar-video').addEventListener('click', cerrar);
 dlg.addEventListener('click', (ev) => { if (ev.target === dlg) cerrar(); });
 dlg.addEventListener('close', () => video.pause());
+
+const vp = document.getElementById('v-portada'), bp = document.getElementById('b-pausa');
+const ICONO = { pausa: '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.5" height="12" rx="1"/><rect x="9.5" y="2" width="3.5" height="12" rx="1"/></svg>',
+  play: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11a.8.8 0 0 0 1.2.7l9-5.5a.8.8 0 0 0 0-1.4l-9-5.5A.8.8 0 0 0 4 2.5z"/></svg>' };
+const pintarPausa = () => { const p = vp.paused; bp.innerHTML = p ? ICONO.play : ICONO.pausa; bp.setAttribute('aria-label', p ? 'Reproducir la animación' : 'Pausar la animación'); };
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) { vp.removeAttribute('autoplay'); vp.pause(); }
+bp.addEventListener('click', () => { if (vp.paused) vp.play().catch(() => {}); else vp.pause(); });
+vp.addEventListener('play', pintarPausa); vp.addEventListener('pause', pintarPausa);
+pintarPausa();
 </script>
 
 </body>

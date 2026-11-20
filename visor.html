@@ -1866,13 +1866,15 @@ function dibujarOverlay(ctx, w, h, t) {
 }
 
 // ss: el 3D se dibuja ss veces más grande y se reduce al tamaño del video (bordes y líneas finas sin dientes)
-async function grabarVideo({ guion: gid = 'proceso', arg, carpeta = '', fps = 30, ancho = 1920, alto = 1080, desde = 0, hasta, calidad = 1.0, ss = 2, fxaa = true } = {}) {
+// camara: función opcional t → { p: [x, y, z], t: [x, y, z] } que reemplaza el recorrido (p. ej. el video de la portada);
+// overlay: false graba solo el 3D, sin los textos del recorrido
+async function grabarVideo({ guion: gid = 'proceso', arg, carpeta = '', fps = 30, ancho = 1920, alto = 1080, desde = 0, hasta, calidad = 1.0, ss = 2, fxaa = true, camara = null, overlay = true } = {}) {
   if (!['127.0.0.1', 'localhost'].includes(location.hostname)) throw new Error('Solo desde el servidor local');
   await document.fonts.ready;
   await cargarLogos();
   grabando = true; detenerTour(); seleccionar(null, false);
   if (paseo.activo) salirPaseo();
-  const G = crearGuion(gid, arg); tour.g = G; hasta = hasta ?? G.dur;
+  const G = camara ? { id: 'camara', dur: hasta } : crearGuion(gid, arg); if (!camara) tour.g = G; hasta = hasta ?? G.dur;
   edif.exp = 0; edif.expObj = 0;
   const v = encodeURIComponent(carpeta);
   const prevPR = renderer.getPixelRatio();
@@ -1901,11 +1903,12 @@ async function grabarVideo({ guion: gid = 'proceso', arg, carpeta = '', fps = 30
     if (renderer.domElement.width !== ancho * ss || renderer.domElement.height !== alto * ss || camera.aspect !== ancho / alto) {
       renderer.setSize(ancho * ss, alto * ss, false); camera.aspect = ancho / alto; camera.updateProjectionMatrix();
     }
-    aplicarTour(t);
+    if (camara) { const c = camara(t); camera.position.set(...c.p); controls.target.set(...c.t); camera.lookAt(controls.target); }
+    else aplicarTour(t);
     animarEdificio(1 / fps); animarPartes(t); actualizarFlujos(t); aplicarMuros();
     if (composer) composer.render(); else renderer.render(scene, camera);
     ctx.drawImage(renderer.domElement, 0, 0, ancho, alto);
-    dibujarOverlay(ctx, ancho, alto, t);
+    if (overlay) dibujarOverlay(ctx, ancho, alto, t);
     const blob = await new Promise((res) => lienzo.toBlob(res, 'image/jpeg', calidad));
     await fetch(`/cuadro?i=${i}&v=${v}`, { method: 'POST', body: blob });
     progreso.i = i + 1;
